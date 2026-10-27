@@ -26,6 +26,60 @@ export interface BobaIngredient {
   tag?: string;
 }
 
+export type DietaryOption = 'all' | 'vegan' | 'lactose-free' | 'gluten-free' | 'nut-free';
+
+export interface DietaryFilterItem {
+  id: DietaryOption;
+  label: string;
+  shortLabel: string;
+  icon: string;
+  badgeClass: string;
+  description: string;
+}
+
+export const DIETARY_FILTERS: DietaryFilterItem[] = [
+  {
+    id: 'all',
+    label: 'Tutti gli Stili',
+    shortLabel: 'TUTTI',
+    icon: '✦',
+    badgeClass: 'border-[#FD5E86] text-[#FD5E86]',
+    description: 'Mostra l\'intero catalogo prodotti',
+  },
+  {
+    id: 'vegan',
+    label: '100% Vegan Friendly',
+    shortLabel: 'VEGAN',
+    icon: '🌱',
+    badgeClass: 'border-emerald-500 text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/20',
+    description: 'Tè alla frutta & sciroppi vegetali con perle agar',
+  },
+  {
+    id: 'lactose-free',
+    label: 'Senza Lattosio',
+    shortLabel: 'DAIRY-FREE',
+    icon: '🥛',
+    badgeClass: 'border-sky-500 text-sky-600 dark:text-sky-400 bg-sky-50/50 dark:bg-sky-950/20',
+    description: 'Zero derivati del latte o con base cocco/vegetale',
+  },
+  {
+    id: 'gluten-free',
+    label: 'Senza Glutine',
+    shortLabel: 'GLUTEN-FREE',
+    icon: '🌾',
+    badgeClass: 'border-amber-500 text-amber-600 dark:text-amber-400 bg-amber-50/50 dark:bg-amber-950/20',
+    description: 'Tapioca 100% naturale da manioca & coppette',
+  },
+  {
+    id: 'nut-free',
+    label: 'Senza Frutta a Guscio',
+    shortLabel: 'NUT-FREE',
+    icon: '🥜',
+    badgeClass: 'border-rose-400 text-rose-600 dark:text-rose-400 bg-rose-50/50 dark:bg-rose-950/20',
+    description: 'Privo di nocciole, pistacchi e arachidi',
+  },
+];
+
 export interface MenuItem {
   id: string;
   name: string;
@@ -36,6 +90,8 @@ export interface MenuItem {
   isNightSpecial?: boolean;
   description: string;
   ingredients: string[];
+  dietary?: ('vegan' | 'lactose-free' | 'gluten-free' | 'nut-free')[];
+  allergens?: string[];
   colorAccent: string;
   imageUrl?: string;
   glovoUrl?: string;
@@ -306,6 +362,8 @@ export const MENU_ITEMS: MenuItem[] = [
     isNightSpecial: true,
     description: 'Il burger più amato di TeaAmo su Glovo: SpacePolly bun, doppio smash burger artigianale, cheddar filante, bacon croccante, cipolla crispy e salsa algerienne.',
     ingredients: ['SpacePolly Bun', 'Doppio Smash Burger', 'Cheddar & Bacon', 'Cipolla Croccante', 'Salsa Algerienne'],
+    dietary: ['nut-free'],
+    allergens: ['Glutine', 'Lattosio'],
     colorAccent: '#E11D48',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/dacbc440-f7dc-438f-ad18-9da15e0ae214.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.spacepolly,
@@ -319,6 +377,8 @@ export const MENU_ITEMS: MenuItem[] = [
     isNightSpecial: true,
     description: 'Doppio smash burger cotto su piastra rovente, cetriolini a fette, lattuga croccante, senape e ketchup in perfetto stile americano.',
     ingredients: ['SpacePolly Bun', 'Doppio Smash Burger', 'Cetriolini Sottaceto', 'Lattuga Fresca', 'Senape & Ketchup'],
+    dietary: ['nut-free'],
+    allergens: ['Glutine', 'Senape'],
     colorAccent: '#7C3AED',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/4083d7fc-e2b5-4ef4-a410-da023a1b34e3.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.spacepolly,
@@ -332,6 +392,8 @@ export const MENU_ITEMS: MenuItem[] = [
     isNightSpecial: true,
     description: 'SpacePolly con burger saporito, cipolla caramellata in salsa barbecue affumicata e lattuga tenera.',
     ingredients: ['SpacePolly Bun', 'Smash Burger', 'Cipolla Caramellata', 'Salsa BBQ', 'Lattuga'],
+    dietary: ['nut-free'],
+    allergens: ['Glutine'],
     colorAccent: '#DD6B20',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/18aabab0-2627-41dd-b684-661d742e2645.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.spacepolly,
@@ -345,6 +407,8 @@ export const MENU_ITEMS: MenuItem[] = [
     isNightSpecial: true,
     description: 'SpacePolly burger con lattuga fresca, formaggio cheddar fuso, bacon dorato e salsa burger speciale.',
     ingredients: ['SpacePolly Bun', 'Burger Selezionato', 'Cheddar Fuso', 'Bacon Dorato', 'Salsa Burger'],
+    dietary: ['nut-free'],
+    allergens: ['Glutine', 'Lattosio'],
     colorAccent: '#D69E2E',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/e2038f52-a3b4-4347-bda5-d0fd852c04d0.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.spacepolly,
@@ -358,6 +422,8 @@ export const MENU_ITEMS: MenuItem[] = [
     isNightSpecial: true,
     description: 'SpacePolly burger di pollo dorato e croccante, lattuga, pomodoro fresco e salsa burger artigianale.',
     ingredients: ['Burger di Pollo', 'Lattuga', 'Pomodoro Fresco', 'Salsa Burger Speciale'],
+    dietary: ['nut-free'],
+    allergens: ['Glutine', 'Uova'],
     colorAccent: '#38A169',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/56ec0782-18a6-4bb7-be70-20b175f392db.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.spacepolly,
@@ -371,6 +437,8 @@ export const MENU_ITEMS: MenuItem[] = [
     isNightSpecial: true,
     description: 'SpacePolly burger con lattuga fresca, pomodoro e maionese delicata.',
     ingredients: ['Burger Selezionato', 'Lattuga', 'Pomodoro', 'Maionese'],
+    dietary: ['nut-free'],
+    allergens: ['Glutine', 'Uova'],
     colorAccent: '#4A5568',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/ab76c044-b0a8-4109-93ff-91f233c7386a.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.spacepolly,
@@ -386,6 +454,7 @@ export const MENU_ITEMS: MenuItem[] = [
     badge: '-10% Glovo Promo',
     description: 'Cialda BubbleWaffle ad alveare calda e fragrante, farcita con il nostro gelato artigianale di produzione propria in tantissimi gusti.',
     ingredients: ['Cialda Calda ad Alveare', 'Gelato Artigianale TeaAmo', 'Topping & Wafer'],
+    allergens: ['Glutine', 'Lattosio', 'Uova'],
     colorAccent: '#B7791F',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/40f7a602-b838-4f17-aa40-cd19bb1dcf92.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.sweetGelato,
@@ -398,6 +467,7 @@ export const MENU_ITEMS: MenuItem[] = [
     badge: 'Best Seller Sweet',
     description: 'Crêpes o pancake con impasto al cacao, cioccolato bianco Galak, ricca crema Pan di Stelle e il magico biscotto stellato sopra.',
     ingredients: ['Impasto al Cacao', 'Cioccolato Galak', 'Crema Pan di Stelle', 'Biscotto Magico'],
+    allergens: ['Glutine', 'Lattosio', 'Frutta a guscio (nocciola)', 'Uova'],
     colorAccent: '#744210',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/PRODUCT/3c81ea2b-a421-4a21-b629-a7fa4d325482.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.sweetSpecial,
@@ -411,6 +481,7 @@ export const MENU_ITEMS: MenuItem[] = [
     badge: '-10% Promo',
     description: 'Crêpe dorata preparata al momento con farcitura di gelato artigianale fresco TeaAmo e colata di cioccolato.',
     ingredients: ['Crêpe Soffice', 'Gelato Artigianale', 'Colata di Cioccolato'],
+    allergens: ['Glutine', 'Lattosio', 'Uova'],
     colorAccent: '#E53E3E',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/4e973bee-3b48-4ecc-aaf0-f2ac810c66bd.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.sweetGelato,
@@ -423,6 +494,7 @@ export const MENU_ITEMS: MenuItem[] = [
     badge: 'Torre Golosa',
     description: 'Pancake caldi e soffici cotti su piastra rovente, guarniti con palline di gelato artigianale e sciroppo.',
     ingredients: ['Pancake Caldi', 'Gelato Artigianale', 'Creme & Granelle'],
+    allergens: ['Glutine', 'Lattosio', 'Uova'],
     colorAccent: '#D69E2E',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/577107e2-706a-4cfb-bcd4-49b5eded2c89.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.sweetGelato,
@@ -435,6 +507,7 @@ export const MENU_ITEMS: MenuItem[] = [
     badge: 'Esclusiva',
     description: 'Farcitura golosa con Nutella, granella di arachidi tostate e morbida merendina Fiesta Ferrero all\'arancia.',
     ingredients: ['Nutella', 'Granella di Arachidi', 'Fiesta Ferrero'],
+    allergens: ['Arachidi', 'Lattosio', 'Glutine', 'Uova'],
     colorAccent: '#DD6B20',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/15afc019fd961c8a3104a13ca0d3957571d639da6a3bb74195ba90503488234c?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.sweetSpecial,
@@ -447,6 +520,7 @@ export const MENU_ITEMS: MenuItem[] = [
     badge: 'White Choco',
     description: 'Nutella bianca vellutata, Nutella classica, riso soffiato al cioccolato bianco e barretta White KitKat croccante.',
     ingredients: ['Nutella Bianca', 'Nutella', 'Riso Cioco Bianco', 'KitKat White'],
+    allergens: ['Glutine', 'Lattosio', 'Soia'],
     colorAccent: '#D69E2E',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/4692122fb45fefbb1dcb7f1ca596cd9a4160586a9e31dbbe943d9e5588190d0f?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.sweetSpecial,
@@ -459,6 +533,7 @@ export const MENU_ITEMS: MenuItem[] = [
     badge: 'Pistacchio Puro',
     description: 'Crocco pistacchio siciliano, doppio cioccolato al latte, pistacchio pralinato e riso soffiato bianco.',
     ingredients: ['Crema Pistacchio', 'Cioccolato al Latte', 'Pistacchio Pralinato', 'Riso Soffiato'],
+    allergens: ['Frutta a guscio (pistacchio)', 'Lattosio', 'Glutine'],
     colorAccent: '#38A169',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/bc6e851b549abea4205ba26439e232db528d53a3e637e0269c9697bd991af186?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.sweetSpecial,
@@ -473,6 +548,8 @@ export const MENU_ITEMS: MenuItem[] = [
     badge: 'Best Seller',
     description: 'Il Taro Milk Tea autentico di TeaAmo Palermo: bevanda cremosa a base di latte e taro viola con perle di tapioca morbide.',
     ingredients: ['Latte Cremoso', 'Taro Viola Naturale', 'Tapioca Cotta'],
+    dietary: ['gluten-free', 'nut-free'],
+    allergens: ['Lattosio (disponibile con latte vegetale/soia)'],
     colorAccent: '#805AD5',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/7b912de34bace8afcafe9cb36d0adabc2dfb40bbe095d0faef35d58b7bc8170b?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.bubbleTea,
@@ -489,8 +566,10 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'bubble-tea',
     price: 5.3,
     badge: 'Ed. Pokémon',
-    description: 'Tè verde al gelsomino, latte fresco, sciroppo di mela verde e perle a scelta che scoppiano in bocca.',
-    ingredients: ['Tè Verde Gelsomino', 'Latte', 'Sciroppo Mela Verde', 'Popping Boba'],
+    description: 'Tè verde al gelsomino, mela verde limpida e popping boba alla frutta che scoppiano in bocca.',
+    ingredients: ['Tè Verde Gelsomino', 'Sciroppo Mela Verde Naturale', 'Popping Boba Frutta'],
+    dietary: ['vegan', 'lactose-free', 'gluten-free', 'nut-free'],
+    allergens: ['Nessuno (100% vegetale, senza glutine, senza lattosio)'],
     colorAccent: '#38A169',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/8750b581ce4e3f43d5c8804b10202cc978c44304aa600365aa1a248764572d3b?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.pokemon,
@@ -507,8 +586,10 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'bubble-tea',
     price: 5.4,
     badge: 'Signature',
-    description: 'Latte fresco, fragola e cocco con sfere popping alla fragola e topping soffice.',
-    ingredients: ['Latte', 'Fragola & Cocco', 'Perle Popping Fragola'],
+    description: 'Latte di cocco vellutato, fragola e sfere popping alla fragola rinfrescanti.',
+    ingredients: ['Latte di Cocco', 'Purea di Fragola', 'Perle Popping Fragola'],
+    dietary: ['lactose-free', 'gluten-free', 'nut-free'],
+    allergens: ['Nessun lattosio animale (base latte di cocco vegetale)'],
     colorAccent: '#E53E3E',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/e9c3c07763a7321f477ada617da2f41c73a0f44067a8642227467c1d6c9d6115?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.bubbleTea,
@@ -525,8 +606,10 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'bubble-tea',
     price: 4.8,
     badge: 'Tradizionale',
-    description: 'Tè nero ricco, latte corposo e perle di tapioca nera al caramello.',
-    ingredients: ['Tè Nero', 'Latte Intero/Vegetale', 'Tapioca Morbida'],
+    description: 'Tè nero ricco taiwanese, latte corposo e perle di tapioca nera al caramello bruno.',
+    ingredients: ['Tè Nero Oolong/Assam', 'Latte', 'Tapioca Morbida di Manioca'],
+    dietary: ['gluten-free', 'nut-free'],
+    allergens: ['Lattosio (disponibile con latte vegetale/soia)'],
     colorAccent: '#B7791F',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/d8b5d4ee3e68985ccd688e9e8889629eea488da2bcf7ab9ccf512b380b4a8078?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.bubbleTea,
@@ -543,8 +626,10 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'bubble-tea',
     price: 4.99,
     badge: 'Dissetante',
-    description: 'Tè nero al blu tropical con perle di kiwi e perle blu tropical che scoppiano in bocca.',
-    ingredients: ['Tè Nero', 'Blu Tropical', 'Perle Kiwi', 'Perle Blu'],
+    description: 'Tè nero aromatizzato al blu tropical con perle di kiwi e perle blu tropical che scoppiano in bocca.',
+    ingredients: ['Tè Nero', 'Sciroppo Blu Tropical', 'Perle Kiwi', 'Perle Blu'],
+    dietary: ['vegan', 'lactose-free', 'gluten-free', 'nut-free'],
+    allergens: ['Nessuno (100% vegetale, senza glutine, senza lattosio)'],
     colorAccent: '#3182CE',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/45c61f24aeeba1b69a9995c457dcba9f1c7df9ee199cee8944919217ea65a19d?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.bubbleTea,
@@ -563,6 +648,8 @@ export const MENU_ITEMS: MenuItem[] = [
     badge: 'Frutta Fresca',
     description: 'Tè al limone dissetante con popping boba alla ciliegia.',
     ingredients: ['Tè al Limone', 'Popping Ciliegia', 'Ghiaccio'],
+    dietary: ['vegan', 'lactose-free', 'gluten-free', 'nut-free'],
+    allergens: ['Nessuno (100% vegetale, senza glutine, senza lattosio)'],
     colorAccent: '#C53030',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/8a9333b726520b526dbbc5703c749b4fa48076b05276fdc1f445d78b8b4f08d3?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.bubbleTea,
@@ -581,8 +668,10 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'frozen',
     price: 5.5,
     badge: 'Maxi Coppetta',
-    description: 'Gelato allo yogurt mantecato o fiordilatte preparato al momento, arricchito con creme calde, granelle di nocciola e snack.',
+    description: 'Gelato allo yogurt mantecato o fiordilatte preparato al momento in coppetta (senza cialda), arricchito con creme e frutta.',
     ingredients: ['Yogurt Mantecato', 'Fiordilatte', 'Creme & Granelle a Scelta'],
+    dietary: ['gluten-free'],
+    allergens: ['Lattosio (latte fresco e yogurt)'],
     colorAccent: '#D53F8C',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/9236638ed56e74cfb07cce3c878d95868b81a7bd88256ec9a283ff9d20c03b54?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.frozen,
@@ -595,6 +684,8 @@ export const MENU_ITEMS: MenuItem[] = [
     badge: 'Produzione Propria',
     description: 'Il gelato artigianale preparato ogni giorno a mano con ingredienti freschi e naturali nel laboratorio TeaAmo di Viale Strasburgo.',
     ingredients: ['Ingredienti Naturali', 'Produzione Quotidiana', 'Gusti di Stagione'],
+    dietary: ['gluten-free'],
+    allergens: ['Lattosio (gusti crema); gusti frutta 100% Vegan & Dairy-Free'],
     colorAccent: '#319795',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/044ec884bb807cb12ee8c1ca7e6140df3f8ea2f18eb0e6ccc6a37fb34945c310?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.gelato,
@@ -607,6 +698,8 @@ export const MENU_ITEMS: MenuItem[] = [
     badge: 'Cremoso & Freddo',
     description: 'Frappè artigianale preparato con gelato yogurt o fiordilatte e creme golose. Denso, cremoso e freddo.',
     ingredients: ['Gelato Mantecato', 'Latte', 'Creme Speciali'],
+    dietary: ['gluten-free'],
+    allergens: ['Lattosio'],
     colorAccent: '#805AD5',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/58231dc0abfdd564551639d543dbcad45a05de8297339344521ece82f37abbf7?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
     glovoUrl: GLOVO_STORE_SECTIONS.frozen,

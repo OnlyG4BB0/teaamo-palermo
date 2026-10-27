@@ -135,7 +135,8 @@ export function App() {
     { href: '#boba-lab', label: '02 / Simulatore 3D', desc: 'Laboratorio di formulazione 3D' },
     { href: '#tiktok', label: '03 / Bacheca TikTok', desc: 'Video & trend @teaamobubbletea' },
     { href: '#delivery', label: '04 / Delivery & Take Away', desc: 'Glovo Store & Ritiro al Locale' },
-    { href: '#dove-siamo', label: '05 / Sede & Orari', desc: 'Viale Strasburgo 378 Palermo' },
+    { href: '#allergeni', label: '05 / Dieta & Allergeni', desc: 'Vegan, Senza Glutine & Lattosio' },
+    { href: '#dove-siamo', label: '06 / Sede & Orari', desc: 'Viale Strasburgo 378 Palermo' },
   ];
 
   const checkIsOpenNow = (): boolean => {

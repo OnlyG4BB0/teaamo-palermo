@@ -5,6 +5,7 @@ import {
   Clock,
   Phone,
   Star,
+  ShieldCheck,
 } from 'lucide-react';
 import {
   GOOGLE_REVIEWS,
@@ -171,6 +172,78 @@ export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({
                 </a>
               </RevealOnScroll>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 05.5 / GUIDA ALLERGENI & SICUREZZA ALIMENTARE */}
+      <section
+        id="allergeni"
+        className="border-b border-[#FCE4EC] dark:border-[#281E23] py-14 sm:py-20 bg-white dark:bg-[#0D090B]"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <RevealOnScroll className="pb-8 border-b border-[#FCE4EC] dark:border-[#281E23] flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#FD5E86] mb-2.5">
+                05.5 / INFORMATIVA DIETETICA // ALLERGENI &amp; INTOLLERANZE
+              </p>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-[#1C0D12] dark:text-[#F5EFEA]">
+                Trasparenza Ingredienti &amp;{' '}
+                <span className="italic text-[#FD5E86]">Salute</span>
+              </h2>
+            </div>
+            <p className="text-sm text-[#7A5A66] dark:text-[#A3939B] max-w-md leading-relaxed">
+              Dalla tapioca calda naturalmente priva di glutine ai tè 100% vegani, ecco come gestiamo ingredienti e contaminazioni nel nostro laboratorio di Viale Strasburgo.
+            </p>
+          </RevealOnScroll>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-x border-b border-[#FCE4EC] dark:border-[#281E23] divide-y md:divide-y-0 md:divide-x divide-[#FCE4EC] dark:divide-[#281E23]">
+            <div className="p-6 sm:p-7 space-y-3 bg-[#FFFDFE] dark:bg-[#120B0E]">
+              <div className="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-serif text-lg">
+                🌱
+              </div>
+              <h3 className="font-serif text-xl text-[#1C0D12] dark:text-white">100% Vegan Friendly</h3>
+              <p className="text-xs text-[#7A5A66] dark:text-[#A3939B] leading-relaxed">
+                Tutti i tè aromatizzati alla frutta e i PokéTea (Bulbasaur, Blu Tropical, Red Passion) sono a base di infusi naturali e perle agar vegetali, privi di latte o derivati animali.
+              </p>
+            </div>
+
+            <div className="p-6 sm:p-7 space-y-3 bg-[#FFFDFE] dark:bg-[#120B0E]">
+              <div className="w-10 h-10 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center font-serif text-lg">
+                🌾
+              </div>
+              <h3 className="font-serif text-xl text-[#1C0D12] dark:text-white">Senza Glutine (Tapioca)</h3>
+              <p className="text-xs text-[#7A5A66] dark:text-[#A3939B] leading-relaxed">
+                Le nostre celebri perle di tapioca nere sono ricavate al 100% dalla radice di manioca (cassava), naturalmente gluten-free. Anche le coppette di gelato/yogurt (senza cono) sono senza glutine.
+              </p>
+            </div>
+
+            <div className="p-6 sm:p-7 space-y-3 bg-[#FFFDFE] dark:bg-[#120B0E]">
+              <div className="w-10 h-10 rounded-full bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 flex items-center justify-center font-serif text-lg">
+                🥛
+              </div>
+              <h3 className="font-serif text-xl text-[#1C0D12] dark:text-white">Opzioni Senza Lattosio</h3>
+              <p className="text-xs text-[#7A5A66] dark:text-[#A3939B] leading-relaxed">
+                Ami il Taro o il Classic Milk Tea ma non tolleri il lattosio? Chiedi la preparazione con latte di cocco o latte vegetale per gustare il tuo boba in totale leggerezza.
+              </p>
+            </div>
+
+            <div className="p-6 sm:p-7 space-y-3 bg-[#FFFDFE] dark:bg-[#120B0E]">
+              <div className="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center font-serif text-lg">
+                🥜
+              </div>
+              <h3 className="font-serif text-xl text-[#1C0D12] dark:text-white">Sicurezza Frutta a Guscio</h3>
+              <p className="text-xs text-[#7A5A66] dark:text-[#A3939B] leading-relaxed">
+                La linea salata SpacePolly e i tè alla frutta non contengono frutta a guscio. Le creme con pistacchio o nocciola sono isolate con dispenser dedicati.
+              </p>
+            </div>
+          </div>
+
+          <div className="p-4 border-x border-b border-[#FCE4EC] dark:border-[#281E23] bg-[#FFF5F8] dark:bg-[#150D11] flex items-center gap-3 text-xs font-mono text-[#7A5A66] dark:text-[#A3939B]">
+            <ShieldCheck className="w-4 h-4 text-[#FD5E86] shrink-0" aria-hidden="true" />
+            <span>
+              <strong>Attenzione per allergie gravi (celiachia o anafilassi):</strong> sebbene adottiamo procedure igieniche rigorose, nel laboratorio vengono manipolati glutine e latte. Segnala sempre eventuali allergie gravi allo staff prima di ordinare.
+            </span>
           </div>
         </div>
       </section>
