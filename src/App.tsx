@@ -159,7 +159,7 @@ export function App() {
           {/* Brand Identity */}
           <a href="#" className="group flex items-center gap-2.5 sm:gap-3.5 min-w-0">
             <img
-              src={`${import.meta.env.BASE_URL}teaamo-logo.jpeg`}
+              src={`${import.meta.env.BASE_URL}teaamo-logo.png`}
               alt="Logo TeaAmo Palermo"
               className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border border-[#FD5E86] shrink-0 group-hover:scale-105 transition-transform duration-300"
             />
@@ -558,7 +558,7 @@ export function App() {
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <img
-              src={`${import.meta.env.BASE_URL}teaamo-logo.jpeg`}
+              src={`${import.meta.env.BASE_URL}teaamo-logo.png`}
               alt="TeaAmo Logo"
               className="w-9 h-9 rounded-full border border-[#FD5E86] shrink-0"
             />
