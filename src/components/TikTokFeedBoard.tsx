@@ -94,10 +94,10 @@ const TikTokVideoCard: React.FC<VideoCardProps> = ({
   return (
     <div
       ref={cardRef}
-      className={`snap-center shrink-0 w-[280px] xs:w-[310px] sm:w-[330px] md:w-[340px] rounded-2xl border-2 bg-white dark:bg-[#120B0E] overflow-hidden flex flex-col justify-between shadow-md transition-all duration-300 ${
+      className={`snap-start shrink-0 w-[270px] xs:w-[290px] sm:w-[310px] md:w-[320px] rounded-2xl border-2 bg-white dark:bg-[#120B0E] overflow-hidden flex flex-col justify-between shadow-md transition-all duration-300 ${
         isActive
           ? 'border-[#FD5E86] shadow-xl scale-100 ring-4 ring-[#FD5E86]/10'
-          : 'border-[#FCE4EC] dark:border-[#281E23] opacity-85 scale-[0.97] hover:opacity-100 hover:scale-[0.99]'
+          : 'border-[#FCE4EC] dark:border-[#281E23] opacity-85 scale-[0.98] hover:opacity-100 hover:scale-[1]'
       }`}
     >
       {/* Card Top Bar */}
@@ -265,13 +265,13 @@ export const TikTokFeedBoard: React.FC<TikTokFeedBoardProps> = () => {
     setUnmutedVideoId((prev) => (prev === id ? null : id));
   };
 
-  // Accurately determine which card is closest to the carousel container's center
+  // Accurately determine which card is at the left-aligned viewing position
   const checkActiveCard = useCallback(() => {
     const container = carouselRef.current;
     if (!container) return;
 
     const containerRect = container.getBoundingClientRect();
-    const containerCenter = containerRect.left + containerRect.width / 2;
+    const containerTarget = containerRect.left + 32;
 
     let closestIdx = 0;
     let minDistance = Infinity;
@@ -279,8 +279,7 @@ export const TikTokFeedBoard: React.FC<TikTokFeedBoardProps> = () => {
     cardRefs.current.forEach((el, idx) => {
       if (!el) return;
       const rect = el.getBoundingClientRect();
-      const cardCenter = rect.left + rect.width / 2;
-      const distance = Math.abs(containerCenter - cardCenter);
+      const distance = Math.abs(containerTarget - rect.left);
       if (distance < minDistance) {
         minDistance = distance;
         closestIdx = idx;
@@ -300,13 +299,13 @@ export const TikTokFeedBoard: React.FC<TikTokFeedBoardProps> = () => {
     return () => el.removeEventListener('scroll', checkActiveCard);
   }, [checkActiveCard]);
 
-  // Smoothly center a specific slide
+  // Smoothly scroll to a specific slide aligned to left
   const scrollToSlide = (index: number) => {
     const cardEl = cardRefs.current[index];
     if (!cardEl) return;
     cardEl.scrollIntoView({
       behavior: 'smooth',
-      inline: 'center',
+      inline: 'start',
       block: 'nearest',
     });
   };
@@ -418,10 +417,10 @@ export const TikTokFeedBoard: React.FC<TikTokFeedBoardProps> = () => {
           </div>
         </div>
 
-        {/* 7-Video Horizontal Native Carousel (Center-Snapped Spotlight) */}
+        {/* 7-Video Horizontal Native Carousel (Left-Aligned Layout) */}
         <div
           ref={carouselRef}
-          className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory py-6 px-4 sm:px-[calc(50%-165px)] md:px-[calc(50%-170px)] border-x border-b border-[#FCE4EC] dark:border-[#281E23] bg-[#FFF9FA] dark:bg-[#0D090B]"
+          className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory py-6 px-4 sm:px-6 lg:px-8 justify-start border-x border-b border-[#FCE4EC] dark:border-[#281E23] bg-[#FFF9FA] dark:bg-[#0D090B]"
           style={{
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',

@@ -365,7 +365,7 @@ export const MENU_ITEMS: MenuItem[] = [
     dietary: ['nut-free'],
     allergens: ['Glutine', 'Lattosio'],
     colorAccent: '#E11D48',
-    imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/dacbc440-f7dc-438f-ad18-9da15e0ae214.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    imageUrl: '/teaamo-palermo/images/burgers/giove.jpg',
     glovoUrl: GLOVO_STORE_SECTIONS.spacepolly,
   },
   {
@@ -380,7 +380,7 @@ export const MENU_ITEMS: MenuItem[] = [
     dietary: ['nut-free'],
     allergens: ['Glutine', 'Senape'],
     colorAccent: '#7C3AED',
-    imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/4083d7fc-e2b5-4ef4-a410-da023a1b34e3.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    imageUrl: '/teaamo-palermo/images/burgers/plutone.jpg',
     glovoUrl: GLOVO_STORE_SECTIONS.spacepolly,
   },
   {
@@ -395,7 +395,7 @@ export const MENU_ITEMS: MenuItem[] = [
     dietary: ['nut-free'],
     allergens: ['Glutine'],
     colorAccent: '#DD6B20',
-    imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/18aabab0-2627-41dd-b684-661d742e2645.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    imageUrl: '/teaamo-palermo/images/burgers/marte.jpg',
     glovoUrl: GLOVO_STORE_SECTIONS.spacepolly,
   },
   {
@@ -713,6 +713,7 @@ export const INSTAGRAM_MOMENTS = [
     tag: '@TEAAMO_BUBBLETEA',
     description: 'Il binomio serale preferito a Palermo: smash burger caldo con cipolla croccante e Bubble Tea Taro ghiacciato fino alle 03:30.',
     subtitle: 'Viale Strasburgo 378 • Night Shift',
+    imageUrl: '/teaamo-palermo/images/burgers/giove.jpg',
   },
   {
     id: 'ig-2',
@@ -720,6 +721,7 @@ export const INSTAGRAM_MOMENTS = [
     tag: 'SWEET CORNER',
     description: 'La cialda ad alveare cotta al momento e le crêpes con impasto al cacao e biscotto stellato.',
     subtitle: 'Produzione Artigianale Quotidiana',
+    imageUrl: '/teaamo-palermo/videos/tiktok_7688302222492372256_cover.jpg',
   },
   {
     id: 'ig-3',
@@ -727,6 +729,7 @@ export const INSTAGRAM_MOMENTS = [
     tag: 'COMMUNITY PALERMO',
     description: 'Le limited edition ispirate al mondo Pokémon con cup collezionabili e perle scoppiettanti.',
     subtitle: 'Palermo • Tè Verde & Frutta',
+    imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/8750b581ce4e3f43d5c8804b10202cc978c44304aa600365aa1a248764572d3b?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6NjQwLCJoZWlnaHQiOjY0MH19XQ==',
   },
 ];
 

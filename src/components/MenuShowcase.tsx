@@ -309,9 +309,10 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                 return (
                   <RevealOnScroll key={item.id} delayMs={(idx % 6) * 45}>
                     <article
+                      id={`menu-item-${item.id}`}
                       onMouseMove={handleSpotlightMove}
                       onClick={() => setInspectedItem(item)}
-                      className={`spotlight-card relative p-5 sm:p-6 lg:p-7 transition-all duration-300 cursor-pointer ${
+                      className={`spotlight-card scroll-mt-24 sm:scroll-mt-28 relative p-5 sm:p-6 lg:p-7 transition-all duration-300 cursor-pointer ${
                         isInspected
                           ? 'bg-[#FFF5F8] dark:bg-[#1A1216]'
                           : 'bg-white hover:bg-[#FFF9FB] dark:bg-transparent dark:hover:bg-white/[0.02]'
@@ -477,7 +478,7 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
           </div>
 
           {/* Right 5 Cols: Sticky 3D WebGL Product Inspector */}
-          <div className="order-1 lg:order-2 lg:col-span-5 bg-[#FFF5F8] dark:bg-[#140E11] border-b lg:border-b-0 border-[#FCE4EC] dark:border-[#281E23] lg:sticky lg:top-20 flex flex-col justify-between relative overflow-hidden">
+          <div className="order-1 lg:order-2 lg:col-span-5 bg-[#FFF5F8] dark:bg-[#140E11] border-b lg:border-b-0 border-[#FCE4EC] dark:border-[#281E23] lg:sticky lg:top-24 flex flex-col justify-between relative overflow-hidden">
             {/* Subtle Pink Ambient Underglow */}
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(253,94,134,0.1),transparent_70%)]" />
             <span className="absolute top-2 left-2 font-mono text-[10px] text-[#FD5E86]/40 select-none pointer-events-none z-10">+</span>

@@ -155,21 +155,38 @@ export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({
                   target="_blank"
                   rel="noopener noreferrer"
                   onMouseMove={handleSpotlightMove}
-                  className="spotlight-card group p-6 sm:p-8 flex flex-col justify-between min-h-[290px] sm:min-h-[320px] bg-white dark:bg-[#120B0E] hover:bg-[#FFF5F8] dark:hover:bg-white/[0.03] transition-all duration-300"
+                  className="spotlight-card group p-5 sm:p-7 flex flex-col justify-between bg-white dark:bg-[#120B0E] hover:bg-[#FFF5F8] dark:hover:bg-white/[0.03] transition-all duration-300"
                 >
-                  <div className="relative z-10">
-                    <span className="font-mono text-[10px] text-[#FD5E86] tracking-widest uppercase block mb-3">
-                      {post.category}
-                    </span>
-                    <h3 className="text-2xl sm:text-3xl font-serif mb-2 group-hover:text-[#FD5E86] transition-colors text-[#1C0D12] dark:text-white">
-                      {post.title}
-                    </h3>
-                    <p className="text-sm text-[#7A5A66] dark:text-[#A3939B] leading-relaxed">
-                      {post.description}
-                    </p>
+                  <div className="relative z-10 space-y-4">
+                    {/* Visual Media Preview Container with Hover Reveal */}
+                    <div className="w-full h-48 sm:h-56 overflow-hidden bg-black/5 dark:bg-white/5 border border-[#FCE4EC] dark:border-[#281E23] relative group-hover:border-[#FD5E86] transition-colors">
+                      <img
+                        src={post.imageUrl}
+                        alt={post.title}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+                      />
+                      <div className="absolute top-2 right-2 px-2 py-0.5 bg-black/70 backdrop-blur-xs text-white font-mono text-[9px] uppercase tracking-wider flex items-center gap-1 border border-white/20">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#FD5E86]" />
+                        <span>{post.tag || '@TEAAMO_BUBBLETEA'}</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <span className="font-mono text-[10px] text-[#FD5E86] tracking-widest uppercase block mb-1.5 font-semibold">
+                        DIARIO 0{idx + 1} // {post.tag || 'INSTAGRAM STORY'}
+                      </span>
+                      <h3 className="text-xl sm:text-2xl font-serif mb-2 group-hover:text-[#FD5E86] transition-colors text-[#1C0D12] dark:text-white leading-snug">
+                        {post.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-[#7A5A66] dark:text-[#A3939B] leading-relaxed">
+                        {post.description}
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="relative z-10 mt-6 sm:mt-8 pt-4 border-t border-[#FCE4EC] dark:border-[#281E23] flex items-center justify-between font-mono text-xs text-[#7A5A66]">
+                  <div className="relative z-10 mt-6 pt-4 border-t border-[#FCE4EC] dark:border-[#281E23] flex items-center justify-between font-mono text-xs text-[#7A5A66] dark:text-[#A3939B]">
                     <span className="truncate">{post.subtitle}</span>
                     <ArrowUpRight className="w-4 h-4 text-[#FD5E86] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300 shrink-0" aria-hidden="true" />
                   </div>

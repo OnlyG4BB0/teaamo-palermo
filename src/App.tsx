@@ -35,7 +35,7 @@ interface HeroModelTab {
 const HERO_MODELS_LIST: HeroModelTab[] = [
   {
     id: 'cup',
-    label: 'Boba Milk Tea',
+    label: '01 Boba',
     badge: 'SIGNATURE BOBA LAB',
     title: 'Taro Dream • Milk Tea con Perle di Tapioca',
     price: '7,00 €',
@@ -44,7 +44,7 @@ const HERO_MODELS_LIST: HeroModelTab[] = [
   },
   {
     id: 'fruittea',
-    label: 'Fruit Tea',
+    label: '02 Fruit',
     badge: 'TÈ CRISTALLINO & FRUTTA',
     title: 'Bulbasaur • Fruit Tea con Fette di Lime & Boba',
     price: '7,00 €',
@@ -53,7 +53,7 @@ const HERO_MODELS_LIST: HeroModelTab[] = [
   },
   {
     id: 'burger-giove',
-    label: 'SpacePolly Giove',
+    label: '03 Burger',
     badge: 'LINEA SMASH NOTTURNA',
     title: 'Giove • Doppio Smash, Bacon & Cipolla Croccante',
     price: '11,90 €',
@@ -62,7 +62,7 @@ const HERO_MODELS_LIST: HeroModelTab[] = [
   },
   {
     id: 'waffle',
-    label: 'Bubble Waffle',
+    label: '04 Waffle',
     badge: 'PATISSERIE A NIDO D\'APE',
     title: 'Bubble Waffle Cono con Doppio Gelato & Fudge',
     price: '10,90 €',
@@ -71,7 +71,7 @@ const HERO_MODELS_LIST: HeroModelTab[] = [
   },
   {
     id: 'crepe',
-    label: 'Crêpe Pan di Stelle',
+    label: '05 Crêpes',
     badge: 'DOLCI AL PIATTO',
     title: 'Crêpe Ripiegata con Nutella, Panna & Biscotto',
     price: '8,50 €',
@@ -80,7 +80,7 @@ const HERO_MODELS_LIST: HeroModelTab[] = [
   },
   {
     id: 'pancake',
-    label: 'Pancake Stack',
+    label: '06 Pancake',
     badge: 'AMERICAN BAKERY',
     title: 'Triple Stack Pancakes con Glassa d\'Acero',
     price: '7,90 €',
@@ -436,8 +436,8 @@ export function App() {
                 <span className="absolute top-2 left-2 font-mono text-[10px] text-[#FD5E86]/40 select-none pointer-events-none z-10">+</span>
                 <span className="absolute top-2 right-2 font-mono text-[10px] text-[#FD5E86]/40 select-none pointer-events-none z-10">+</span>
                 {/* 3D Model Category Switcher Header */}
-                <div className="grid grid-cols-3 sm:grid-cols-6 border-b border-[#FCE4EC] dark:border-[#281E23] font-mono text-[9px] sm:text-[10px] uppercase tracking-wider text-center">
-                  {HERO_MODELS_LIST.map((m, idx) => {
+                <div className="flex overflow-x-auto no-scrollbar sm:grid sm:grid-cols-6 border-b border-[#FCE4EC] dark:border-[#281E23] font-mono text-[10px] sm:text-[11px] uppercase tracking-wider text-center divide-x divide-[#FCE4EC] dark:divide-[#281E23]">
+                  {HERO_MODELS_LIST.map((m) => {
                     const isSelected = heroModelType === m.id;
                     return (
                       <button
@@ -449,14 +449,14 @@ export function App() {
                             setAutoCycleHero(false);
                           }
                         }}
-                        className={`py-3 px-1 sm:px-1.5 border-r border-b sm:border-b-0 border-[#FCE4EC] dark:border-[#281E23] last:border-r-0 transition-colors cursor-pointer truncate ${
+                        className={`py-3 px-3.5 sm:px-1 flex-1 sm:flex-initial shrink-0 transition-colors cursor-pointer whitespace-nowrap text-center ${
                           isSelected
                             ? 'bg-[#FD5E86] text-white font-semibold shadow-xs'
-                            : 'hover:bg-[#FFD8E1]/40 text-[#1C0D12] dark:text-[#F5EFEA]'
+                            : 'hover:bg-[#FFD8E1]/40 text-[#1C0D12] dark:text-[#F5EFEA] bg-white dark:bg-[#120B0E]'
                         }`}
                         title={m.title}
                       >
-                        0{idx + 1}. {m.label}
+                        {m.label}
                       </button>
                     );
                   })}

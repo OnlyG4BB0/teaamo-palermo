@@ -207,18 +207,26 @@ export const BobaCupMesh: React.FC<{
     }
 
     if (pearlsGroupRef.current) {
-      const vortexAngle = t * 0.35 + spinBoostRef.current * 0.25;
+      const impulse = spinBoostRef.current;
+      const vortexAngle = t * 0.42 + impulse * 0.85;
       pearlsGroupRef.current.children.forEach((child, i) => {
         const d = pearlsData[i];
         if (d) {
-          const curAngle = d.angle + vortexAngle * (i % 2 === 0 ? 1 : -0.7);
+          const phase = d.phase || (i * 0.618);
+          const swirlSpeed = (i % 2 === 0 ? 1.15 : -0.85);
+          const curAngle = d.angle + vortexAngle * swirlSpeed;
           const radialExpand = 1 + exp * 0.22;
-          child.position.x = Math.cos(curAngle) * d.radius * radialExpand;
-          child.position.z = Math.sin(curAngle) * d.radius * radialExpand;
-          child.position.y =
-            d.pos[1] -
-            exp * 0.25 +
-            Math.sin(t * d.speed + d.phase) * (0.048 + spinBoostRef.current * 0.02);
+
+          // Micro-physics: fluid sway on X and Z in dense liquid during rotation & impulse
+          const fluidSwayX = Math.sin(t * 2.6 + phase) * (0.02 + impulse * 0.05);
+          const fluidSwayZ = Math.cos(t * 2.3 + phase) * (0.02 + impulse * 0.05);
+
+          child.position.x = Math.cos(curAngle) * d.radius * radialExpand + fluidSwayX;
+          child.position.z = Math.sin(curAngle) * d.radius * radialExpand + fluidSwayZ;
+
+          // Buoyant lift & oscillation in dense honey-tapioca suspension
+          const verticalBob = Math.sin(t * (d.speed * 1.5) + phase) * (0.045 + impulse * 0.08);
+          child.position.y = d.pos[1] - exp * 0.25 + verticalBob + impulse * 0.035;
         }
       });
     }
@@ -236,9 +244,11 @@ export const BobaCupMesh: React.FC<{
     }
 
     if (iceGroupRef.current) {
+      const impulse = spinBoostRef.current;
       iceGroupRef.current.position.y =
-        0.92 + exp * 0.32 + Math.sin(t * 2.2) * 0.025;
-      iceGroupRef.current.rotation.y = Math.sin(t * 0.9) * 0.18;
+        0.92 + exp * 0.32 + Math.sin(t * 2.4) * (0.025 + impulse * 0.06);
+      iceGroupRef.current.rotation.y = Math.sin(t * 0.9) * 0.18 + impulse * 0.45;
+      iceGroupRef.current.rotation.z = Math.sin(t * 1.7) * (0.025 + impulse * 0.05);
     }
 
     if (heartRef.current) {
@@ -715,10 +725,14 @@ export const SpacePollyBurgerMesh: React.FC<{
         <meshStandardMaterial color="#F59E0B" roughness={0.25} metalness={0.6} transparent opacity={0.65} />
       </mesh>
 
-      {/* Bottom Brioche Bun */}
+      {/* Warm Side Point Lights for "Cheese Melt" and Searing Glisten */}
+      <pointLight position={[2.4, 0.5, 2.0]} intensity={2.4} color="#FFD54F" distance={7} decay={2} />
+      <pointLight position={[-2.4, -0.2, 1.8]} intensity={1.9} color="#FF8A65" distance={7} decay={2} />
+
+      {/* Bottom Brioche Bun (Artisanal Matte Finish) */}
       <mesh ref={bottomBunRef} position={[0, -0.72, 0]}>
         <cylinderGeometry args={[1.18, 1.05, 0.36, 40]} />
-        <meshPhysicalMaterial color="#C67C2F" roughness={0.38} clearcoat={0.3} />
+        <meshStandardMaterial color="#C67C2F" roughness={0.78} />
       </mesh>
 
       {/* Center Stack Ingredients (Differentiated by Variant) */}
@@ -728,26 +742,32 @@ export const SpacePollyBurgerMesh: React.FC<{
           /* Crispy Golden Breaded Chicken Fillet */
           <mesh position={[0, -0.42, 0]}>
             <cylinderGeometry args={[1.25, 1.22, 0.26, 40]} />
-            <meshStandardMaterial color="#B45309" roughness={0.8} />
+            <meshStandardMaterial color="#B45309" roughness={0.75} />
           </mesh>
         ) : (
-          /* Smashed Beef Patty with Sear Fringes */
+          /* Smashed Beef Patty with Sizzling Seared Crust */
           <group position={[0, -0.45, 0]}>
             <mesh>
               <cylinderGeometry args={[1.28, 1.25, 0.2, 40]} />
-              <meshStandardMaterial color="#32140A" roughness={0.9} />
+              <meshStandardMaterial color="#32140A" roughness={0.45} metalness={0.12} />
             </mesh>
             <mesh position={[0, -0.05, 0]}>
               <cylinderGeometry args={[1.34, 1.3, 0.06, 24]} />
-              <meshStandardMaterial color="#220B04" roughness={0.95} />
+              <meshStandardMaterial color="#220B04" roughness={0.5} metalness={0.1} />
             </mesh>
           </group>
         )}
 
-        {/* Melted Cheddar or Sauce */}
+        {/* Melted Cheddar - Cheese Melt High-Gloss Effect */}
         <mesh position={[0, -0.3, 0]} rotation={[0, Math.PI / 6, 0]}>
           <boxGeometry args={[1.85, 0.045, 1.85]} />
-          <meshPhysicalMaterial color="#F59E0B" roughness={0.18} clearcoat={0.7} />
+          <meshPhysicalMaterial
+            color="#F59E0B"
+            roughness={0.14}
+            clearcoat={1.0}
+            clearcoatRoughness={0.06}
+            metalness={0.05}
+          />
         </mesh>
 
         {/* Pickles for Plutone */}
@@ -783,11 +803,17 @@ export const SpacePollyBurgerMesh: React.FC<{
           <group position={[0, -0.12, 0]}>
             <mesh>
               <cylinderGeometry args={[1.26, 1.28, 0.2, 40]} />
-              <meshStandardMaterial color="#2B1006" roughness={0.9} />
+              <meshStandardMaterial color="#2B1006" roughness={0.45} metalness={0.12} />
             </mesh>
             <mesh position={[0, 0.02, 0]} rotation={[0, Math.PI / 4, 0]}>
               <boxGeometry args={[1.82, 0.045, 1.82]} />
-              <meshPhysicalMaterial color="#FBBF24" roughness={0.18} clearcoat={0.7} />
+              <meshPhysicalMaterial
+                color="#FBBF24"
+                roughness={0.15}
+                clearcoat={1.0}
+                clearcoatRoughness={0.06}
+                metalness={0.05}
+              />
             </mesh>
           </group>
         )}
@@ -797,11 +823,11 @@ export const SpacePollyBurgerMesh: React.FC<{
           <group position={[0, -0.15, 0]}>
             <mesh position={[0, 0, 0]} rotation={[0, 0.3, 0]}>
               <torusGeometry args={[0.55, 0.12, 16, 32]} />
-              <meshStandardMaterial color="#451A03" roughness={0.3} />
+              <meshStandardMaterial color="#451A03" roughness={0.25} />
             </mesh>
             <mesh position={[0.2, 0.04, 0]} rotation={[0.2, -0.4, 0]}>
               <torusGeometry args={[0.45, 0.1, 16, 32]} />
-              <meshStandardMaterial color="#78350F" roughness={0.3} />
+              <meshStandardMaterial color="#78350F" roughness={0.25} />
             </mesh>
           </group>
         )}
@@ -818,8 +844,13 @@ export const SpacePollyBurgerMesh: React.FC<{
               <meshStandardMaterial color="#B45309" roughness={0.45} />
             </mesh>
             <mesh position={[0.42, -0.08, 0.42]}>
-              <sphereGeometry args={[0.075, 12, 12]} />
-              <meshPhysicalMaterial color="#EA580C" roughness={0.2} clearcoat={0.8} />
+              <sphereGeometry args={[0.085, 16, 16]} />
+              <meshPhysicalMaterial
+                color="#EA580C"
+                roughness={0.12}
+                clearcoat={1.0}
+                clearcoatRoughness={0.04}
+              />
             </mesh>
           </group>
         )}
@@ -841,21 +872,21 @@ export const SpacePollyBurgerMesh: React.FC<{
         )}
       </group>
 
-      {/* Glossy Brioche Crown Bun with Sesame Seeds */}
+      {/* Artisanal Matte Brioche Crown Bun with Contrast */}
       <group ref={topBunGroupRef} position={[0, 0.26, 0]}>
         <mesh>
           <sphereGeometry args={[1.2, 40, 28, 0, Math.PI * 2, 0, Math.PI / 2]} />
           <meshPhysicalMaterial
             color="#D9822B"
-            roughness={0.25}
-            clearcoat={0.5}
-            clearcoatRoughness={0.2}
+            roughness={0.78}
+            clearcoat={0.08}
+            clearcoatRoughness={0.3}
           />
         </mesh>
         {sesameSeeds.map((s, idx) => (
           <mesh key={idx} position={s.pos} rotation={s.rot}>
             <capsuleGeometry args={[0.024, 0.055, 6, 6]} />
-            <meshStandardMaterial color="#FEF3C7" roughness={0.35} />
+            <meshStandardMaterial color="#FEF3C7" roughness={0.45} />
           </mesh>
         ))}
       </group>
@@ -1371,7 +1402,7 @@ export const StudioViewport3D: React.FC<StudioViewport3DProps> = ({
   className = 'h-[360px] sm:h-[420px] lg:h-[440px]',
 }) => {
   const wrapRef = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(true);
+  const [inView, setInView] = useState(false);
   const [exploded, setExploded] = useState(false);
   const [impulseTick, setImpulseTick] = useState(0);
 
@@ -1386,15 +1417,36 @@ export const StudioViewport3D: React.FC<StudioViewport3DProps> = ({
       window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
 
+  // Battery saving & WebGL context management on mobile:
+  // Render and animate ONLY when this viewport is physically on-screen.
   useEffect(() => {
     const el = wrapRef.current;
-    if (!el || typeof IntersectionObserver === 'undefined') return;
+    if (!el || typeof IntersectionObserver === 'undefined') {
+      setInView(true);
+      return;
+    }
     const io = new IntersectionObserver(
-      ([entry]) => setInView(entry.isIntersecting),
-      { rootMargin: '200px' }
+      ([entry]) => {
+        setInView(entry.isIntersecting);
+      },
+      { rootMargin: '80px', threshold: 0.05 }
     );
     io.observe(el);
-    return () => io.disconnect();
+
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        setInView(false);
+      } else if (el) {
+        const rect = el.getBoundingClientRect();
+        setInView(rect.top < window.innerHeight + 80 && rect.bottom > -80);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    return () => {
+      io.disconnect();
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
   }, []);
 
   const fit = MODEL_FIT[modelType] || MODEL_FIT.cup;
@@ -1432,8 +1484,13 @@ export const StudioViewport3D: React.FC<StudioViewport3DProps> = ({
           <Canvas
             frameloop={inView ? 'always' : 'never'}
             camera={{ position: [0, 0.35, 5.2], fov: 36 }}
-            dpr={[1, 1.75]}
-            gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+            dpr={isTouch ? 1 : [1, 1.75]}
+            gl={{
+              antialias: !isTouch,
+              alpha: true,
+              powerPreference: isTouch ? 'low-power' : 'high-performance',
+              preserveDrawingBuffer: false,
+            }}
             style={{ touchAction: isTouch ? 'pan-y' : 'none' }}
           >
             <Suspense fallback={null}>
