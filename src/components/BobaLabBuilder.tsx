@@ -173,33 +173,21 @@ export const BobaLabBuilder: React.FC<BobaLabBuilderProps> = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-                <MagneticWrap strength={0.14}>
-                  <a
-                    href={TEAAMO_LINKS.glovo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 bg-[#FD5E86] text-white font-mono text-xs uppercase tracking-widest font-medium hover:bg-[#1C0D12] transition-all cursor-pointer shadow-xs"
-                  >
-                    <span>Ordina su Glovo</span>
-                    <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
-                  </a>
-                </MagneticWrap>
-
+              <div className="pt-2">
                 <button
                   type="button"
                   onClick={handleCopyRecipe}
-                  className="inline-flex items-center justify-center gap-2 py-3 px-4 border border-[#FD5E86] text-[#FD5E86] font-mono text-xs uppercase tracking-widest font-medium hover:bg-[#FFF5F8] dark:hover:bg-white/5 transition-colors cursor-pointer"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-4 bg-[#FD5E86] hover:bg-[#1C0D12] text-white font-mono text-xs uppercase tracking-widest font-semibold transition-all cursor-pointer shadow-xs"
                 >
                   {copiedRecipe ? (
                     <>
-                      <Check className="w-4 h-4 text-emerald-600" aria-hidden="true" />
-                      Copiata!
+                      <Check className="w-4 h-4 text-white" aria-hidden="true" />
+                      Ricetta Copiata negli Appunti!
                     </>
                   ) : (
                     <>
                       <Copy className="w-4 h-4" aria-hidden="true" />
-                      Copia Ricetta
+                      Copia Ricetta Personalizzata
                     </>
                   )}
                 </button>
