@@ -13,6 +13,7 @@ export interface HeroPresetFlavor {
   calories: string;
   description: string;
   imageUrl?: string;
+  glovoUrl?: string;
 }
 
 export interface BobaIngredient {
@@ -37,6 +38,7 @@ export interface MenuItem {
   ingredients: string[];
   colorAccent: string;
   imageUrl?: string;
+  glovoUrl?: string;
   cupConfig?: {
     liquidTop: string;
     liquidBottom: string;
@@ -44,6 +46,17 @@ export interface MenuItem {
     cream: string;
   };
 }
+
+export const GLOVO_STORE_SECTIONS = {
+  store: 'https://glovoapp.com/it/it/palermo/stores/teaamo-bubble-tea-pmo',
+  spacepolly: 'https://glovoapp.com/it/it/palermo/stores/teaamo-bubble-tea-pmo/#sublist-smashburger-spacepolly-s.5928543826',
+  sweetGelato: 'https://glovoapp.com/it/it/palermo/stores/teaamo-bubble-tea-pmo/#sublist-crepes-bubblewaffle-pancake-gelato-s.6315760044',
+  sweetSpecial: 'https://glovoapp.com/it/it/palermo/stores/teaamo-bubble-tea-pmo/#sublist-crepes-pancake-waffle-special-con-snack-s.5927622311',
+  bubbleTea: 'https://glovoapp.com/it/it/palermo/stores/teaamo-bubble-tea-pmo/#sublist-bubble-tea-s.5927622312',
+  pokemon: 'https://glovoapp.com/it/it/palermo/stores/teaamo-bubble-tea-pmo/#sublist-pokemon-bubble-tea-limited-edition-s.5927622306',
+  frozen: 'https://glovoapp.com/it/it/palermo/stores/teaamo-bubble-tea-pmo/#sublist-frozenyogurt-e-fiordilatte-s.5927622305',
+  gelato: 'https://glovoapp.com/it/it/palermo/stores/teaamo-bubble-tea-pmo/#sublist-gelato-e-granita-artigianale-s.6184017023',
+};
 
 export const TEAAMO_LINKS = {
   googleShare: 'https://share.google/mQuebwYXC9WtTkPSz',
@@ -74,6 +87,7 @@ export const HERO_FLAVORS: HeroPresetFlavor[] = [
     calories: '240 kcal',
     description: 'La celebre ricetta originale di TeaAmo Palermo su Glovo: latte, fragola e cocco vellutato con popping boba alla fragola e topping panna.',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/e9c3c07763a7321f477ada617da2f41c73a0f44067a8642227467c1d6c9d6115?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: 'https://glovoapp.com/it/it/palermo/stores/teaamo-bubble-tea-pmo/#sublist-bubble-tea-s.5927622312',
   },
   {
     id: 'taro-velvet',
@@ -90,6 +104,7 @@ export const HERO_FLAVORS: HeroPresetFlavor[] = [
     calories: '260 kcal',
     description: 'Il Taro Milk Tea autentico: latte cremoso e radice tuberosa dai toni viola, con morbide perle di tapioca nera preparate ogni giorno.',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/7b912de34bace8afcafe9cb36d0adabc2dfb40bbe095d0faef35d58b7bc8170b?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: 'https://glovoapp.com/it/it/palermo/stores/teaamo-bubble-tea-pmo/#sublist-bubble-tea-s.5927622312',
   },
   {
     id: 'pokemon-special',
@@ -106,6 +121,7 @@ export const HERO_FLAVORS: HeroPresetFlavor[] = [
     calories: '195 kcal',
     description: 'L\'iconico drink a tema Pokémon di TeaAmo Palermo presente su Glovo: infuso di tè verde con latte fresco e succosa mela verde con perle esplosive.',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/8750b581ce4e3f43d5c8804b10202cc978c44304aa600365aa1a248764572d3b?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: 'https://glovoapp.com/it/it/palermo/stores/teaamo-bubble-tea-pmo/#sublist-pokemon-bubble-tea-limited-edition-s.5927622306',
   },
   {
     id: 'classic-milk-tea',
@@ -122,6 +138,7 @@ export const HERO_FLAVORS: HeroPresetFlavor[] = [
     calories: '210 kcal',
     description: 'La ricetta taiwanese classica servita da TeaAmo a Palermo: infusione di tè nero, latte denso e perle di tapioca calde e gommose.',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/d8b5d4ee3e68985ccd688e9e8889629eea488da2bcf7ab9ccf512b380b4a8078?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: 'https://glovoapp.com/it/it/palermo/stores/teaamo-bubble-tea-pmo/#sublist-bubble-tea-s.5927622312',
   },
   {
     id: 'blue-tropical',
@@ -138,6 +155,7 @@ export const HERO_FLAVORS: HeroPresetFlavor[] = [
     calories: '185 kcal',
     description: 'Tè nero aromatizzato al tropical blue, perle al kiwi e perle blu tropical che scoppiano sul palato con freschezza oceanica.',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/45c61f24aeeba1b69a9995c457dcba9f1c7df9ee199cee8944919217ea65a19d?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: 'https://glovoapp.com/it/it/palermo/stores/teaamo-bubble-tea-pmo/#sublist-bubble-tea-s.5927622312',
   },
 ];
 
@@ -290,6 +308,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['SpacePolly Bun', 'Doppio Smash Burger', 'Cheddar & Bacon', 'Cipolla Croccante', 'Salsa Algerienne'],
     colorAccent: '#E11D48',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/dacbc440-f7dc-438f-ad18-9da15e0ae214.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.spacepolly,
   },
   {
     id: 'sp-plutone',
@@ -302,6 +321,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['SpacePolly Bun', 'Doppio Smash Burger', 'Cetriolini Sottaceto', 'Lattuga Fresca', 'Senape & Ketchup'],
     colorAccent: '#7C3AED',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/4083d7fc-e2b5-4ef4-a410-da023a1b34e3.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.spacepolly,
   },
   {
     id: 'sp-marte',
@@ -314,6 +334,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['SpacePolly Bun', 'Smash Burger', 'Cipolla Caramellata', 'Salsa BBQ', 'Lattuga'],
     colorAccent: '#DD6B20',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/18aabab0-2627-41dd-b684-661d742e2645.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.spacepolly,
   },
   {
     id: 'sp-mercurio',
@@ -326,6 +347,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['SpacePolly Bun', 'Burger Selezionato', 'Cheddar Fuso', 'Bacon Dorato', 'Salsa Burger'],
     colorAccent: '#D69E2E',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/e2038f52-a3b4-4347-bda5-d0fd852c04d0.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.spacepolly,
   },
   {
     id: 'sp-urano',
@@ -338,6 +360,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Burger di Pollo', 'Lattuga', 'Pomodoro Fresco', 'Salsa Burger Speciale'],
     colorAccent: '#38A169',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/56ec0782-18a6-4bb7-be70-20b175f392db.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.spacepolly,
   },
   {
     id: 'sp-luna',
@@ -350,6 +373,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Burger Selezionato', 'Lattuga', 'Pomodoro', 'Maionese'],
     colorAccent: '#4A5568',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/ab76c044-b0a8-4109-93ff-91f233c7386a.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.spacepolly,
   },
 
   // SWEET: BUBBLE WAFFLE, CREPES, PANCAKES (FOTO REALI GLOVO)
@@ -364,6 +388,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Cialda Calda ad Alveare', 'Gelato Artigianale TeaAmo', 'Topping & Wafer'],
     colorAccent: '#B7791F',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/40f7a602-b838-4f17-aa40-cd19bb1dcf92.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.sweetGelato,
   },
   {
     id: 'sw-crepes-pandistelle',
@@ -375,6 +400,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Impasto al Cacao', 'Cioccolato Galak', 'Crema Pan di Stelle', 'Biscotto Magico'],
     colorAccent: '#744210',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/PRODUCT/3c81ea2b-a421-4a21-b629-a7fa4d325482.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.sweetSpecial,
   },
   {
     id: 'sw-crepes-gelato',
@@ -387,6 +413,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Crêpe Soffice', 'Gelato Artigianale', 'Colata di Cioccolato'],
     colorAccent: '#E53E3E',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/4e973bee-3b48-4ecc-aaf0-f2ac810c66bd.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.sweetGelato,
   },
   {
     id: 'sw-pancake-gelato',
@@ -398,6 +425,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Pancake Caldi', 'Gelato Artigianale', 'Creme & Granelle'],
     colorAccent: '#D69E2E',
     imageUrl: 'https://glovo.dhmedia.io/image/global-menu-service/GV_IT/vendor/448442/product/577107e2-706a-4cfb-bcd4-49b5eded2c89.jpg?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.sweetGelato,
   },
   {
     id: 'sw-fiesta-ferrero',
@@ -409,6 +437,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Nutella', 'Granella di Arachidi', 'Fiesta Ferrero'],
     colorAccent: '#DD6B20',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/15afc019fd961c8a3104a13ca0d3957571d639da6a3bb74195ba90503488234c?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.sweetSpecial,
   },
   {
     id: 'sw-kitkat-bianco',
@@ -420,6 +449,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Nutella Bianca', 'Nutella', 'Riso Cioco Bianco', 'KitKat White'],
     colorAccent: '#D69E2E',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/4692122fb45fefbb1dcb7f1ca596cd9a4160586a9e31dbbe943d9e5588190d0f?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.sweetSpecial,
   },
   {
     id: 'sw-pistacchioso',
@@ -431,6 +461,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Crema Pistacchio', 'Cioccolato al Latte', 'Pistacchio Pralinato', 'Riso Soffiato'],
     colorAccent: '#38A169',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/bc6e851b549abea4205ba26439e232db528d53a3e637e0269c9697bd991af186?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.sweetSpecial,
   },
 
   // BUBBLE TEA & FRUIT DRINKS (FOTO REALI GLOVO)
@@ -444,6 +475,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Latte Cremoso', 'Taro Viola Naturale', 'Tapioca Cotta'],
     colorAccent: '#805AD5',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/7b912de34bace8afcafe9cb36d0adabc2dfb40bbe095d0faef35d58b7bc8170b?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.bubbleTea,
     cupConfig: {
       liquidTop: '#C084FC',
       liquidBottom: '#6D28D9',
@@ -461,6 +493,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Tè Verde Gelsomino', 'Latte', 'Sciroppo Mela Verde', 'Popping Boba'],
     colorAccent: '#38A169',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/8750b581ce4e3f43d5c8804b10202cc978c44304aa600365aa1a248764572d3b?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.pokemon,
     cupConfig: {
       liquidTop: '#68D391',
       liquidBottom: '#276749',
@@ -478,6 +511,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Latte', 'Fragola & Cocco', 'Perle Popping Fragola'],
     colorAccent: '#E53E3E',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/e9c3c07763a7321f477ada617da2f41c73a0f44067a8642227467c1d6c9d6115?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.bubbleTea,
     cupConfig: {
       liquidTop: '#FF7EB3',
       liquidBottom: '#E11D48',
@@ -495,6 +529,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Tè Nero', 'Latte Intero/Vegetale', 'Tapioca Morbida'],
     colorAccent: '#B7791F',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/d8b5d4ee3e68985ccd688e9e8889629eea488da2bcf7ab9ccf512b380b4a8078?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.bubbleTea,
     cupConfig: {
       liquidTop: '#F6E05E',
       liquidBottom: '#975A16',
@@ -512,6 +547,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Tè Nero', 'Blu Tropical', 'Perle Kiwi', 'Perle Blu'],
     colorAccent: '#3182CE',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/45c61f24aeeba1b69a9995c457dcba9f1c7df9ee199cee8944919217ea65a19d?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.bubbleTea,
     cupConfig: {
       liquidTop: '#63B3ED',
       liquidBottom: '#2B6CB0',
@@ -529,6 +565,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Tè al Limone', 'Popping Ciliegia', 'Ghiaccio'],
     colorAccent: '#C53030',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/8a9333b726520b526dbbc5703c749b4fa48076b05276fdc1f445d78b8b4f08d3?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.bubbleTea,
     cupConfig: {
       liquidTop: '#FEB2B2',
       liquidBottom: '#9B2C2C',
@@ -548,6 +585,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Yogurt Mantecato', 'Fiordilatte', 'Creme & Granelle a Scelta'],
     colorAccent: '#D53F8C',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/9236638ed56e74cfb07cce3c878d95868b81a7bd88256ec9a283ff9d20c03b54?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.frozen,
   },
   {
     id: 'fr-gelato-artigianale',
@@ -559,6 +597,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Ingredienti Naturali', 'Produzione Quotidiana', 'Gusti di Stagione'],
     colorAccent: '#319795',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/044ec884bb807cb12ee8c1ca7e6140df3f8ea2f18eb0e6ccc6a37fb34945c310?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.gelato,
   },
   {
     id: 'fr-shakeamo',
@@ -570,6 +609,7 @@ export const MENU_ITEMS: MenuItem[] = [
     ingredients: ['Gelato Mantecato', 'Latte', 'Creme Speciali'],
     colorAccent: '#805AD5',
     imageUrl: 'https://glovo.dhmedia.io/image/menus-glovo/products/58231dc0abfdd564551639d543dbcad45a05de8297339344521ece82f37abbf7?t=W3sicmVzaXplIjp7Im1vZGUiOiJmaXQiLCJ3aWR0aCI6MzIwLCJoZWlnaHQiOjMyMH19XQ==',
+    glovoUrl: GLOVO_STORE_SECTIONS.frozen,
   },
 ];
 

@@ -7,6 +7,7 @@ import {
   HERO_FLAVORS,
   HeroPresetFlavor,
   TEAAMO_LINKS,
+  GLOVO_STORE_SECTIONS,
 } from './data/teaamoData';
 import { StudioViewport3D, ModelType } from './components/three/TeaAmo3DModels';
 import { BobaLabBuilder } from './components/BobaLabBuilder';
@@ -27,6 +28,7 @@ interface HeroModelTab {
   title: string;
   price: string;
   description: string;
+  glovoUrl?: string;
 }
 
 const HERO_MODELS_LIST: HeroModelTab[] = [
@@ -37,6 +39,7 @@ const HERO_MODELS_LIST: HeroModelTab[] = [
     title: 'Taro Dream • Milk Tea con Perle di Tapioca',
     price: '7,00 €',
     description: 'Bicchiere sigillato con perle di tapioca cotte al miele e crema vellutata.',
+    glovoUrl: GLOVO_STORE_SECTIONS.bubbleTea,
   },
   {
     id: 'fruittea',
@@ -45,6 +48,7 @@ const HERO_MODELS_LIST: HeroModelTab[] = [
     title: 'Bulbasaur • Fruit Tea con Fette di Lime & Boba',
     price: '7,00 €',
     description: 'Infusione fredda trasparente, fette di lime galleggianti e popping boba alla frutta.',
+    glovoUrl: GLOVO_STORE_SECTIONS.pokemon,
   },
   {
     id: 'burger-giove',
@@ -53,6 +57,7 @@ const HERO_MODELS_LIST: HeroModelTab[] = [
     title: 'Giove • Doppio Smash, Bacon & Cipolla Croccante',
     price: '11,90 €',
     description: 'Doppio patty smashato, cheddar fondente, bacon croccante, salsa algerina e anelli orbitali.',
+    glovoUrl: GLOVO_STORE_SECTIONS.spacepolly,
   },
   {
     id: 'waffle',
@@ -61,6 +66,7 @@ const HERO_MODELS_LIST: HeroModelTab[] = [
     title: 'Bubble Waffle Cono con Doppio Gelato & Fudge',
     price: '10,90 €',
     description: 'Cialda a bolle calda arrotolata a cono con gelato artigianale, wafer e colata di cioccolato.',
+    glovoUrl: GLOVO_STORE_SECTIONS.sweetGelato,
   },
   {
     id: 'crepe',
@@ -69,6 +75,7 @@ const HERO_MODELS_LIST: HeroModelTab[] = [
     title: 'Crêpe Ripiegata con Nutella, Panna & Biscotto',
     price: '8,50 €',
     description: 'Crêpe francese dorata su piatto in ceramica con Nutella calda, rosetta di panna e biscotto Pan di Stelle.',
+    glovoUrl: GLOVO_STORE_SECTIONS.sweetSpecial,
   },
   {
     id: 'pancake',
@@ -77,6 +84,7 @@ const HERO_MODELS_LIST: HeroModelTab[] = [
     title: 'Triple Stack Pancakes con Glassa d\'Acero',
     price: '7,90 €',
     description: 'Torre di 3 pancake soffici con cascata di sciroppo ambrato e noce di gelato fondente.',
+    glovoUrl: GLOVO_STORE_SECTIONS.sweetGelato,
   },
 ];
 
@@ -485,11 +493,27 @@ export function App() {
                         {activeHeroModel.description}
                       </p>
                     </div>
-                    <span className="font-mono text-lg sm:text-xl font-semibold shrink-0 text-[#FD5E86]">
-                      {heroModelType === 'cup'
-                        ? selectedHeroFlavor.price
-                        : activeHeroModel.price}
-                    </span>
+                    <div className="flex items-center gap-2.5 shrink-0">
+                      <span className="font-mono text-lg sm:text-xl font-semibold text-[#FD5E86]">
+                        {heroModelType === 'cup'
+                          ? selectedHeroFlavor.price
+                          : activeHeroModel.price}
+                      </span>
+                      <a
+                        href={
+                          heroModelType === 'cup'
+                            ? selectedHeroFlavor.glovoUrl || activeHeroModel.glovoUrl || TEAAMO_LINKS.glovo
+                            : activeHeroModel.glovoUrl || TEAAMO_LINKS.glovo
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Ordina su Glovo"
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#FD5E86] text-white hover:bg-[#1C0D12] transition-colors font-mono text-[10px] uppercase tracking-wider shadow-xs"
+                      >
+                        <span>Glovo</span>
+                        <ArrowUpRight className="w-3 h-3" aria-hidden="true" />
+                      </a>
+                    </div>
                   </div>
 
                   {/* Swatch Selector for 3D Cup & Fruit Tea */}

@@ -265,11 +265,11 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                           </button>
 
                           <a
-                            href={TEAAMO_LINKS.glovo}
+                            href={item.glovoUrl || TEAAMO_LINKS.glovo}
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            aria-label={`Vedi ${item.name} su Glovo`}
+                            aria-label={`Ordina ${item.name} su Glovo`}
                             className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#FFF0F5] border border-[#FCE4EC] hover:border-[#FD5E86] hover:text-[#FD5E86] text-[#1C0D12] font-mono text-[11px] uppercase transition-colors"
                           >
                             <span>Glovo</span>
@@ -340,12 +340,13 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                   Disponibile per asporto &amp; delivery
                 </span>
                 <a
-                  href={TEAAMO_LINKS.glovo}
+                  href={inspectedItem.glovoUrl || TEAAMO_LINKS.glovo}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label={`Ordina ${inspectedItem.name} su Glovo`}
                   className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#FD5E86] text-white font-mono text-xs uppercase tracking-wider hover:bg-[#1C0D12] transition-colors shadow-xs"
                 >
-                  <span>Apri su Glovo</span>
+                  <span>Ordina su Glovo</span>
                   <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
                 </a>
               </div>
