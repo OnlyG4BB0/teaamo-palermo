@@ -1,5 +1,17 @@
 import React, { useState } from 'react';
-import { ArrowUpRight, Eye, ShieldCheck, Info, Sparkles, Filter } from 'lucide-react';
+import {
+  ArrowUpRight,
+  Eye,
+  ShieldCheck,
+  Info,
+  Sparkles,
+  Filter,
+  Leaf,
+  MilkOff,
+  WheatOff,
+  NutOff,
+  RotateCcw,
+} from 'lucide-react';
 import {
   MENU_ITEMS,
   MenuItem,
@@ -221,7 +233,21 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                       }`}
                       title={df.description}
                     >
-                      <span>{df.icon}</span>
+                      {df.iconKey === 'all' && (
+                        <Sparkles className="w-3.5 h-3.5 text-[#FD5E86]" aria-hidden="true" />
+                      )}
+                      {df.iconKey === 'vegan' && (
+                        <Leaf className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+                      )}
+                      {df.iconKey === 'lactose-free' && (
+                        <MilkOff className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" aria-hidden="true" />
+                      )}
+                      {df.iconKey === 'gluten-free' && (
+                        <WheatOff className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+                      )}
+                      {df.iconKey === 'nut-free' && (
+                        <NutOff className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" aria-hidden="true" />
+                      )}
                       <span>{df.label}</span>
                     </button>
                   );
@@ -246,9 +272,10 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                 <button
                   type="button"
                   onClick={resetFilters}
-                  className="text-[11px] text-[#FD5E86] hover:underline cursor-pointer font-mono"
+                  className="inline-flex items-center gap-1.5 text-[11px] text-[#FD5E86] hover:underline cursor-pointer font-mono"
                 >
-                  ✕ Reimposta filtri
+                  <RotateCcw className="w-3 h-3" aria-hidden="true" />
+                  <span>Reimposta filtri</span>
                 </button>
               )}
             </div>
@@ -345,25 +372,25 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                               <div className="mt-2 flex flex-wrap gap-1">
                                 {item.dietary.includes('vegan') && (
                                   <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 rounded-xs border border-emerald-500/50 text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 flex items-center gap-1">
-                                    <span>🌱</span>
+                                    <Leaf className="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden="true" />
                                     <span>Vegan</span>
                                   </span>
                                 )}
                                 {item.dietary.includes('lactose-free') && (
                                   <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 rounded-xs border border-sky-500/50 text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/30 flex items-center gap-1">
-                                    <span>🥛</span>
+                                    <MilkOff className="w-2.5 h-2.5 text-sky-600 dark:text-sky-400 shrink-0" aria-hidden="true" />
                                     <span>Senza Lattosio</span>
                                   </span>
                                 )}
                                 {item.dietary.includes('gluten-free') && (
                                   <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 rounded-xs border border-amber-500/50 text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 flex items-center gap-1">
-                                    <span>🌾</span>
+                                    <WheatOff className="w-2.5 h-2.5 text-amber-600 dark:text-amber-400 shrink-0" aria-hidden="true" />
                                     <span>Gluten-Free</span>
                                   </span>
                                 )}
                                 {item.dietary.includes('nut-free') && (
                                   <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 rounded-xs border border-rose-400/50 text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/30 flex items-center gap-1">
-                                    <span>🥜</span>
+                                    <NutOff className="w-2.5 h-2.5 text-rose-600 dark:text-rose-400 shrink-0" aria-hidden="true" />
                                     <span>No Frutta a Guscio</span>
                                   </span>
                                 )}
@@ -509,11 +536,31 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                   {inspectedItem.dietary && inspectedItem.dietary.length > 0 ? (
                     <div className="flex items-center gap-1 font-mono text-[10px]">
                       {inspectedItem.dietary.map((d) => (
-                        <span key={d} className="px-1.5 py-0.2 border border-[#FD5E86]/40 text-[#FD5E86] bg-[#FFF5F8]">
-                          {d === 'vegan' && '🌱 Vegan'}
-                          {d === 'lactose-free' && '🥛 Lactose-Free'}
-                          {d === 'gluten-free' && '🌾 Gluten-Free'}
-                          {d === 'nut-free' && '🥜 Nut-Free'}
+                        <span key={d} className="inline-flex items-center gap-1 px-1.5 py-0.5 border border-[#FD5E86]/40 text-[#FD5E86] bg-[#FFF5F8] dark:bg-[#1A1216]">
+                          {d === 'vegan' && (
+                            <>
+                              <Leaf className="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden="true" />
+                              <span>Vegan</span>
+                            </>
+                          )}
+                          {d === 'lactose-free' && (
+                            <>
+                              <MilkOff className="w-2.5 h-2.5 text-sky-600 dark:text-sky-400 shrink-0" aria-hidden="true" />
+                              <span>Lactose-Free</span>
+                            </>
+                          )}
+                          {d === 'gluten-free' && (
+                            <>
+                              <WheatOff className="w-2.5 h-2.5 text-amber-600 dark:text-amber-400 shrink-0" aria-hidden="true" />
+                              <span>Gluten-Free</span>
+                            </>
+                          )}
+                          {d === 'nut-free' && (
+                            <>
+                              <NutOff className="w-2.5 h-2.5 text-rose-600 dark:text-rose-400 shrink-0" aria-hidden="true" />
+                              <span>Nut-Free</span>
+                            </>
+                          )}
                         </span>
                       ))}
                     </div>

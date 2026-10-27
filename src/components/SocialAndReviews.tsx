@@ -6,6 +6,10 @@ import {
   Phone,
   Star,
   ShieldCheck,
+  Leaf,
+  MilkOff,
+  WheatOff,
+  NutOff,
 } from 'lucide-react';
 import {
   GOOGLE_REVIEWS,
@@ -199,8 +203,8 @@ export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-x border-b border-[#FCE4EC] dark:border-[#281E23] divide-y md:divide-y-0 md:divide-x divide-[#FCE4EC] dark:divide-[#281E23]">
             <div className="p-6 sm:p-7 space-y-3 bg-[#FFFDFE] dark:bg-[#120B0E]">
-              <div className="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-serif text-lg">
-                🌱
+              <div className="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                <Leaf className="w-5 h-5" aria-hidden="true" />
               </div>
               <h3 className="font-serif text-xl text-[#1C0D12] dark:text-white">100% Vegan Friendly</h3>
               <p className="text-xs text-[#7A5A66] dark:text-[#A3939B] leading-relaxed">
@@ -209,8 +213,8 @@ export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({
             </div>
 
             <div className="p-6 sm:p-7 space-y-3 bg-[#FFFDFE] dark:bg-[#120B0E]">
-              <div className="w-10 h-10 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center font-serif text-lg">
-                🌾
+              <div className="w-10 h-10 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                <WheatOff className="w-5 h-5" aria-hidden="true" />
               </div>
               <h3 className="font-serif text-xl text-[#1C0D12] dark:text-white">Senza Glutine (Tapioca)</h3>
               <p className="text-xs text-[#7A5A66] dark:text-[#A3939B] leading-relaxed">
@@ -219,8 +223,8 @@ export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({
             </div>
 
             <div className="p-6 sm:p-7 space-y-3 bg-[#FFFDFE] dark:bg-[#120B0E]">
-              <div className="w-10 h-10 rounded-full bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 flex items-center justify-center font-serif text-lg">
-                🥛
+              <div className="w-10 h-10 rounded-full bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 flex items-center justify-center">
+                <MilkOff className="w-5 h-5" aria-hidden="true" />
               </div>
               <h3 className="font-serif text-xl text-[#1C0D12] dark:text-white">Opzioni Senza Lattosio</h3>
               <p className="text-xs text-[#7A5A66] dark:text-[#A3939B] leading-relaxed">
@@ -229,8 +233,8 @@ export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({
             </div>
 
             <div className="p-6 sm:p-7 space-y-3 bg-[#FFFDFE] dark:bg-[#120B0E]">
-              <div className="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center font-serif text-lg">
-                🥜
+              <div className="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+                <NutOff className="w-5 h-5" aria-hidden="true" />
               </div>
               <h3 className="font-serif text-xl text-[#1C0D12] dark:text-white">Sicurezza Frutta a Guscio</h3>
               <p className="text-xs text-[#7A5A66] dark:text-[#A3939B] leading-relaxed">
@@ -291,7 +295,11 @@ export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({
                       <span>
                         RECENSIONE 0{i + 1} // {rev.author.toUpperCase()} ({rev.badge})
                       </span>
-                      <span className="text-[#FD5E86] tracking-widest">★★★★★</span>
+                      <div className="flex items-center gap-0.5" aria-label="Valutazione 5 su 5 stelle">
+                        {[...Array(5)].map((_, sIdx) => (
+                          <Star key={sIdx} className="w-3.5 h-3.5 fill-[#FD5E86] text-[#FD5E86]" aria-hidden="true" />
+                        ))}
+                      </div>
                     </div>
                     <p className="relative z-10 text-lg sm:text-2xl font-serif leading-snug text-[#1C0D12] dark:text-[#F5EFEA]">
                       &ldquo;{rev.text}&rdquo;

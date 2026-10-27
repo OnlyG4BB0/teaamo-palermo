@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   ArrowUpRight,
   Sparkles,
+  Star,
 } from 'lucide-react';
 import {
   HERO_FLAVORS,
@@ -412,8 +413,9 @@ export function App() {
                     <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-wider sm:tracking-widest text-[#7A5A66] dark:text-[#A3939B] block">
                       GOOGLE RATING
                     </span>
-                    <span className="font-serif text-lg sm:text-2xl lg:text-3xl mt-1 block text-[#1C0D12] dark:text-white">
-                      4.2 / 5.0 ★
+                    <span className="font-serif text-lg sm:text-2xl lg:text-3xl mt-1 flex items-center text-[#1C0D12] dark:text-white">
+                      <span>4.2 / 5.0</span>
+                      <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-[#FD5E86] text-[#FD5E86] ml-1.5 shrink-0 inline-block" aria-hidden="true" />
                     </span>
                   </div>
                   <div>

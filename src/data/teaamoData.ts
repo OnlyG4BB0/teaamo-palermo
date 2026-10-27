@@ -32,7 +32,7 @@ export interface DietaryFilterItem {
   id: DietaryOption;
   label: string;
   shortLabel: string;
-  icon: string;
+  iconKey: DietaryOption;
   badgeClass: string;
   description: string;
 }
@@ -42,7 +42,7 @@ export const DIETARY_FILTERS: DietaryFilterItem[] = [
     id: 'all',
     label: 'Tutti gli Stili',
     shortLabel: 'TUTTI',
-    icon: '✦',
+    iconKey: 'all',
     badgeClass: 'border-[#FD5E86] text-[#FD5E86]',
     description: 'Mostra l\'intero catalogo prodotti',
   },
@@ -50,7 +50,7 @@ export const DIETARY_FILTERS: DietaryFilterItem[] = [
     id: 'vegan',
     label: '100% Vegan Friendly',
     shortLabel: 'VEGAN',
-    icon: '🌱',
+    iconKey: 'vegan',
     badgeClass: 'border-emerald-500 text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/20',
     description: 'Tè alla frutta & sciroppi vegetali con perle agar',
   },
@@ -58,7 +58,7 @@ export const DIETARY_FILTERS: DietaryFilterItem[] = [
     id: 'lactose-free',
     label: 'Senza Lattosio',
     shortLabel: 'DAIRY-FREE',
-    icon: '🥛',
+    iconKey: 'lactose-free',
     badgeClass: 'border-sky-500 text-sky-600 dark:text-sky-400 bg-sky-50/50 dark:bg-sky-950/20',
     description: 'Zero derivati del latte o con base cocco/vegetale',
   },
@@ -66,7 +66,7 @@ export const DIETARY_FILTERS: DietaryFilterItem[] = [
     id: 'gluten-free',
     label: 'Senza Glutine',
     shortLabel: 'GLUTEN-FREE',
-    icon: '🌾',
+    iconKey: 'gluten-free',
     badgeClass: 'border-amber-500 text-amber-600 dark:text-amber-400 bg-amber-50/50 dark:bg-amber-950/20',
     description: 'Tapioca 100% naturale da manioca & coppette',
   },
@@ -74,7 +74,7 @@ export const DIETARY_FILTERS: DietaryFilterItem[] = [
     id: 'nut-free',
     label: 'Senza Frutta a Guscio',
     shortLabel: 'NUT-FREE',
-    icon: '🥜',
+    iconKey: 'nut-free',
     badgeClass: 'border-rose-400 text-rose-600 dark:text-rose-400 bg-rose-50/50 dark:bg-rose-950/20',
     description: 'Privo di nocciole, pistacchi e arachidi',
   },
