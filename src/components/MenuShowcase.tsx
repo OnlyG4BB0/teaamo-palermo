@@ -181,6 +181,7 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                               src={item.imageUrl}
                               alt={item.name}
                               loading="lazy"
+                              decoding="async"
                               className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                             />
                           </div>

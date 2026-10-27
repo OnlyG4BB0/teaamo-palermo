@@ -51,6 +51,19 @@ const TikTokVideoCard: React.FC<VideoCardProps> = ({
     }
   }, [isUnmuted]);
 
+  // Performance optimization: Only play video when this card is ACTIVE in viewport.
+  // When inactive, pause to save mobile memory, CPU and battery.
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el) return;
+    if (isActive) {
+      el.play().then(() => setIsPlaying(true)).catch(() => {});
+    } else {
+      el.pause();
+      setIsPlaying(false);
+    }
+  }, [isActive]);
+
   // Handle play / pause toggle
   const togglePlayPause = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -119,11 +132,11 @@ const TikTokVideoCard: React.FC<VideoCardProps> = ({
           ref={videoRef}
           src={video.videoUrl}
           poster={video.coverUrl}
-          autoPlay
+          autoPlay={isActive}
           muted={!isUnmuted}
           loop
           playsInline
-          preload="auto"
+          preload={isActive ? 'auto' : 'metadata'}
           onTimeUpdate={handleTimeUpdate}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}

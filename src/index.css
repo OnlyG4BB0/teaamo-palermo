@@ -26,6 +26,12 @@
     scroll-padding-top: 5rem;
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
   }
 
   body {
@@ -33,8 +39,24 @@
     background-color: var(--bg-primary);
     color: var(--text-primary);
     overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+    position: relative;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-x: none;
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
+  }
+
+  #root {
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+  }
+
+  button, a, input, select {
+    touch-action: manipulation;
   }
 
   * {
