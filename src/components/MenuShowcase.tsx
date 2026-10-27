@@ -226,10 +226,10 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                       key={df.id}
                       type="button"
                       onClick={() => handleDietaryChange(df.id)}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-mono text-[11px] uppercase tracking-wider transition-all duration-200 cursor-pointer border ${
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-colors duration-150 cursor-pointer border ${
                         isActive
-                          ? 'bg-[#1C0D12] dark:bg-white text-white dark:text-[#1C0D12] border-transparent shadow-xs font-medium scale-[1.02]'
-                          : 'bg-white dark:bg-white/5 border-[#FCE4EC] dark:border-[#281E23] text-[#7A5A66] dark:text-[#A3939B] hover:border-[#FD5E86] hover:text-[#FD5E86]'
+                          ? 'bg-[#1C0D12] dark:bg-white text-white dark:text-[#1C0D12] border-[#1C0D12] dark:border-white shadow-xs font-semibold'
+                          : 'bg-white dark:bg-transparent border-[#FCE4EC] dark:border-[#281E23] text-[#7A5A66] dark:text-[#A3939B] hover:border-[#FD5E86] hover:text-[#FD5E86]'
                       }`}
                       title={df.description}
                     >
@@ -371,25 +371,25 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                             {item.dietary && item.dietary.length > 0 && (
                               <div className="mt-2 flex flex-wrap gap-1">
                                 {item.dietary.includes('vegan') && (
-                                  <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 rounded-xs border border-emerald-500/50 text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 flex items-center gap-1">
+                                  <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 border border-emerald-500/50 text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 flex items-center gap-1">
                                     <Leaf className="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden="true" />
                                     <span>Vegan</span>
                                   </span>
                                 )}
                                 {item.dietary.includes('lactose-free') && (
-                                  <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 rounded-xs border border-sky-500/50 text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/30 flex items-center gap-1">
+                                  <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 border border-sky-500/50 text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/30 flex items-center gap-1">
                                     <MilkOff className="w-2.5 h-2.5 text-sky-600 dark:text-sky-400 shrink-0" aria-hidden="true" />
                                     <span>Senza Lattosio</span>
                                   </span>
                                 )}
                                 {item.dietary.includes('gluten-free') && (
-                                  <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 rounded-xs border border-amber-500/50 text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 flex items-center gap-1">
+                                  <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 border border-amber-500/50 text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 flex items-center gap-1">
                                     <WheatOff className="w-2.5 h-2.5 text-amber-600 dark:text-amber-400 shrink-0" aria-hidden="true" />
                                     <span>Gluten-Free</span>
                                   </span>
                                 )}
                                 {item.dietary.includes('nut-free') && (
-                                  <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 rounded-xs border border-rose-400/50 text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/30 flex items-center gap-1">
+                                  <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 border border-rose-400/50 text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/30 flex items-center gap-1">
                                     <NutOff className="w-2.5 h-2.5 text-rose-600 dark:text-rose-400 shrink-0" aria-hidden="true" />
                                     <span>No Frutta a Guscio</span>
                                   </span>
@@ -573,7 +573,7 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
 
                 {/* Allergen Breakdown */}
                 {inspectedItem.allergens && (
-                  <div className="p-2 rounded-xs bg-[#FFF5F8] dark:bg-white/5 border border-[#FCE4EC] dark:border-[#281E23] flex items-start gap-1.5 text-[11px] font-mono">
+                  <div className="p-2 bg-[#FFF5F8] dark:bg-white/5 border border-[#FCE4EC] dark:border-[#281E23] flex items-start gap-1.5 text-[11px] font-mono">
                     <ShieldCheck className="w-3.5 h-3.5 text-[#FD5E86] shrink-0 mt-0.5" aria-hidden="true" />
                     <div>
                       <span className="font-semibold text-[#1C0D12] dark:text-white block">
