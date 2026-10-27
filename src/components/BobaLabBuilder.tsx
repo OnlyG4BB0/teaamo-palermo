@@ -417,34 +417,16 @@ export const BobaLabBuilder: React.FC<BobaLabBuilderProps> = () => {
 
               <div className="pt-6 border-t border-[#FCE4EC] dark:border-[#281E23] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <span className="font-mono text-xs uppercase tracking-wider text-[#7A5A66] dark:text-[#A3939B]">
-                  DISPONIBILE ANCHE SUI CANALI DELIVERY PALERMO:
+                  CONSEGNA A DOMICILIO A PALERMO DISPONIBILE SU:
                 </span>
                 <div className="flex flex-wrap items-center gap-2.5">
                   <a
                     href={TEAAMO_LINKS.glovo}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider px-3.5 py-2 border border-[#FD5E86] text-[#FD5E86] hover:bg-[#FD5E86] hover:text-white transition-all hover:-translate-y-0.5"
+                    className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider px-4 py-2 border border-[#FD5E86] text-[#FD5E86] hover:bg-[#FD5E86] hover:text-white transition-all hover:-translate-y-0.5"
                   >
-                    <span>Glovo</span>
-                    <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
-                  </a>
-                  <a
-                    href={TEAAMO_LINKS.deliveroo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider px-3.5 py-2 border border-[#FD5E86] text-[#FD5E86] hover:bg-[#FD5E86] hover:text-white transition-all hover:-translate-y-0.5"
-                  >
-                    <span>Deliveroo</span>
-                    <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
-                  </a>
-                  <a
-                    href={TEAAMO_LINKS.justeat}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider px-3.5 py-2 border border-[#FD5E86] text-[#FD5E86] hover:bg-[#FD5E86] hover:text-white transition-all hover:-translate-y-0.5"
-                  >
-                    <span>JustEat</span>
+                    <span>Glovo Store Ufficiale</span>
                     <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
                   </a>
                 </div>

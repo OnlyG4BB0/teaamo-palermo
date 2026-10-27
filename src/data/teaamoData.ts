@@ -52,8 +52,6 @@ export const TEAAMO_LINKS = {
   tiktok: 'https://www.tiktok.com/@teaamobubbletea',
   linktree: 'https://linktr.ee/TeaAmoBubbleTeaPA?utm_source=ig&utm_medium=social&utm_content=link_in_bio',
   glovo: 'https://glovoapp.com/it/it/palermo/stores/teaamo-bubble-tea-pmo',
-  deliveroo: 'https://deliveroo.it/it/menu/palermo/favorita/teaamo-bubble-tea',
-  justeat: 'https://www.justeat.it/restaurants-teaamo---bubble-tea-palermo/menu/',
   phone: '+393517032607',
   phoneDisplay: '+39 351 703 2607',
   address: 'Viale Strasburgo, 378 — 90146 Palermo (PA)',

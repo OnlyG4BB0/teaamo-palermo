@@ -126,7 +126,7 @@ export function App() {
     { href: '#menu', label: '01 / Catalogo Glovo', desc: 'SpacePolly, Bubble Tea & Sweet' },
     { href: '#boba-lab', label: '02 / Simulatore 3D', desc: 'Laboratorio di formulazione 3D' },
     { href: '#tiktok', label: '03 / Bacheca TikTok', desc: 'Video & trend @teaamobubbletea' },
-    { href: '#delivery', label: '04 / Delivery Hub', desc: 'Glovo, Deliveroo & JustEat' },
+    { href: '#delivery', label: '04 / Delivery & Take Away', desc: 'Glovo Store & Ritiro al Locale' },
     { href: '#dove-siamo', label: '05 / Sede & Orari', desc: 'Viale Strasburgo 378 Palermo' },
   ];
 
@@ -144,7 +144,7 @@ export function App() {
     'BUBBLE TEA ARTIGIANALE & TAPIOCA CALDA',
     'SPACEPOLLY SMASHBURGER: GIOVE / PLUTONE / MARTE / MERCURIO',
     'BUBBLE WAFFLE CON GELATO ARTIGIANALE & CRÊPES PAN DI STELLE',
-    'CONSEGNA A DOMICILIO SU GLOVO • DELIVEROO • JUSTEAT',
+    'CONSEGNA A DOMICILIO UFFICIALE SU GLOVO',
   ];
 
   return (

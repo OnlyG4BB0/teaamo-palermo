@@ -55,8 +55,8 @@ export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({
             </MagneticWrap>
           </RevealOnScroll>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 border-x border-b border-[#FCE4EC] dark:border-[#281E23] divide-y md:divide-y-0 md:divide-x divide-[#FCE4EC] dark:divide-[#281E23]">
-            {/* Glovo */}
+          <div className="grid grid-cols-1 md:grid-cols-2 border-x border-b border-[#FCE4EC] dark:border-[#281E23] divide-y md:divide-y-0 md:divide-x divide-[#FCE4EC] dark:divide-[#281E23]">
+            {/* Glovo Official Delivery */}
             <RevealOnScroll delayMs={40}>
               <a
                 href={TEAAMO_LINKS.glovo}
@@ -66,7 +66,7 @@ export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({
                 className="spotlight-card group p-6 sm:p-8 lg:p-10 flex flex-col justify-between min-h-[220px] sm:min-h-[250px] bg-white dark:bg-[#120B0E] hover:bg-[#FFF5F8] dark:hover:bg-white/[0.03] transition-all duration-300"
               >
                 <div className="relative z-10 flex items-center justify-between font-mono text-xs text-[#7A5A66] dark:text-[#A3939B]">
-                  <span>PARTNER 01 // STORE #296067</span>
+                  <span>DELIVERY ESCLUSIVO // STORE #296067</span>
                   <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300 text-[#FD5E86]" aria-hidden="true" />
                 </div>
                 <div className="relative z-10 mt-6">
@@ -74,64 +74,37 @@ export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({
                     Glovo Palermo
                   </h3>
                   <p className="text-sm text-[#7A5A66] dark:text-[#A3939B] leading-relaxed">
-                    Consegna rapida da Viale Strasburgo 378 con promozioni attive sulla linea SpacePolly SmashBurger e Bubble Waffle.
+                    Consegna rapida a domicilio in tutta Palermo da Viale Strasburgo 378. Menu completo con Bubble Tea sigillati, SpacePolly SmashBurger e Bubble Waffle.
                   </p>
-                  <span className="editorial-link inline-block mt-4 font-mono text-xs uppercase tracking-widest text-[#FD5E86] pb-0.5">
-                    Apri Catalogo Glovo
+                  <span className="editorial-link inline-block mt-4 font-mono text-xs uppercase tracking-widest text-[#FD5E86] pb-0.5 font-semibold">
+                    Ordina su Glovo Store →
                   </span>
                 </div>
               </a>
             </RevealOnScroll>
 
-            {/* Deliveroo */}
-            <RevealOnScroll delayMs={120}>
+            {/* Asporto & Ritiro al Banco */}
+            <RevealOnScroll delayMs={100}>
               <a
-                href={TEAAMO_LINKS.deliveroo}
+                href={TEAAMO_LINKS.googleMapsDirect}
                 target="_blank"
                 rel="noopener noreferrer"
                 onMouseMove={handleSpotlightMove}
                 className="spotlight-card group p-6 sm:p-8 lg:p-10 flex flex-col justify-between min-h-[220px] sm:min-h-[250px] bg-white dark:bg-[#120B0E] hover:bg-[#FFF5F8] dark:hover:bg-white/[0.03] transition-all duration-300"
               >
                 <div className="relative z-10 flex items-center justify-between font-mono text-xs text-[#7A5A66] dark:text-[#A3939B]">
-                  <span>PARTNER 02 // ZONA FAVORITA</span>
+                  <span>ASPORTO & BANCO // VIALE STRASBURGO 378</span>
                   <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300 text-[#FD5E86]" aria-hidden="true" />
                 </div>
                 <div className="relative z-10 mt-6">
                   <h3 className="text-3xl sm:text-4xl font-serif mb-2 group-hover:text-[#FD5E86] transition-colors text-[#1C0D12] dark:text-white">
-                    Deliveroo
+                    Take Away &amp; Notte
                   </h3>
                   <p className="text-sm text-[#7A5A66] dark:text-[#A3939B] leading-relaxed">
-                    Bubble Tea sigillati ermeticamente al momento dell&apos;ordine, Crêpes calde, Pancake e Frozen Yogurt.
+                    Ritiro al locale senza attese o consumazione sul posto. Laboratorio artigianale attivo tutti i giorni dalle 12:30 fino alle 03:30 di notte.
                   </p>
-                  <span className="editorial-link inline-block mt-4 font-mono text-xs uppercase tracking-widest text-[#FD5E86] pb-0.5">
-                    Ordina su Deliveroo
-                  </span>
-                </div>
-              </a>
-            </RevealOnScroll>
-
-            {/* JustEat */}
-            <RevealOnScroll delayMs={200}>
-              <a
-                href={TEAAMO_LINKS.justeat}
-                target="_blank"
-                rel="noopener noreferrer"
-                onMouseMove={handleSpotlightMove}
-                className="spotlight-card group p-6 sm:p-8 lg:p-10 flex flex-col justify-between min-h-[220px] sm:min-h-[250px] bg-white dark:bg-[#120B0E] hover:bg-[#FFF5F8] dark:hover:bg-white/[0.03] transition-all duration-300"
-              >
-                <div className="relative z-10 flex items-center justify-between font-mono text-xs text-[#7A5A66] dark:text-[#A3939B]">
-                  <span>PARTNER 03 // LATE SHIFT</span>
-                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300 text-[#FD5E86]" aria-hidden="true" />
-                </div>
-                <div className="relative z-10 mt-6">
-                  <h3 className="text-3xl sm:text-4xl font-serif mb-2 group-hover:text-[#FD5E86] transition-colors text-[#1C0D12] dark:text-white">
-                    JustEat
-                  </h3>
-                  <p className="text-sm text-[#7A5A66] dark:text-[#A3939B] leading-relaxed">
-                    Servizio serale e notturno su tutta l&apos;area di Palermo Nord. Ideale per ordini di gruppo e menu completi.
-                  </p>
-                  <span className="editorial-link inline-block mt-4 font-mono text-xs uppercase tracking-widest text-[#FD5E86] pb-0.5">
-                    Apri Menu JustEat
+                  <span className="editorial-link inline-block mt-4 font-mono text-xs uppercase tracking-widest text-[#FD5E86] pb-0.5 font-semibold">
+                    Indicazioni Stradali (Maps) →
                   </span>
                 </div>
               </a>
