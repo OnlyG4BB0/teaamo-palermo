@@ -31,8 +31,19 @@ if (typeof window !== 'undefined') {
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+const rootElement = document.getElementById('root')!;
+
+if (rootElement.hasChildNodes()) {
+  ReactDOM.hydrateRoot(
+    rootElement,
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+} else {
+  ReactDOM.createRoot(rootElement).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+}
