@@ -634,7 +634,7 @@ export function App() {
                     hasPinkCream: true,
                     showIce: true,
                   }}
-                  accentColor={selectedHeroFlavor.accentHex}
+                  accentColor={heroModelType === 'cup' || heroModelType === 'fruittea' ? selectedHeroFlavor.accentHex : '#DE3163'}
                   className="h-[340px] sm:h-[400px] lg:h-[440px]"
                 />
 
