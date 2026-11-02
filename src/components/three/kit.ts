@@ -381,7 +381,7 @@ const GLSL_NOISE = /* glsl */ `
   }
   float teaFbm(vec3 p) {
     float s = 0.0; float a = 0.5;
-    for (int i = 0; i < 4; i++) { s += teaNoise(p) * a; p *= 2.03; a *= 0.5; }
+    for (int i = 0; i < 3; i++) { s += teaNoise(p) * a; p *= 2.03; a *= 0.5; }
     return s;
   }
 `;
@@ -462,8 +462,11 @@ export const liquidMaterial = (opts: {
          vec3 col = mix(uBottom, uTop, grad);
          float clouds = smoothstep(0.58, 0.82, teaFbm(q * 2.3 + 4.0)) * smoothstep(0.15, 0.9, h);
          col = mix(col, uSwirl, clouds * 0.35);
-         float streak = smoothstep(0.55, 0.85, teaFbm(vec3(ang * 2.4, h * 1.1 - uTime * 0.03, 1.7)))
-           * (1.0 - smoothstep(0.25, 0.85, h)) * uStreaks;
+         float streak = 0.0;
+         if (uStreaks > 0.0 && h < 0.85) {
+           streak = smoothstep(0.55, 0.85, teaFbm(vec3(ang * 2.4, h * 1.1 - uTime * 0.03, 1.7)))
+             * (1.0 - smoothstep(0.25, 0.85, h)) * uStreaks;
+         }
          col = mix(col, uBottom * 0.55, streak * 0.75);
          vec4 diffuseColor = vec4(col, mix(uAlphaLow, uAlphaHigh, h) * opacity);`
       );
@@ -497,7 +500,7 @@ export const meltMaterial = (params: THREE.MeshPhysicalMaterialParameters) => {
 /* ============================================================================
    BRAND TEXTURES
    ============================================================================ */
-const BRAND_FONTS = ['italic 120px "Instrument Serif"', '600 40px "JetBrains Mono"'];
+const BRAND_FONTS = ['800 120px "Bricolage Grotesque"', '700 40px "Figtree"'];
 
 const drawDiamondLogo = (ctx: CanvasRenderingContext2D, x: number, y: number, s: number, fill: string) => {
   ctx.save();
@@ -525,7 +528,7 @@ export const cupLabelTexture = (accent = '#DE3163') =>
     2048,
     512,
     (ctx, w, h) => {
-      ctx.fillStyle = '#FFF8F3';
+      ctx.fillStyle = '#FFF6F0';
       ctx.fillRect(0, 0, w, h);
       // fine pink pinstripes top & bottom
       ctx.fillStyle = accent;
@@ -538,15 +541,15 @@ export const cupLabelTexture = (accent = '#DE3163') =>
       for (let k = 0; k < 2; k++) {
         const cx = w * (0.25 + k * 0.5);
         drawDiamondLogo(ctx, cx - 300, h / 2, 150, accent);
-        ctx.fillStyle = '#2B0F1D';
-        ctx.font = 'italic 170px "Instrument Serif", Georgia, serif';
+        ctx.fillStyle = '#1D0B33';
+        ctx.font = '800 150px "Bricolage Grotesque", system-ui, sans-serif';
         ctx.textBaseline = 'middle';
         ctx.fillText('TeaAmo', cx - 190, h / 2 - 22);
         ctx.fillStyle = accent;
-        ctx.font = '600 38px "JetBrains Mono", monospace';
+        ctx.font = '700 40px "Figtree", system-ui, sans-serif';
         ctx.fillText('BUBBLE TEA · PALERMO', cx - 182, h / 2 + 92);
         // scattered pearls motif
-        ctx.fillStyle = '#2B0F1D';
+        ctx.fillStyle = '#1D0B33';
         for (let i = 0; i < 6; i++) {
           ctx.globalAlpha = 0.12;
           ctx.beginPath();
@@ -761,7 +764,7 @@ export const paperCupTexture = (accent = '#DE3163') =>
     2048,
     512,
     (ctx, w, h) => {
-      ctx.fillStyle = '#FFF8F3';
+      ctx.fillStyle = '#FFF6F0';
       ctx.fillRect(0, 0, w, h);
       ctx.fillStyle = accent;
       for (let i = 0; i < 64; i++) {
@@ -771,8 +774,8 @@ export const paperCupTexture = (accent = '#DE3163') =>
       for (let k = 0; k < 3; k++) {
         const cx = w * (k / 3 + 1 / 6);
         drawDiamondLogo(ctx, cx, h * 0.52, 120, accent);
-        ctx.fillStyle = '#2B0F1D';
-        ctx.font = 'italic 96px "Instrument Serif", Georgia, serif';
+        ctx.fillStyle = '#1D0B33';
+        ctx.font = '800 88px "Bricolage Grotesque", system-ui, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('TeaAmo', cx, h * 0.82);
@@ -799,10 +802,48 @@ export const flagTexture = (label: string, accent: string) =>
       ctx.fillStyle = '#FFFFFF';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.font = '600 34px "JetBrains Mono", monospace';
+      ctx.font = '700 34px "Figtree", system-ui, sans-serif';
       ctx.fillText('SPACEPOLLY', w / 2, h * 0.3);
-      ctx.font = 'italic 110px "Instrument Serif", Georgia, serif';
+      ctx.font = '800 96px "Bricolage Grotesque", system-ui, sans-serif';
       ctx.fillText(label, w / 2, h * 0.64);
     },
     { fonts: BRAND_FONTS }
   );
+
+/** Soft baked floor shadow — replaces per-frame contact-shadow renders */
+export const softShadowTexture = () =>
+  canvasTexture('soft-shadow', 256, 256, (ctx, w) => {
+    const g = ctx.createRadialGradient(w / 2, w / 2, 0, w / 2, w / 2, w / 2);
+    g.addColorStop(0, 'rgba(70, 18, 60, 0.55)');
+    g.addColorStop(0.35, 'rgba(70, 18, 60, 0.32)');
+    g.addColorStop(0.7, 'rgba(70, 18, 60, 0.08)');
+    g.addColorStop(1, 'rgba(70, 18, 60, 0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, w);
+  });
+
+/**
+ * Runs cache warm-up tasks (geometry + texture builders) one per idle slot, so
+ * switching products later never pays for procedural generation on the spot.
+ */
+let prewarmStarted = false;
+export const prewarmInIdle = (tasks: (() => unknown)[]) => {
+  if (prewarmStarted || typeof window === 'undefined') return;
+  prewarmStarted = true;
+  const queue = [...tasks];
+  const idle: (cb: (d: { timeRemaining: () => number }) => void) => void =
+    'requestIdleCallback' in window
+      ? (cb) => (window as unknown as { requestIdleCallback: (c: typeof cb, o: { timeout: number }) => void }).requestIdleCallback(cb, { timeout: 2000 })
+      : (cb) => window.setTimeout(() => cb({ timeRemaining: () => 8 }), 120);
+  const run = (deadline: { timeRemaining: () => number }) => {
+    while (queue.length && deadline.timeRemaining() > 4) {
+      try {
+        queue.shift()!();
+      } catch {
+        // A failed warm-up just means that piece is built on demand later
+      }
+    }
+    if (queue.length) idle(run);
+  };
+  idle(run);
+};

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef } from 'react';
-import { useFrame, type ThreeEvent } from '@react-three/fiber';
+import { useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Spring, clamp01, damp, easeOutBack, easeOutCubic, lerp } from './kit';
 
@@ -62,6 +62,28 @@ export const MotionRoot: React.FC<MotionRootProps> = ({
   const rotRef = useRef(0);
   const exitedRef = useRef(false);
   const firstTickRef = useRef(impulseTick);
+  // The model stays hidden until its shaders are compiled, so the intro never stutters
+  const readyRef = useRef(false);
+  const gl = useThree((s) => s.gl);
+  const camera = useThree((s) => s.camera);
+  const scene = useThree((s) => s.scene);
+
+  useEffect(() => {
+    const group = outerRef.current;
+    let done = false;
+    const markReady = () => {
+      done = true;
+      readyRef.current = true;
+    };
+    // KHR_parallel_shader_compile lets the GPU driver compile off the main thread
+    if (group) gl.compileAsync(group, camera, scene).then(markReady, markReady);
+    else markReady();
+    // Never keep a product hidden for long on drivers that report slowly
+    const fallback = window.setTimeout(() => !done && markReady(), 900);
+    return () => window.clearTimeout(fallback);
+    // Compile once per mounted model
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const m = useMemo<MotionState>(
     () => ({
@@ -107,6 +129,15 @@ export const MotionRoot: React.FC<MotionRootProps> = ({
 
   useFrame((state, delta) => {
     const dt = Math.min(delta, 1 / 20);
+    if (!readyRef.current) {
+      if (outerRef.current) outerRef.current.visible = false;
+      if (exiting && !exitedRef.current) {
+        exitedRef.current = true;
+        onExited();
+      }
+      return;
+    }
+    if (outerRef.current) outerRef.current.visible = true;
     m.time += dt;
     m.intro += dt;
 

@@ -451,7 +451,7 @@ const BBQOnion: React.FC = () => (
 
 const chickenGeometry = () =>
   cachedGeometry('chicken', () => {
-    const geo = new THREE.SphereGeometry(1, 128, 64);
+    const geo = new THREE.SphereGeometry(1, 96, 48);
     geo.scale(1.32, 0.17, 1.16);
     geo.translate(0, 0.17, 0);
     const amount = new Float32Array((geo.attributes.position as THREE.BufferAttribute).count);
@@ -474,22 +474,21 @@ const Chicken: React.FC = () => (
   </mesh>
 );
 
+const sauceGeometry = (seed: number) =>
+  cachedGeometry(`sauce-${seed}`, () => {
+    const pts = Array.from({ length: 28 }, (_, i) => {
+      const a = (i / 28) * Math.PI * 2;
+      const r = 0.7 + Math.sin(i * 1.7 + seed) * 0.32;
+      return new THREE.Vector3(Math.cos(a) * r, 0.02, Math.sin(a) * r);
+    });
+    return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true), 160, 0.045, 8, true);
+  });
+
 /** Glossy sauce zig-zag plus drips that slowly run over the edge */
 const Sauce: React.FC<{ color: string; seed: number }> = ({ color, seed }) => {
   const m = useMotion();
   const dripRefs = useRef<(THREE.Group | null)[]>([]);
-  const ribbon = useMemo(
-    () =>
-      cachedGeometry(`sauce-${seed}`, () => {
-        const pts = Array.from({ length: 28 }, (_, i) => {
-          const a = (i / 28) * Math.PI * 2;
-          const r = 0.7 + Math.sin(i * 1.7 + seed) * 0.32;
-          return new THREE.Vector3(Math.cos(a) * r, 0.02, Math.sin(a) * r);
-        });
-        return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true), 200, 0.045, 10, true);
-      }),
-    [seed]
-  );
+  const ribbon = sauceGeometry(seed);
   const drips = useMemo(() => {
     const rand = mulberry32(seed + 50);
     return Array.from({ length: 5 }, () => ({ a: rand() * Math.PI * 2, len: 0.14 + rand() * 0.18, phase: rand() * 6 }));
@@ -721,3 +720,21 @@ export const SpacePollyBurgerMesh: React.FC<{ variant?: BurgerVariant; accentCol
   );
 };
 
+
+/** Builders warmed up in idle time so switching burgers never stalls */
+export const PREWARM_BURGERS: (() => unknown)[] = [
+  topBunGeometry,
+  bottomBunGeometry,
+  ...[1, 2, 3, 4, 5].flatMap((seed) => [() => pattyGeometry(seed), () => laceGeometry(seed)]),
+  cheeseGeometry,
+  () => baconGeometry(1),
+  () => baconGeometry(2),
+  lettuceGeometry,
+  () => onionRingGeometry(1),
+  () => onionRingGeometry(2),
+  bbqOnionGeometry,
+  chickenGeometry,
+  ...[1, 2, 3, 4].map((seed) => () => sauceGeometry(seed)),
+  pickleTexture,
+  tomatoTexture,
+];

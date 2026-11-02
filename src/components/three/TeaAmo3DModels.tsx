@@ -1,12 +1,12 @@
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, ContactShadows, Environment, Lightformer, Sparkles } from '@react-three/drei';
+import { OrbitControls, Environment, Lightformer, PerformanceMonitor, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
-import { cachedGeometry, damp, lathe, mulberry32, smoothProfile } from './kit';
+import { cachedGeometry, damp, lathe, mulberry32, prewarmInIdle, smoothProfile, softShadowTexture } from './kit';
 import { MotionRoot, useMotion } from './motion';
-import { BobaCupMesh, FruitTeaMesh, type Cup3DConfig } from './models/cups';
-import { SpacePollyBurgerMesh } from './models/burger';
-import { BubbleWaffleMesh, CrepeMesh, GelatoCoppettaMesh, PancakeStackMesh } from './models/desserts';
+import { BobaCupMesh, FruitTeaMesh, PREWARM_CUPS, type Cup3DConfig } from './models/cups';
+import { PREWARM_BURGERS, SpacePollyBurgerMesh } from './models/burger';
+import { BubbleWaffleMesh, CrepeMesh, GelatoCoppettaMesh, PancakeStackMesh, PREWARM_DESSERTS } from './models/desserts';
 
 export type { Cup3DConfig } from './models/cups';
 export type { BurgerVariant } from './models/burger';
@@ -234,6 +234,25 @@ const KickRipple: React.FC<{ fit: ModelFit; accent: string }> = ({ fit, accent }
   );
 };
 
+/** Baked radial shadow that follows the fit of the product */
+const SoftShadow: React.FC<{ fit: ModelFit }> = ({ fit }) => {
+  const ref = useRef<THREE.Mesh>(null);
+  const size = Math.max(fit.w, fit.d) * 1.15;
+  useFrame((_, delta) => {
+    const mesh = ref.current;
+    if (!mesh) return;
+    mesh.position.y = damp(mesh.position.y, fit.shadowY + 0.004, 5, delta);
+    const s = damp(mesh.scale.x, size, 5, delta);
+    mesh.scale.set(s, s, 1);
+  });
+  return (
+    <mesh ref={ref} rotation={[-Math.PI / 2, 0, 0]} position={[0, fit.shadowY + 0.004, 0]} scale={[size, size, 1]} renderOrder={-1}>
+      <planeGeometry args={[1, 1]} />
+      <meshBasicMaterial map={softShadowTexture()} transparent depthWrite={false} toneMapped={false} />
+    </mesh>
+  );
+};
+
 /* ============================================================================
    MODEL DISPATCH
    ============================================================================ */
@@ -276,7 +295,7 @@ class CanvasErrorBoundary extends React.Component<{ children: React.ReactNode },
   render() {
     if (this.state.hasError) {
       return (
-        <div className="absolute inset-0 flex items-center justify-center font-mono text-xs uppercase text-[#76525F]">
+        <div className="absolute inset-0 flex items-center justify-center text-sm font-semibold text-ink-soft">
           Anteprima 3D non disponibile
         </div>
       );
@@ -294,9 +313,8 @@ export interface StudioViewport3DProps {
 }
 
 const hudButton =
-  'pointer-events-auto px-2.5 py-1 border font-mono text-[10px] uppercase tracking-widest transition-all cursor-pointer backdrop-blur-sm';
-const hudIdle =
-  'bg-white/85 dark:bg-[#170A12]/85 border-[#F3DFD8] dark:border-[#3B2231] hover:border-[#DE3163] hover:text-[#DE3163] text-[#2B0F1D] dark:text-[#FCEFF2]';
+  'pointer-events-auto rounded-full px-3 py-1.5 text-xs font-bold transition-all duration-300 cursor-pointer backdrop-blur-md shadow-[0_6px_16px_-10px_rgba(29,11,51,0.5)]';
+const hudIdle = 'bg-white/80 text-ink hover:bg-ink hover:text-white';
 
 export const StudioViewport3D: React.FC<StudioViewport3DProps> = ({
   modelType,
@@ -321,6 +339,17 @@ export const StudioViewport3D: React.FC<StudioViewport3DProps> = ({
   const [reducedMotion] = useState(
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
+  // Resolution adapts to the measured frame rate: sharp on fast GPUs, smooth on slow ones
+  const maxDpr = useMemo(
+    () => (typeof window === 'undefined' ? 1 : Math.min(window.devicePixelRatio || 1, isTouch ? 1.5 : 1.75)),
+    [isTouch]
+  );
+  const [dpr, setDpr] = useState(() => Math.min(maxDpr, isTouch ? 1.25 : 1.5));
+
+  // Build every other product's geometry while the browser is idle
+  useEffect(() => {
+    prewarmInIdle([...PREWARM_CUPS, ...PREWARM_BURGERS, ...PREWARM_DESSERTS]);
+  }, []);
 
   // Render and animate ONLY while the viewport is on screen (battery + GPU)
   useEffect(() => {
@@ -358,13 +387,13 @@ export const StudioViewport3D: React.FC<StudioViewport3DProps> = ({
           type="button"
           onClick={() => setExploded((prev) => !prev)}
           aria-pressed={exploded}
-          className={`${hudButton} ${exploded ? 'bg-[#DE3163] text-white border-[#DE3163]' : hudIdle}`}
+          className={`${hudButton} ${exploded ? 'bg-ink text-white' : hudIdle}`}
         >
-          {exploded ? '● Vista esplosa' : '○ Esplodi strati'}
+          {exploded ? 'Ricomponi strati' : 'Esplodi strati'}
         </button>
         <div className="flex items-center gap-1.5">
           <button type="button" onClick={() => setReplay((r) => r + 1)} className={`${hudButton} ${hudIdle}`} title="Rivedi l'assemblaggio">
-            ↺ Ricomponi
+            ↺ Rifai
           </button>
           <button type="button" onClick={() => setImpulseTick((t) => t + 1)} className={`${hudButton} ${hudIdle}`}>
             ✦ Impulso
@@ -377,9 +406,9 @@ export const StudioViewport3D: React.FC<StudioViewport3DProps> = ({
           <Canvas
             frameloop={inView ? 'always' : 'never'}
             camera={{ position: [0, 0.6, 5.2], fov: 34 }}
-            dpr={isTouch ? [1, 1.5] : [1, 2]}
+            dpr={dpr}
             gl={{
-              antialias: true,
+              antialias: !isTouch,
               alpha: true,
               powerPreference: isTouch ? 'low-power' : 'high-performance',
               toneMapping: THREE.ACESFilmicToneMapping,
@@ -387,6 +416,12 @@ export const StudioViewport3D: React.FC<StudioViewport3DProps> = ({
             }}
             style={{ touchAction: isTouch ? 'pan-y' : 'none' }}
           >
+            <PerformanceMonitor
+              flipflops={4}
+              onDecline={() => setDpr((d) => Math.max(0.75, +(d - 0.25).toFixed(2)))}
+              onIncline={() => setDpr((d) => Math.min(maxDpr, +(d + 0.25).toFixed(2)))}
+              onFallback={() => setDpr(1)}
+            />
             <Suspense fallback={null}>
               <ambientLight intensity={0.45} />
               <hemisphereLight args={['#fff6f1', '#f3d6dc', 0.65]} />
@@ -432,15 +467,7 @@ export const StudioViewport3D: React.FC<StudioViewport3DProps> = ({
               )}
 
               {fit.pedestal !== false && <Pedestal fit={fit} accent={accentColor} />}
-              <ContactShadows
-                position={[0, fit.shadowY + 0.002, 0]}
-                opacity={0.5}
-                scale={Math.max(fit.w, fit.d) * 1.9}
-                blur={2.6}
-                far={4.5}
-                resolution={isTouch ? 256 : 512}
-                color="#5B1A33"
-              />
+              <SoftShadow fit={fit} />
 
               {!isTouch && (
                 <OrbitControls
@@ -460,8 +487,8 @@ export const StudioViewport3D: React.FC<StudioViewport3DProps> = ({
         </CanvasErrorBoundary>
       </div>
 
-      <div className="pointer-events-none absolute bottom-3 inset-x-4 flex items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-widest text-[#76525F] dark:text-[#C9AEBB]">
-        <span className="truncate">Modello 3D interattivo</span>
+      <div className="pointer-events-none absolute bottom-3 inset-x-4 flex items-center justify-between gap-2 text-xs font-semibold text-ink-soft">
+        <span className="truncate inline-flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-pop" />3D live</span>
         <span className="truncate text-right">
           {interactiveHint || (isTouch ? 'Tocca il prodotto' : 'Trascina 360° • Clicca il prodotto')}
         </span>

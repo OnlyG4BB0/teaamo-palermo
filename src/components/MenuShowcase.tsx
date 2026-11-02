@@ -1,81 +1,95 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   ArrowUpRight,
-  Eye,
-  ShieldCheck,
+  Box,
+  CakeSlice,
+  CupSoda,
+  IceCreamCone,
   Info,
-  Sparkles,
-  Filter,
   Leaf,
   MilkOff,
-  WheatOff,
   NutOff,
   RotateCcw,
+  Sandwich,
+  ShieldCheck,
+  Sparkles,
+  WheatOff,
 } from 'lucide-react';
-import {
-  MENU_ITEMS,
-  MenuItem,
-  TEAAMO_LINKS,
-  DIETARY_FILTERS,
-  DietaryOption,
-} from '../data/teaamoData';
+import type { LucideIcon } from 'lucide-react';
+import { MENU_ITEMS, MenuItem, TEAAMO_LINKS, DIETARY_FILTERS, DietaryOption } from '../data/teaamoData';
 import { ModelType, StudioViewport3D } from './three/LazyStudioViewport3D';
-import {
-  RevealOnScroll,
-  AnimatedPrice,
-  handleSpotlightMove,
-} from './ui/AnimatedPrimitives';
-
-interface MenuShowcaseProps {
-  className?: string;
-}
+import { RevealOnScroll, AnimatedPrice } from './ui/AnimatedPrimitives';
 
 type CategoryFilter = 'all' | 'spacepolly' | 'sweet' | 'bubble-tea' | 'frozen';
 
-export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
+const CATEGORIES: { id: CategoryFilter; label: string; icon: LucideIcon; dot: string }[] = [
+  { id: 'all', label: 'Tutto il menu', icon: Sparkles, dot: '#1D0B33' },
+  { id: 'bubble-tea', label: 'Bubble tea', icon: CupSoda, dot: '#A98BFF' },
+  { id: 'spacepolly', label: 'SpacePolly burger', icon: Sandwich, dot: '#FF2E7E' },
+  { id: 'sweet', label: 'Waffle, crêpes & pancake', icon: CakeSlice, dot: '#FFC94A' },
+  { id: 'frozen', label: 'Gelato & frozen', icon: IceCreamCone, dot: '#7CCBFF' },
+];
+
+const DIET_STYLE: Record<Exclude<DietaryOption, 'all'>, { icon: LucideIcon; label: string; cls: string }> = {
+  vegan: { icon: Leaf, label: 'Vegan', cls: 'bg-[#E6F7D9] text-[#2F6B12]' },
+  'lactose-free': { icon: MilkOff, label: 'Senza lattosio', cls: 'bg-[#DFF1FF] text-[#155A8A]' },
+  'gluten-free': { icon: WheatOff, label: 'Senza glutine', cls: 'bg-[#FFF1CC] text-[#7A5200]' },
+  'nut-free': { icon: NutOff, label: 'No frutta a guscio', cls: 'bg-[#FFE3EC] text-[#A30F4C]' },
+};
+
+const getModelType = (item: MenuItem): ModelType => {
+  if (item.category === 'spacepolly') {
+    if (item.id === 'sp-plutone') return 'burger-plutone';
+    if (item.id === 'sp-marte') return 'burger-marte';
+    if (item.id === 'sp-urano') return 'burger-urano';
+    return 'burger-giove';
+  }
+  if (item.category === 'sweet') {
+    const lower = item.name.toLowerCase();
+    if (item.id.includes('crepe') || lower.includes('crêpe') || lower.includes('crepe') || lower.includes('fiesta') || lower.includes('kitkat')) {
+      return 'crepe';
+    }
+    if (item.id.includes('pancake') || lower.includes('pancake')) return 'pancake';
+    return 'waffle';
+  }
+  if (item.category === 'frozen') return 'coppetta';
+  // Milk teas get the creamy cup, everything else the crystal fruit tea
+  if (item.id === 'bt-taro' || item.id === 'bt-classic-milk' || item.name.toLowerCase().includes('milk')) return 'cup';
+  return 'fruittea';
+};
+
+const Price: React.FC<{ item: MenuItem }> = ({ item }) =>
+  item.promoPrice ? (
+    <span className="flex items-baseline gap-1.5 shrink-0">
+      <span className="text-xs line-through text-ink-soft">€{item.price.toFixed(2)}</span>
+      <span className="rounded-full bg-pop-deep text-white px-3 py-1 font-display font-extrabold text-sm">€{item.promoPrice.toFixed(2)}</span>
+    </span>
+  ) : (
+    <span className="shrink-0 rounded-full bg-blush px-3 py-1 font-display font-extrabold text-sm text-ink">€{item.price.toFixed(2)}</span>
+  );
+
+export const MenuShowcase: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('all');
   const [activeDietary, setActiveDietary] = useState<DietaryOption>('all');
   const [inspectedItem, setInspectedItem] = useState<MenuItem>(MENU_ITEMS[0]);
+  const inspectorRef = useRef<HTMLDivElement>(null);
 
-  const categories: { id: CategoryFilter; label: string; code: string }[] = [
-    { id: 'all', label: 'Indice Completo Glovo', code: 'ALL' },
-    { id: 'spacepolly', label: 'SpacePolly SmashBurger', code: 'SPC' },
-    { id: 'sweet', label: 'BubbleWaffle, Crêpes & Pancake', code: 'SWT' },
-    { id: 'bubble-tea', label: 'Bubble Tea & Pokémon Ed.', code: 'TEA' },
-    { id: 'frozen', label: 'Gelato Artigianale & Frappè', code: 'FRZ' },
-  ];
+  const matches = (item: MenuItem, cat: CategoryFilter, diet: DietaryOption) =>
+    (cat === 'all' || item.category === cat) &&
+    (diet === 'all' || (item.dietary?.includes(diet as Exclude<DietaryOption, 'all'>) ?? false));
 
-  const filteredItems = MENU_ITEMS.filter((item) => {
-    const matchesCategory =
-      activeCategory === 'all' || item.category === activeCategory;
-    const matchesDietary =
-      activeDietary === 'all' ||
-      (item.dietary && item.dietary.includes(activeDietary as any));
-    return matchesCategory && matchesDietary;
-  });
+  const filteredItems = MENU_ITEMS.filter((item) => matches(item, activeCategory, activeDietary));
 
   const handleCategoryChange = (catId: CategoryFilter) => {
     setActiveCategory(catId);
-    const firstMatch =
-      catId === 'all'
-        ? MENU_ITEMS[0]
-        : MENU_ITEMS.find((i) => i.category === catId) || MENU_ITEMS[0];
-    setInspectedItem(firstMatch);
+    const first = MENU_ITEMS.find((i) => matches(i, catId, activeDietary));
+    if (first) setInspectedItem(first);
   };
 
   const handleDietaryChange = (dietaryId: DietaryOption) => {
     setActiveDietary(dietaryId);
-    const matching = MENU_ITEMS.filter((item) => {
-      const matchesCategory =
-        activeCategory === 'all' || item.category === activeCategory;
-      const matchesDietary =
-        dietaryId === 'all' ||
-        (item.dietary && item.dietary.includes(dietaryId as any));
-      return matchesCategory && matchesDietary;
-    });
-    if (matching.length > 0) {
-      setInspectedItem(matching[0]);
-    }
+    const first = MENU_ITEMS.find((i) => matches(i, activeCategory, dietaryId));
+    if (first) setInspectedItem(first);
   };
 
   const resetFilters = () => {
@@ -84,46 +98,15 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
     setInspectedItem(MENU_ITEMS[0]);
   };
 
-  const getModelType = (item: MenuItem): ModelType => {
-    if (item.category === 'spacepolly') {
-      if (item.id === 'sp-giove') return 'burger-giove';
-      if (item.id === 'sp-plutone') return 'burger-plutone';
-      if (item.id === 'sp-marte') return 'burger-marte';
-      if (item.id === 'sp-urano') return 'burger-urano';
-      return 'burger-giove';
+  const inspect = (item: MenuItem) => {
+    setInspectedItem(item);
+    // On phones the 3D inspector sits above the list: bring it into view
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      inspectorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-    if (item.category === 'sweet') {
-      const lower = item.name.toLowerCase();
-      if (
-        item.id.includes('crepe') ||
-        lower.includes('crêpe') ||
-        lower.includes('crepe') ||
-        lower.includes('fiesta') ||
-        lower.includes('kitkat')
-      ) {
-        return 'crepe';
-      }
-      if (item.id.includes('pancake') || lower.includes('pancake')) {
-        return 'pancake';
-      }
-      return 'waffle';
-    }
-    if (item.category === 'frozen') {
-      return 'coppetta';
-    }
-    // Bubble tea: distinguish fruit tea with sliced fruit vs classic milk tea
-    if (
-      item.id === 'bt-taro' ||
-      item.id === 'bt-classic-milk' ||
-      item.name.toLowerCase().includes('milk')
-    ) {
-      return 'cup';
-    }
-    return 'fruittea';
   };
 
   const resolvedModelType = getModelType(inspectedItem);
-
   const resolvedCupConfig = inspectedItem.cupConfig
     ? {
         liquidTopColor: inspectedItem.cupConfig.liquidTop,
@@ -136,50 +119,49 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
       }
     : {
         liquidTopColor: '#FF85A2',
-        liquidBottomColor: '#DE3163',
+        liquidBottomColor: '#FF2E7E',
         bobaColor: '#881337',
         bobaSecondaryColor: '#FFF1EC',
         creamColor: '#FFFFFF',
         hasPinkCream: true,
         showIce: false,
       };
+  const accent = inspectedItem.colorAccent;
+  const category = CATEGORIES.find((c) => c.id === inspectedItem.category);
 
   return (
-    <section
-      id="menu"
-      className="border-b border-[#F3DFD8] dark:border-[#3B2231] py-14 sm:py-24 bg-white dark:bg-[#170A12]"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <RevealOnScroll className="flex flex-col md:flex-row md:items-end justify-between pb-8 sm:pb-10 border-b border-[#F3DFD8] dark:border-[#3B2231] gap-4 sm:gap-6">
-          <div>
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#DE3163] mb-2.5">
-              01 / CATALOGO VETRINA &amp; ISPETTORE 3D GLOVO
-            </p>
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-normal tracking-tight leading-none text-[#2B0F1D] dark:text-[#FCEFF2]">
-              SpacePolly, Bubble Tea &amp;{' '}
-              <span className="italic text-[#DE3163]">Sweet Patisserie</span>
+    <section id="menu" className="relative py-20 sm:py-28 bg-milk overflow-hidden" aria-labelledby="menu-title">
+      <span className="blob w-[520px] h-[520px] -left-56 top-40 bg-blush" aria-hidden="true" />
+      <span className="blob w-[460px] h-[460px] -right-48 bottom-20 bg-taro-soft" style={{ animationDelay: '-7s' }} aria-hidden="true" />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <RevealOnScroll className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
+          <div className="lg:col-span-7">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-ink shadow-soft">
+              <span className="w-2 h-2 rounded-full bg-pop" aria-hidden="true" />
+              Il menu
+            </span>
+            <h2 id="menu-title" className="mt-5 font-display font-extrabold tracking-[-0.05em] leading-[0.9] text-ink text-[clamp(2.6rem,6.5vw,5.5rem)]">
+              Scegli. Giralo in 3D.{' '}
+              <span className="text-candy">Ordina.</span>
             </h2>
           </div>
-          <div className="max-w-md space-y-2">
-            <p className="text-sm sm:text-base text-[#76525F] dark:text-[#C9AEBB] leading-relaxed">
-              Consulta le foto reali del locale e dei prodotti presenti su Glovo Palermo. Filtra per categoria o preferenza alimentare (Vegan, Senza Lattosio, Senza Glutine) e ispeziona ogni elemento in 3D.
+          <div className="lg:col-span-5 space-y-3">
+            <p className="text-base sm:text-lg text-ink-soft leading-relaxed">
+              Tutti i prodotti del nostro store Glovo con foto reali. Filtra per categoria o esigenza alimentare e tocca un prodotto per vederlo in 3D.
             </p>
-            <div className="flex items-center gap-2 font-mono text-[11px] text-[#DE3163]">
-              <ShieldCheck className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-              <span>Ingredienti trasparenti e gestione allergeni verificata</span>
-            </div>
+            <p className="inline-flex items-center gap-2 text-sm font-semibold text-ink">
+              <ShieldCheck className="w-4 h-4 text-pop-ink" aria-hidden="true" />
+              Ingredienti e allergeni sempre in chiaro
+            </p>
           </div>
         </RevealOnScroll>
 
-        {/* Primary Category Filter Bar */}
-        <RevealOnScroll delayMs={60}>
-          <div
-            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 border-x border-b border-[#F3DFD8] dark:border-[#3B2231]"
-            role="tablist"
-            aria-label="Filtra categorie menu"
-          >
-            {categories.map((cat, idx) => {
+        {/* Filters */}
+        <RevealOnScroll delayMs={60} className="mt-10 space-y-4">
+          <div role="tablist" aria-label="Categorie del menu" className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
+            {CATEGORIES.map((cat) => {
+              const Icon = cat.icon;
               const isActive = activeCategory === cat.id;
               return (
                 <button
@@ -188,419 +170,243 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                   role="tab"
                   aria-selected={isActive}
                   onClick={() => handleCategoryChange(cat.id)}
-                  className={`py-3.5 px-4 text-left border-b lg:border-b-0 border-r border-[#F3DFD8] dark:border-[#3B2231] transition-all duration-300 cursor-pointer ${
-                    idx === categories.length - 1 ? 'col-span-2 sm:col-span-1 lg:border-r-0' : ''
-                  } ${
-                    isActive
-                      ? 'bg-[#DE3163] text-white shadow-xs font-semibold'
-                      : 'bg-white hover:bg-[#FFF1EC] text-[#2B0F1D] dark:bg-transparent dark:hover:bg-white/5 dark:text-[#FCEFF2]'
+                  className={`btn-squish shrink-0 inline-flex items-center gap-2.5 rounded-full pl-2 pr-5 py-2 font-display font-bold text-[15px] whitespace-nowrap ${
+                    isActive ? 'bg-ink text-white shadow-soft' : 'bg-white text-ink shadow-[0_1px_0_rgba(29,11,51,0.06)] hover:shadow-soft'
                   }`}
                 >
-                  <span className={`font-mono text-[10px] uppercase tracking-widest block ${isActive ? 'text-white/80' : 'text-[#76525F]'}`}>
-                    [{cat.code}]
+                  <span
+                    className="w-9 h-9 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: isActive ? 'rgba(255,255,255,0.15)' : `${cat.dot}22`, color: isActive ? '#fff' : cat.dot }}
+                  >
+                    <Icon className="w-[18px] h-[18px]" aria-hidden="true" />
                   </span>
-                  <span className="font-medium text-xs sm:text-sm mt-0.5 block truncate">
-                    {cat.label}
-                  </span>
+                  {cat.label}
                 </button>
               );
             })}
           </div>
-        </RevealOnScroll>
 
-        {/* Secondary Dietary & Allergen Filter Strip */}
-        <RevealOnScroll delayMs={100}>
-          <div className="border-x border-b border-[#F3DFD8] dark:border-[#3B2231] bg-[#FFF9FB] dark:bg-[#1F0E19] p-3 sm:p-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-[#76525F] dark:text-[#C9AEBB] shrink-0">
-                <Filter className="w-3.5 h-3.5 text-[#DE3163]" aria-hidden="true" />
-                <span>FILTRA PER DIETA &amp; ALLERGENI:</span>
-              </div>
-
-              {/* Dietary Buttons */}
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                {DIETARY_FILTERS.map((df) => {
-                  const isActive = activeDietary === df.id;
-                  return (
-                    <button
-                      key={df.id}
-                      type="button"
-                      onClick={() => handleDietaryChange(df.id)}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-colors duration-150 cursor-pointer border ${
-                        isActive
-                          ? 'bg-[#2B0F1D] dark:bg-white text-white dark:text-[#2B0F1D] border-[#2B0F1D] dark:border-white shadow-xs font-semibold'
-                          : 'bg-white dark:bg-transparent border-[#F3DFD8] dark:border-[#3B2231] text-[#76525F] dark:text-[#C9AEBB] hover:border-[#DE3163] hover:text-[#DE3163]'
-                      }`}
-                      title={df.description}
-                    >
-                      {df.iconKey === 'all' && (
-                        <Sparkles className="w-3.5 h-3.5 text-[#DE3163]" aria-hidden="true" />
-                      )}
-                      {df.iconKey === 'vegan' && (
-                        <Leaf className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
-                      )}
-                      {df.iconKey === 'lactose-free' && (
-                        <MilkOff className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" aria-hidden="true" />
-                      )}
-                      {df.iconKey === 'gluten-free' && (
-                        <WheatOff className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" aria-hidden="true" />
-                      )}
-                      {df.iconKey === 'nut-free' && (
-                        <NutOff className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" aria-hidden="true" />
-                      )}
-                      <span>{df.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Active Counter & Clear Indicator */}
-            <div className="mt-2.5 pt-2 border-t border-[#F3DFD8]/60 dark:border-[#3B2231]/60 flex items-center justify-between font-mono text-[11px] text-[#76525F] dark:text-[#C9AEBB]">
-              <span className="flex items-center gap-1.5">
-                <span>Mostrando:</span>
-                <strong className="text-[#DE3163]">{filteredItems.length}</strong>
-                <span>di {MENU_ITEMS.length} prodotti</span>
-                {activeDietary !== 'all' && (
-                  <span className="text-xs text-[#DE3163] font-semibold">
-                    • Filtro attivo: {DIETARY_FILTERS.find((d) => d.id === activeDietary)?.label}
-                  </span>
-                )}
-              </span>
-
-              {(activeCategory !== 'all' || activeDietary !== 'all') && (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm font-semibold text-ink-soft mr-1">Esigenze:</span>
+            {DIETARY_FILTERS.map((df) => {
+              const isActive = activeDietary === df.id;
+              const style = df.id === 'all' ? null : DIET_STYLE[df.id];
+              const Icon = style?.icon ?? Sparkles;
+              return (
                 <button
+                  key={df.id}
                   type="button"
-                  onClick={resetFilters}
-                  className="inline-flex items-center gap-1.5 text-[11px] text-[#DE3163] hover:underline cursor-pointer font-mono"
+                  aria-pressed={isActive}
+                  onClick={() => handleDietaryChange(df.id)}
+                  title={df.description}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-semibold transition-all duration-300 ${
+                    isActive ? 'bg-ink text-white' : `${style?.cls ?? 'bg-white text-ink'} hover:brightness-95`
+                  }`}
                 >
-                  <RotateCcw className="w-3 h-3" aria-hidden="true" />
-                  <span>Reimposta filtri</span>
+                  <Icon className="w-4 h-4" aria-hidden="true" />
+                  {style?.label ?? 'Tutti'}
                 </button>
-              )}
-            </div>
+              );
+            })}
+            <span className="ml-auto text-sm text-ink-soft">
+              <strong className="text-ink">{filteredItems.length}</strong> di {MENU_ITEMS.length} prodotti
+            </span>
+            {(activeCategory !== 'all' || activeDietary !== 'all') && (
+              <button type="button" onClick={resetFilters} className="inline-flex items-center gap-1.5 text-sm font-bold text-pop-ink hover:underline">
+                <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
+                Azzera
+              </button>
+            )}
           </div>
         </RevealOnScroll>
 
-        {/* Split Layout: Left Menu with Real Photos, Right Sticky 3D Inspector */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 border-x border-b border-[#F3DFD8] dark:border-[#3B2231] items-start">
-          {/* Left 7 Cols: Showcase Menu List */}
-          <div className="order-2 lg:order-1 lg:col-span-7 divide-y divide-[#F3DFD8] dark:divide-[#3B2231] lg:border-r border-[#F3DFD8] dark:border-[#3B2231] bg-white dark:bg-[#170A12]">
+        <div className="mt-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+          {/* Product cards */}
+          <div className="order-2 lg:order-1 lg:col-span-7">
             {filteredItems.length === 0 ? (
-              <div className="p-10 text-center space-y-4">
-                <Info className="w-8 h-8 mx-auto text-[#DE3163]" aria-hidden="true" />
-                <h3 className="text-xl font-serif text-[#2B0F1D] dark:text-white">
-                  Nessun prodotto corrisponde a questo filtro
-                </h3>
-                <p className="text-sm text-[#76525F] dark:text-[#C9AEBB] max-w-sm mx-auto">
-                  Non ci sono prodotti che soddisfano contemporaneamente la categoria &quot;{categories.find((c) => c.id === activeCategory)?.label}&quot; e la preferenza &quot;{DIETARY_FILTERS.find((d) => d.id === activeDietary)?.label}&quot;.
-                </p>
-                <button
-                  type="button"
-                  onClick={resetFilters}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#DE3163] text-white font-mono text-xs uppercase tracking-wider hover:bg-[#2B0F1D] transition-colors"
-                >
-                  <span>Reimposta Tutti i Filtri</span>
+              <div className="rounded-5xl bg-white p-10 text-center shadow-soft">
+                <Info className="w-10 h-10 mx-auto text-pop" aria-hidden="true" />
+                <h3 className="mt-4 font-display font-extrabold text-2xl text-ink">Nessun prodotto con questi filtri</h3>
+                <p className="mt-2 text-ink-soft max-w-sm mx-auto">Prova un'altra categoria o togli il filtro sulle esigenze alimentari.</p>
+                <button type="button" onClick={resetFilters} className="btn-squish mt-6 inline-flex rounded-full bg-ink text-white px-6 py-3 font-display font-bold">
+                  Mostra tutto
                 </button>
               </div>
             ) : (
-              filteredItems.map((item, idx) => {
-                const isInspected = inspectedItem.id === item.id;
-                return (
-                  <RevealOnScroll key={item.id} delayMs={(idx % 6) * 45}>
-                    <article
-                      id={`menu-item-${item.id}`}
-                      onMouseMove={handleSpotlightMove}
-                      onClick={() => setInspectedItem(item)}
-                      className={`spotlight-card scroll-mt-24 sm:scroll-mt-28 relative p-5 sm:p-6 lg:p-7 transition-all duration-300 cursor-pointer ${
-                        isInspected
-                          ? 'bg-[#FFF1EC] dark:bg-[#2A1422]'
-                          : 'bg-white hover:bg-[#FFF9FB] dark:bg-transparent dark:hover:bg-white/[0.02]'
-                      }`}
-                    >
-                      {/* Animated Left Accent Indicator */}
-                      <span
-                        className={`absolute left-0 top-0 bottom-0 w-1 transition-transform duration-300 origin-top ${
-                          item.category === 'spacepolly' ? 'bg-[#F59E0B]' : 'bg-[#DE3163]'
-                        } ${isInspected ? 'scale-y-100' : 'scale-y-0'}`}
-                      />
-
-                      <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 justify-between">
-                        {/* Left: Thumbnail from Glovo */}
-                        <div className="flex items-start gap-4 min-w-0 flex-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                {filteredItems.map((item, idx) => {
+                  const isInspected = inspectedItem.id === item.id;
+                  return (
+                    <RevealOnScroll key={item.id} delayMs={(idx % 4) * 60} direction="scale">
+                      <article
+                        id={`menu-item-${item.id}`}
+                        onClick={() => setInspectedItem(item)}
+                        className={`group h-full flex flex-col rounded-4xl bg-white p-2.5 shadow-soft card-lift cursor-pointer transition-shadow ${
+                          isInspected ? 'ring-[3px] ring-ink' : 'ring-1 ring-ink/5'
+                        }`}
+                      >
+                        <div
+                          className="relative aspect-[4/3] rounded-3xl overflow-hidden"
+                          style={{ background: `linear-gradient(140deg, ${item.colorAccent}40, ${item.colorAccent}12)` }}
+                        >
                           {item.imageUrl ? (
-                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-md overflow-hidden bg-black/5 shrink-0 border border-[#F3DFD8] dark:border-[#3B2231] shadow-xs">
-                              <img
-                                src={item.imageUrl}
-                                alt={item.name}
-                                loading="lazy"
-                                decoding="async"
-                                className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                              />
-                            </div>
+                            <img
+                              src={item.imageUrl}
+                              alt={item.name}
+                              loading="lazy"
+                              decoding="async"
+                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.07]"
+                            />
                           ) : (
-                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-md bg-[#FFEDE6] flex items-center justify-center font-mono text-[10px] uppercase text-[#DE3163] shrink-0 border border-[#F3DFD8]">
-                              3D Model
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Box className="w-12 h-12 text-ink/30" aria-hidden="true" />
                             </div>
                           )}
-
-                          <div className="min-w-0 flex-1">
-                            <div className="flex flex-wrap items-baseline gap-2">
-                              <span className="font-mono text-xs text-[#DE3163]">
-                                {String(idx + 1).padStart(2, '0')}
-                              </span>
-                              <h3 className="text-lg sm:text-xl font-serif text-[#2B0F1D] dark:text-white">
-                                {item.name}
-                              </h3>
-                              {item.badge && (
-                                <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider px-1.5 py-0.5 border border-[#DE3163] text-[#DE3163]">
-                                  {item.badge}
-                                </span>
-                              )}
-                              {item.category === 'spacepolly' && (
-                                <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider px-1.5 py-0.5 border border-[#F59E0B] text-[#D97706] dark:text-[#FBBF24]">
-                                  250°C Smash
-                                </span>
-                              )}
+                          {item.badge && (
+                            <span className="absolute top-3 left-3 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-ink shadow-soft">
+                              {item.badge}
+                            </span>
+                          )}
+                          {isInspected && (
+                            <span className="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-ink text-white px-3 py-1 text-xs font-bold">
+                              <Box className="w-3.5 h-3.5" aria-hidden="true" />
+                              In 3D
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex-1 flex flex-col px-2.5 pt-4 pb-2">
+                          <div className="flex items-start justify-between gap-3">
+                            <h3 className="font-display font-bold text-lg leading-tight text-ink">{item.name}</h3>
+                            <Price item={item} />
+                          </div>
+                          <p className="mt-1.5 text-sm text-ink-soft line-clamp-2 leading-relaxed">{item.description}</p>
+                          <div className="mt-auto pt-4 flex items-center justify-between gap-2">
+                            <div className="flex gap-1">
+                              {item.dietary?.map((d) => {
+                                const s = DIET_STYLE[d];
+                                const Icon = s.icon;
+                                return (
+                                  <span key={d} title={s.label} className={`w-8 h-8 rounded-full flex items-center justify-center ${s.cls}`}>
+                                    <Icon className="w-4 h-4" aria-hidden="true" />
+                                    <span className="sr-only">{s.label}</span>
+                                  </span>
+                                );
+                              })}
                             </div>
-
-                            <p className="text-xs sm:text-sm text-[#76525F] dark:text-[#C9AEBB] mt-1 line-clamp-2 leading-relaxed">
-                              {item.description}
-                            </p>
-
-                            {/* Dietary Badges */}
-                            {item.dietary && item.dietary.length > 0 && (
-                              <div className="mt-2 flex flex-wrap gap-1">
-                                {item.dietary.includes('vegan') && (
-                                  <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 border border-emerald-500/50 text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 flex items-center gap-1">
-                                    <Leaf className="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden="true" />
-                                    <span>Vegan</span>
-                                  </span>
-                                )}
-                                {item.dietary.includes('lactose-free') && (
-                                  <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 border border-sky-500/50 text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/30 flex items-center gap-1">
-                                    <MilkOff className="w-2.5 h-2.5 text-sky-600 dark:text-sky-400 shrink-0" aria-hidden="true" />
-                                    <span>Senza Lattosio</span>
-                                  </span>
-                                )}
-                                {item.dietary.includes('gluten-free') && (
-                                  <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 border border-amber-500/50 text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 flex items-center gap-1">
-                                    <WheatOff className="w-2.5 h-2.5 text-amber-600 dark:text-amber-400 shrink-0" aria-hidden="true" />
-                                    <span>Gluten-Free</span>
-                                  </span>
-                                )}
-                                {item.dietary.includes('nut-free') && (
-                                  <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 border border-rose-400/50 text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/30 flex items-center gap-1">
-                                    <NutOff className="w-2.5 h-2.5 text-rose-600 dark:text-rose-400 shrink-0" aria-hidden="true" />
-                                    <span>No Frutta a Guscio</span>
-                                  </span>
-                                )}
-                              </div>
-                            )}
-
-                            {/* Ingredients List */}
-                            <div className="mt-2 flex flex-wrap gap-1.5">
-                              {item.ingredients.map((ing) => (
-                                <span
-                                  key={ing}
-                                  className="font-mono text-[10px] px-1.5 py-0.5 border border-[#F3DFD8] dark:border-[#3B2231] bg-[#FFF1EC] dark:bg-transparent text-[#76525F] dark:text-[#C9AEBB]"
-                                >
-                                  {ing}
-                                </span>
-                              ))}
+                            <div className="flex gap-1.5">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  inspect(item);
+                                }}
+                                aria-label={`Guarda ${item.name} in 3D`}
+                                className={`btn-squish inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-bold ${
+                                  isInspected ? 'bg-ink text-white' : 'bg-milk text-ink'
+                                }`}
+                              >
+                                <Box className="w-4 h-4" aria-hidden="true" />
+                                3D
+                              </button>
+                              <a
+                                href={item.glovoUrl || TEAAMO_LINKS.glovo}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                aria-label={`Ordina ${item.name} su Glovo`}
+                                className="btn-squish inline-flex items-center gap-1 rounded-full bg-pop-deep text-white px-3.5 py-2 text-sm font-bold"
+                              >
+                                Ordina
+                                <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
+                              </a>
                             </div>
-
-                            {/* Transparent Allergen Notice */}
-                            {item.allergens && (
-                              <p className="font-mono text-[10px] text-[#A3828F] dark:text-[#7D6B74] mt-1.5">
-                                <span className="font-medium text-[#76525F] dark:text-[#C9AEBB]">Allergeni:</span>{' '}
-                                {item.allergens.join(', ')}
-                              </p>
-                            )}
                           </div>
                         </div>
-
-                        {/* Right: Price & Actions */}
-                        <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#F3DFD8]/60">
-                          <div className="text-left sm:text-right font-mono">
-                            {item.promoPrice ? (
-                              <div className="flex items-baseline gap-1.5">
-                                <span className="text-xs line-through text-[#76525F] dark:text-[#C9AEBB]">
-                                  €{item.price.toFixed(2)}
-                                </span>
-                                <span className="text-base sm:text-lg font-semibold text-[#DE3163]">
-                                  €{item.promoPrice.toFixed(2)}
-                                </span>
-                              </div>
-                            ) : (
-                              <span className="text-base sm:text-lg font-semibold text-[#2B0F1D] dark:text-white">
-                                €{item.price.toFixed(2)}
-                              </span>
-                            )}
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setInspectedItem(item);
-                              }}
-                              className={`inline-flex items-center gap-1.5 px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-all cursor-pointer ${
-                                isInspected
-                                  ? 'bg-[#DE3163] text-white shadow-xs'
-                                  : 'border border-[#F3DFD8] hover:border-[#DE3163] text-[#2B0F1D] bg-white'
-                              }`}
-                            >
-                              <Eye className="w-3.5 h-3.5" aria-hidden="true" />
-                              <span>3D</span>
-                            </button>
-
-                            <a
-                              href={item.glovoUrl || TEAAMO_LINKS.glovo}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              aria-label={`Ordina ${item.name} su Glovo`}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#FFEDE6] border border-[#F3DFD8] hover:border-[#DE3163] hover:text-[#DE3163] text-[#2B0F1D] font-mono text-[11px] uppercase transition-colors"
-                            >
-                              <span>Glovo</span>
-                              <ArrowUpRight className="w-3 h-3" aria-hidden="true" />
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </article>
-                  </RevealOnScroll>
-                );
-              })
+                      </article>
+                    </RevealOnScroll>
+                  );
+                })}
+              </div>
             )}
           </div>
 
-          {/* Right 5 Cols: Sticky 3D WebGL Product Inspector */}
-          <div className="order-1 lg:order-2 lg:col-span-5 bg-[#FFF1EC] dark:bg-[#1F0E19] border-b lg:border-b-0 border-[#F3DFD8] dark:border-[#3B2231] lg:sticky lg:top-24 flex flex-col justify-between relative overflow-hidden">
-            {/* Subtle Pink Ambient Underglow */}
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(253,94,134,0.1),transparent_70%)]" />
-            <span className="absolute top-2 left-2 font-mono text-[10px] text-[#DE3163]/40 select-none pointer-events-none z-10">+</span>
-            <span className="absolute top-2 right-2 font-mono text-[10px] text-[#DE3163]/40 select-none pointer-events-none z-10">+</span>
-            <div className="p-4 sm:p-5 border-b border-[#F3DFD8] dark:border-[#3B2231] flex items-center justify-between gap-2">
-              <span className="font-mono text-[11px] sm:text-xs uppercase tracking-widest text-[#DE3163] truncate flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#DE3163] live-dot shrink-0" />
-                ISPETTORE 3D // {resolvedModelType.toUpperCase()}
-              </span>
-              <span className="font-mono text-[11px] text-[#76525F] dark:text-[#C9AEBB] shrink-0">
-                STRASBURGO 378
-              </span>
-            </div>
-
-            <StudioViewport3D
-              modelType={resolvedModelType}
-              cupConfig={resolvedCupConfig}
-              accentColor={inspectedItem.colorAccent}
-              interactiveHint={`MODELLO 3D: ${inspectedItem.name.toUpperCase()}`}
-              className="h-[310px] sm:h-[360px] lg:h-[360px] xl:h-[400px]"
-            />
-
-            <div className="p-5 sm:p-6 border-t border-[#F3DFD8] dark:border-[#3B2231] bg-white dark:bg-[#170A12] space-y-3">
-              <div className="flex items-center justify-between gap-3">
-                <span className="font-mono text-[10px] uppercase tracking-widest text-[#76525F] dark:text-[#C9AEBB]">
-                  PRODOTTO IN ISPEZIONE 3D
-                </span>
-                {inspectedItem.imageUrl && (
-                  <span className="font-mono text-[10px] uppercase text-[#DE3163] tracking-wider">
-                    ● Foto Glovo Sincronizzata
-                  </span>
-                )}
-              </div>
-
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h4 className="text-xl sm:text-2xl font-serif italic text-[#2B0F1D] dark:text-white">
-                    {inspectedItem.name}
-                  </h4>
-                  <p className="text-xs text-[#76525F] dark:text-[#C9AEBB] mt-1 leading-relaxed">
-                    {inspectedItem.description}
-                  </p>
-                </div>
-                <AnimatedPrice
-                  value={inspectedItem.promoPrice || inspectedItem.price}
-                  className="font-mono text-lg sm:text-xl font-semibold text-[#DE3163] shrink-0"
+          {/* Sticky 3D inspector */}
+          <div ref={inspectorRef} className="order-1 lg:order-2 lg:col-span-5 lg:sticky lg:top-24 scroll-mt-24">
+            <div className="rounded-5xl overflow-hidden bg-white shadow-soft">
+              <div
+                className="relative transition-[background] duration-700"
+                style={{ background: `radial-gradient(circle at 50% 42%, #ffffff 0%, ${accent}2e 58%, ${accent}14 100%)` }}
+              >
+                <StudioViewport3D
+                  modelType={resolvedModelType}
+                  cupConfig={resolvedCupConfig}
+                  accentColor={accent}
+                  interactiveHint={inspectedItem.name}
+                  className="h-[340px] sm:h-[400px] xl:h-[430px]"
                 />
               </div>
-
-              {/* Dietary Profile of Inspected Product */}
-              <div className="pt-2 border-t border-[#F3DFD8] dark:border-[#3B2231] space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[10px] uppercase tracking-wider text-[#76525F] dark:text-[#C9AEBB]">
-                    Profilo Dietetico:
+              <div className="p-6 sm:p-7">
+                {category && (
+                  <span
+                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide"
+                    style={{ backgroundColor: `${category.dot}1f`, color: category.id === 'sweet' ? '#7A5200' : category.dot }}
+                  >
+                    <category.icon className="w-3.5 h-3.5" aria-hidden="true" />
+                    {category.label}
                   </span>
-                  {inspectedItem.dietary && inspectedItem.dietary.length > 0 ? (
-                    <div className="flex items-center gap-1 font-mono text-[10px]">
-                      {inspectedItem.dietary.map((d) => (
-                        <span key={d} className="inline-flex items-center gap-1 px-1.5 py-0.5 border border-[#DE3163]/40 text-[#DE3163] bg-[#FFF1EC] dark:bg-[#2A1422]">
-                          {d === 'vegan' && (
-                            <>
-                              <Leaf className="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden="true" />
-                              <span>Vegan</span>
-                            </>
-                          )}
-                          {d === 'lactose-free' && (
-                            <>
-                              <MilkOff className="w-2.5 h-2.5 text-sky-600 dark:text-sky-400 shrink-0" aria-hidden="true" />
-                              <span>Lactose-Free</span>
-                            </>
-                          )}
-                          {d === 'gluten-free' && (
-                            <>
-                              <WheatOff className="w-2.5 h-2.5 text-amber-600 dark:text-amber-400 shrink-0" aria-hidden="true" />
-                              <span>Gluten-Free</span>
-                            </>
-                          )}
-                          {d === 'nut-free' && (
-                            <>
-                              <NutOff className="w-2.5 h-2.5 text-rose-600 dark:text-rose-400 shrink-0" aria-hidden="true" />
-                              <span>Nut-Free</span>
-                            </>
-                          )}
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <span className="font-mono text-[10px] text-[#76525F] dark:text-[#C9AEBB]">
-                      Ricetta classica artigianale
+                )}
+                <div className="mt-3 flex items-start justify-between gap-4">
+                  <h3 key={inspectedItem.id} className="hero-enter font-display font-extrabold text-2xl sm:text-3xl leading-tight tracking-tight text-ink">
+                    {inspectedItem.name}
+                  </h3>
+                  <AnimatedPrice value={inspectedItem.promoPrice || inspectedItem.price} className="font-display font-extrabold text-2xl sm:text-3xl text-ink shrink-0" />
+                </div>
+                <p className="mt-2 text-[15px] text-ink-soft leading-relaxed">{inspectedItem.description}</p>
+
+                <div className="mt-5 flex flex-wrap gap-1.5">
+                  {inspectedItem.ingredients.map((ing) => (
+                    <span key={ing} className="rounded-full bg-milk px-3 py-1.5 text-sm font-medium text-ink">
+                      {ing}
                     </span>
-                  )}
+                  ))}
                 </div>
 
-                {/* Allergen Breakdown */}
-                {inspectedItem.allergens && (
-                  <div className="p-2 bg-[#FFF1EC] dark:bg-white/5 border border-[#F3DFD8] dark:border-[#3B2231] flex items-start gap-1.5 text-[11px] font-mono">
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#DE3163] shrink-0 mt-0.5" aria-hidden="true" />
-                    <div>
-                      <span className="font-semibold text-[#2B0F1D] dark:text-white block">
-                        Allergeni Presenti:
-                      </span>
-                      <span className="text-[#76525F] dark:text-[#C9AEBB]">
-                        {inspectedItem.allergens.join(', ')}
-                      </span>
-                    </div>
+                {(inspectedItem.dietary?.length || inspectedItem.allergens) && (
+                  <div className="mt-5 rounded-3xl bg-blush/60 p-4 space-y-3">
+                    {inspectedItem.dietary && inspectedItem.dietary.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {inspectedItem.dietary.map((d) => {
+                          const s = DIET_STYLE[d];
+                          const Icon = s.icon;
+                          return (
+                            <span key={d} className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${s.cls}`}>
+                              <Icon className="w-3.5 h-3.5" aria-hidden="true" />
+                              {s.label}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    )}
+                    {inspectedItem.allergens && (
+                      <p className="flex items-start gap-2 text-sm text-ink">
+                        <ShieldCheck className="w-4 h-4 mt-0.5 text-pop-ink shrink-0" aria-hidden="true" />
+                        <span>
+                          <strong>Allergeni:</strong> {inspectedItem.allergens.join(', ')}
+                        </span>
+                      </p>
+                    )}
                   </div>
                 )}
-              </div>
 
-              <div className="pt-2 flex items-center justify-between gap-3 border-t border-[#F3DFD8] dark:border-[#3B2231]">
-                <span className="font-mono text-[11px] text-[#76525F] dark:text-[#C9AEBB]">
-                  Disponibile per asporto &amp; delivery
-                </span>
                 <a
                   href={inspectedItem.glovoUrl || TEAAMO_LINKS.glovo}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Ordina ${inspectedItem.name} su Glovo`}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#DE3163] text-white font-mono text-xs uppercase tracking-wider hover:bg-[#2B0F1D] transition-colors shadow-xs"
+                  className="btn-squish mt-6 flex items-center justify-center gap-2 rounded-full bg-pop-deep text-white px-6 py-4 font-display font-bold text-lg shadow-pop"
                 >
-                  <span>Ordina su Glovo</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
+                  Ordina su Glovo
+                  <ArrowUpRight className="w-5 h-5" aria-hidden="true" />
                 </a>
               </div>
             </div>

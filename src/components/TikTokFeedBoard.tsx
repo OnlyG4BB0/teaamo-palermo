@@ -7,7 +7,6 @@ import {
   Volume2,
   VolumeX,
   Play,
-  Pause,
   Heart,
   Eye,
   Music,
@@ -94,38 +93,14 @@ const TikTokVideoCard: React.FC<VideoCardProps> = ({
   return (
     <div
       ref={cardRef}
-      className={`snap-start shrink-0 w-[270px] xs:w-[290px] sm:w-[310px] md:w-[320px] rounded-2xl border-2 bg-white dark:bg-[#1F0E19] overflow-hidden flex flex-col justify-between shadow-md transition-all duration-300 ${
-        isActive
-          ? 'border-[#DE3163] shadow-xl scale-100 ring-4 ring-[#DE3163]/10'
-          : 'border-[#F3DFD8] dark:border-[#3B2231] opacity-85 scale-[0.98] hover:opacity-100 hover:scale-[1]'
+      className={`snap-start shrink-0 w-[260px] sm:w-[300px] md:w-[320px] transition-all duration-500 ${
+        isActive ? 'scale-100 opacity-100' : 'scale-[0.94] opacity-60 hover:opacity-90'
       }`}
     >
-      {/* Card Top Bar */}
-      <div className="p-3 border-b border-[#F3DFD8] dark:border-[#3B2231] bg-[#FFF1EC] dark:bg-[#180E13] flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="w-6 h-6 rounded-full bg-[#DE3163] text-white flex items-center justify-center font-mono text-[11px] font-bold shrink-0">
-            0{index + 1}
-          </span>
-          <div className="min-w-0">
-            <p className="font-mono text-xs font-semibold text-[#2B0F1D] dark:text-white truncate">
-              @teaamobubbletea
-            </p>
-            <p className="font-mono text-[9px] text-[#DE3163] uppercase tracking-wider truncate">
-              {video.tag}
-            </p>
-          </div>
-        </div>
-
-        {video.badge && (
-          <span className="font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-white dark:bg-black border border-[#DE3163] text-[#DE3163] font-bold shrink-0 shadow-2xs">
-            {video.badge}
-          </span>
-        )}
-      </div>
-
-      {/* Video Container (Vertical 9:16) */}
       <div
-        className="relative w-full h-[500px] sm:h-[540px] bg-black overflow-hidden cursor-pointer select-none"
+        className={`relative w-full aspect-[9/16] rounded-[2rem] overflow-hidden bg-night-2 cursor-pointer select-none transition-shadow duration-500 ${
+          isActive ? 'shadow-neon' : 'ring-1 ring-white/10'
+        }`}
         onClick={togglePlayPause}
       >
         <video
@@ -136,117 +111,85 @@ const TikTokVideoCard: React.FC<VideoCardProps> = ({
           muted={!isUnmuted}
           loop
           playsInline
-          preload={isActive ? 'auto' : 'metadata'}
+          preload={isActive ? 'auto' : 'none'}
           onTimeUpdate={handleTimeUpdate}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
           className="w-full h-full object-cover"
         />
+        <div className="absolute inset-0 bg-gradient-to-b from-night/50 via-transparent to-night/90 pointer-events-none" />
 
-        {/* Video Overlay Vignette */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/80 pointer-events-none" />
-
-        {/* Top Floating Controls */}
-        <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10 pointer-events-auto">
-          {/* Audio Unmute / Mute Toggle Button */}
+        <div className="absolute top-3 inset-x-3 flex items-center justify-between z-10">
           <button
             type="button"
             onClick={handleAudioClick}
             aria-label={isUnmuted ? 'Disattiva audio' : 'Attiva audio'}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono font-medium backdrop-blur-md transition-all duration-300 shadow-md ${
-              isUnmuted
-                ? 'bg-[#DE3163] text-white ring-2 ring-[#DE3163]/50 animate-pulse'
-                : 'bg-black/60 text-white hover:bg-[#DE3163] hover:text-white border border-white/20'
+            className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-bold backdrop-blur-md transition-all duration-300 ${
+              isUnmuted ? 'bg-pop text-white' : 'bg-white/15 text-white hover:bg-white/25'
             }`}
           >
-            {isUnmuted ? (
-              <>
-                <Volume2 className="w-4 h-4 text-white" />
-                <span className="font-semibold tracking-wide">AUDIO ON</span>
-                {/* Animated Equalizer wave */}
-                <span className="flex items-end gap-0.5 h-3 ml-1">
-                  <span className="w-0.5 h-full bg-white animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-0.5 h-2/3 bg-white animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-0.5 h-full bg-white animate-bounce" style={{ animationDelay: '300ms' }} />
-                </span>
-              </>
-            ) : (
-              <>
-                <VolumeX className="w-4 h-4 text-white/80" />
-                <span>Ascolta</span>
-              </>
+            {isUnmuted ? <Volume2 className="w-4 h-4" aria-hidden="true" /> : <VolumeX className="w-4 h-4" aria-hidden="true" />}
+            {isUnmuted ? 'Audio on' : 'Ascolta'}
+            {isUnmuted && (
+              <span className="flex items-end gap-0.5 h-3 ml-0.5" aria-hidden="true">
+                <span className="w-0.5 h-full bg-white animate-bounce" />
+                <span className="w-0.5 h-2/3 bg-white animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-0.5 h-full bg-white animate-bounce" style={{ animationDelay: '300ms' }} />
+              </span>
             )}
           </button>
-
-          {/* Play/Pause state indicator */}
-          <div className="w-7 h-7 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white/80 border border-white/10">
-            {isPlaying ? (
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            ) : (
-              <Pause className="w-3.5 h-3.5 text-white" />
-            )}
-          </div>
+          {video.badge && (
+            <span className="rounded-full bg-mango text-ink px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wide">{video.badge}</span>
+          )}
         </div>
 
-        {/* Pause Overlay (when paused by tap) */}
         {!isPlaying && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-xs z-10 pointer-events-none">
-            <div className="w-16 h-16 rounded-full bg-[#DE3163]/90 flex items-center justify-center text-white shadow-xl animate-scale-up">
-              <Play className="w-8 h-8 fill-current ml-1" />
-            </div>
+          <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+            <span className="w-16 h-16 rounded-full bg-white/90 text-ink flex items-center justify-center shadow-neon">
+              <Play className="w-7 h-7 fill-current ml-1" aria-hidden="true" />
+            </span>
           </div>
         )}
 
-        {/* Bottom Floating Info (TikTok Style) */}
-        <div className="absolute bottom-3 left-3 right-3 text-white z-10 pointer-events-auto space-y-2">
-          {/* Metrics Pill (Views + Likes) */}
-          <div className="flex items-center gap-3 text-xs font-mono font-medium drop-shadow-md">
-            <span className="inline-flex items-center gap-1 bg-black/50 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/15">
-              <Eye className="w-3.5 h-3.5 text-[#DE3163]" />
-              {video.views}
+        <div className="absolute bottom-4 inset-x-4 z-10 space-y-2.5">
+          <div className="flex items-center gap-2">
+            <span className="w-8 h-8 rounded-full bg-gradient-to-br from-pop to-taro flex items-center justify-center font-display font-extrabold text-xs text-white">
+              {index + 1}
             </span>
-            <span className="inline-flex items-center gap-1 bg-black/50 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/15">
-              <Heart className="w-3.5 h-3.5 text-[#DE3163] fill-current" />
-              {video.likes}
-            </span>
+            <span className="text-sm font-bold">@teaamobubbletea</span>
           </div>
-
-          {/* Video Title / Caption */}
-          <p className="text-xs sm:text-[13px] font-sans font-medium text-white/95 leading-snug line-clamp-2 drop-shadow-md">
-            {video.title}
-          </p>
-
-          {/* Music Track Note */}
-          <div className="flex items-center gap-1.5 text-[11px] font-mono text-white/80 drop-shadow-xs truncate">
-            <Music className="w-3 h-3 text-[#DE3163] shrink-0 animate-spin-slow" />
+          <p className="text-[13px] font-medium text-white/95 leading-snug line-clamp-2">{video.title}</p>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-xs font-semibold">
+              <span className="inline-flex items-center gap-1 rounded-full bg-white/15 backdrop-blur-md px-2.5 py-1">
+                <Eye className="w-3.5 h-3.5" aria-hidden="true" />
+                {video.views}
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-white/15 backdrop-blur-md px-2.5 py-1">
+                <Heart className="w-3.5 h-3.5 fill-pop text-pop" aria-hidden="true" />
+                {video.likes}
+              </span>
+            </div>
+            <a
+              href={video.tiktokUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              aria-label="Apri il video su TikTok"
+              className="w-9 h-9 rounded-full bg-white text-ink flex items-center justify-center hover:scale-110 transition-transform"
+            >
+              <ExternalLink className="w-4 h-4" aria-hidden="true" />
+            </a>
+          </div>
+          <p className="flex items-center gap-1.5 text-[11px] text-white/70 truncate">
+            <Music className="w-3 h-3 shrink-0 animate-spin-slow" aria-hidden="true" />
             <span className="truncate">{video.music}</span>
-          </div>
+          </p>
         </div>
 
-        {/* Pink Scrub / Progress Bar */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 z-20">
-          <div
-            className="h-full bg-[#DE3163] transition-all duration-100 ease-linear"
-            style={{ width: `${progress}%` }}
-          />
+        <div className="absolute bottom-0 inset-x-0 h-1 bg-white/15 z-20">
+          <div className="h-full bg-gradient-to-r from-pop to-taro" style={{ width: `${progress}%` }} />
         </div>
-      </div>
-
-      {/* Card Footer Bar */}
-      <div className="p-3 bg-white dark:bg-[#1F0E19] border-t border-[#F3DFD8] dark:border-[#3B2231] flex items-center justify-between gap-2">
-        <span className="font-mono text-[10px] text-[#76525F] dark:text-[#C9AEBB] truncate">
-          Viale Strasburgo 378
-        </span>
-
-        <a
-          href={video.tiktokUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FFEDE6] dark:bg-white/5 border border-[#F3DFD8] hover:border-[#DE3163] hover:bg-[#DE3163] hover:text-white text-[#DE3163] font-mono text-xs font-semibold uppercase tracking-wider transition-all duration-200 shrink-0 shadow-2xs"
-        >
-          <span>Apri su TikTok</span>
-          <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
-        </a>
       </div>
     </div>
   );
@@ -271,7 +214,7 @@ export const TikTokFeedBoard: React.FC<TikTokFeedBoardProps> = () => {
     if (!container) return;
 
     const containerRect = container.getBoundingClientRect();
-    const containerTarget = containerRect.left + 32;
+    const containerTarget = containerRect.left + (parseFloat(getComputedStyle(container).paddingLeft) || 0);
 
     let closestIdx = 0;
     let minDistance = Infinity;
@@ -320,143 +263,93 @@ export const TikTokFeedBoard: React.FC<TikTokFeedBoardProps> = () => {
   };
 
   return (
-    <section
-      id="tiktok"
-      className="border-b border-[#F3DFD8] dark:border-[#3B2231] py-14 sm:py-24 bg-[#FFF9FA] dark:bg-[#170A12] overflow-hidden"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <RevealOnScroll className="flex flex-col md:flex-row md:items-end justify-between pb-8 sm:pb-10 border-b border-[#F3DFD8] dark:border-[#3B2231] gap-4 sm:gap-6">
+    <section id="tiktok" className="relative pt-20 sm:pt-28 pb-16 overflow-hidden" aria-labelledby="tiktok-title">
+      <span className="blob w-[520px] h-[520px] -left-56 top-10 bg-pop/25" aria-hidden="true" />
+      <span className="blob w-[460px] h-[460px] -right-40 bottom-0 bg-taro/20" style={{ animationDelay: '-8s' }} aria-hidden="true" />
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <RevealOnScroll className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <div className="flex items-center gap-2 mb-2.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#DE3163] live-dot shrink-0" />
-              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#DE3163] font-semibold">
-                03 / CAROSELLO VIDEO UFFICIALI • @TEAAMOBUBBLETEA
-              </p>
-            </div>
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-normal tracking-tight leading-none text-[#2B0F1D] dark:text-[#FCEFF2]">
-              Bacheca Video{' '}
-              <span className="italic text-[#DE3163]">TikTok</span>
+            <span className="glass-night inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold text-haze">
+              <span className="w-2 h-2 rounded-full bg-pop animate-pulse" aria-hidden="true" />
+              {TIKTOK_VIDEOS.length} video · @teaamobubbletea
+            </span>
+            <h2 id="tiktok-title" className="mt-5 font-display font-extrabold tracking-[-0.05em] leading-[0.9] text-[clamp(2.6rem,6.5vw,5.5rem)]">
+              Dietro il <span className="text-neon">bancone</span>
             </h2>
-            <p className="mt-3 text-sm text-[#76525F] dark:text-[#C9AEBB] max-w-xl">
-              I 7 video originali del nostro canale: riproduzione continua in silenzioso. Tocca <strong>"Ascolta"</strong> su qualsiasi video per attivare l'audio originale.
+            <p className="mt-4 text-base sm:text-lg text-haze max-w-xl">
+              I video del nostro TikTok partono da soli, senza audio. Tocca &ldquo;Ascolta&rdquo; per sentire il suono originale.
             </p>
           </div>
-
-          {/* Carousel Navigation Controls & Official Channel Link */}
           <div className="flex items-center gap-3 self-start md:self-auto">
-            {/* Arrow Navigation */}
-            <div className="inline-flex items-center rounded-full border-2 border-[#F3DFD8] dark:border-[#3B2231] bg-white dark:bg-[#1F0E19] p-1 shadow-xs">
+            <div className="glass-night inline-flex items-center rounded-full p-1">
               <button
                 type="button"
                 onClick={() => scrollCarousel('left')}
                 disabled={!canScrollLeft}
                 aria-label="Video precedente"
-                className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
-                  canScrollLeft
-                    ? 'text-[#2B0F1D] dark:text-white hover:bg-[#DE3163] hover:text-white'
-                    : 'text-gray-300 dark:text-gray-700 cursor-not-allowed'
-                }`}
+                className="w-11 h-11 rounded-full flex items-center justify-center text-white transition-colors enabled:hover:bg-white enabled:hover:text-ink disabled:opacity-30"
               >
                 <ChevronLeft className="w-5 h-5" aria-hidden="true" />
               </button>
-              <span className="w-px h-5 bg-[#F3DFD8] dark:bg-[#3B2231] mx-1" />
               <button
                 type="button"
                 onClick={() => scrollCarousel('right')}
                 disabled={!canScrollRight}
                 aria-label="Video successivo"
-                className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
-                  canScrollRight
-                    ? 'text-[#2B0F1D] dark:text-white hover:bg-[#DE3163] hover:text-white'
-                    : 'text-gray-300 dark:text-gray-700 cursor-not-allowed'
-                }`}
+                className="w-11 h-11 rounded-full flex items-center justify-center text-white transition-colors enabled:hover:bg-white enabled:hover:text-ink disabled:opacity-30"
               >
                 <ChevronRight className="w-5 h-5" aria-hidden="true" />
               </button>
             </div>
-
-            {/* Official Channel Button */}
             <MagneticWrap strength={0.15}>
               <a
                 href={TEAAMO_LINKS.tiktok}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#DE3163] text-white font-mono text-xs uppercase tracking-widest hover:bg-[#2B0F1D] transition-colors shadow-sm font-semibold"
+                className="btn-squish inline-flex items-center gap-2 rounded-full bg-white text-ink px-5 py-3 font-display font-bold"
               >
                 <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.85.12V9.41a6.33 6.33 0 0 0-.85-.06A6.34 6.34 0 0 0 3.14 15.7a6.34 6.34 0 0 0 10.74 4.54 6.3 6.3 0 0 0 1.95-4.57V8.71a8.21 8.21 0 0 0 4.76 1.5V6.76a4.87 4.87 0 0 1-1-.07z" />
                 </svg>
-                <span className="hidden sm:inline">@teaamobubbletea</span>
-                <span className="sm:hidden">TikTok</span>
-                <ArrowUpRight className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                Seguici
+                <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
               </a>
             </MagneticWrap>
           </div>
         </RevealOnScroll>
+      </div>
 
-        {/* Channel Status Banner */}
-        <div className="py-3 px-4 border-x border-b border-[#F3DFD8] dark:border-[#3B2231] bg-white dark:bg-[#1F0E19] flex items-center justify-between text-xs font-mono text-[#76525F] dark:text-[#C9AEBB]">
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="w-2 h-2 rounded-full bg-[#DE3163] live-dot shrink-0" />
-            <span className="font-medium text-[#2B0F1D] dark:text-white truncate">
-              {TIKTOK_VIDEOS.length} Video Originali Caricati
-            </span>
-          </div>
+      <div
+        ref={carouselRef}
+        className="relative mt-10 flex gap-4 sm:gap-6 overflow-x-auto no-scrollbar snap-x snap-mandatory py-6 px-4 sm:px-6 lg:px-[max(2rem,calc((100vw-80rem)/2+2rem))] scroll-px-4 sm:scroll-px-6 lg:scroll-px-[max(2rem,calc((100vw-80rem)/2+2rem))]"
+      >
+        {TIKTOK_VIDEOS.map((video, idx) => (
+          <TikTokVideoCard
+            key={video.id}
+            cardRef={(el) => {
+              cardRefs.current[idx] = el;
+            }}
+            video={video}
+            index={idx}
+            isActive={activeSlideIndex === idx}
+            isUnmuted={unmutedVideoId === video.id}
+            onToggleUnmute={handleToggleUnmute}
+          />
+        ))}
+      </div>
 
-          <div className="flex items-center gap-3 shrink-0">
-            {unmutedVideoId && (
-              <span className="inline-flex items-center gap-1 text-[11px] text-[#DE3163] font-semibold">
-                <Volume2 className="w-3.5 h-3.5" />
-                Audio Attivo
-              </span>
-            )}
-            <div className="font-mono text-xs text-[#DE3163] font-bold">
-              Video {activeSlideIndex + 1} di {TIKTOK_VIDEOS.length}
-            </div>
-          </div>
-        </div>
-
-        {/* 7-Video Horizontal Native Carousel (Left-Aligned Layout) */}
-        <div
-          ref={carouselRef}
-          className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory py-6 px-4 sm:px-6 lg:px-8 justify-start border-x border-b border-[#F3DFD8] dark:border-[#3B2231] bg-[#FFF9FA] dark:bg-[#170A12]"
-          style={{
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-          }}
-        >
-          {TIKTOK_VIDEOS.map((video, idx) => (
-            <TikTokVideoCard
-              key={video.id}
-              cardRef={(el) => {
-                cardRefs.current[idx] = el;
-              }}
-              video={video}
-              index={idx}
-              isActive={activeSlideIndex === idx}
-              isUnmuted={unmutedVideoId === video.id}
-              onToggleUnmute={handleToggleUnmute}
-            />
-          ))}
-        </div>
-
-        {/* Carousel Pagination Dots (1:1 with all 7 accessible videos) */}
-        <div className="py-4 border-x border-b border-[#F3DFD8] dark:border-[#3B2231] bg-white dark:bg-[#1F0E19] flex items-center justify-center gap-2">
-          {TIKTOK_VIDEOS.map((_, dotIdx) => (
-            <button
-              key={dotIdx}
-              type="button"
-              onClick={() => scrollToSlide(dotIdx)}
-              aria-label={`Vai al video ${dotIdx + 1}`}
-              className={`h-2 transition-all duration-300 rounded-full cursor-pointer ${
-                activeSlideIndex === dotIdx
-                  ? 'w-8 bg-[#DE3163]'
-                  : 'w-2 bg-[#F3DFD8] dark:bg-[#3B2231] hover:bg-[#DE3163]/50'
-              }`}
-            />
-          ))}
-        </div>
+      <div className="mt-4 flex items-center justify-center gap-2">
+        {TIKTOK_VIDEOS.map((_, dotIdx) => (
+          <button
+            key={dotIdx}
+            type="button"
+            onClick={() => scrollToSlide(dotIdx)}
+            aria-label={`Vai al video ${dotIdx + 1}`}
+            className={`h-2.5 rounded-full transition-all duration-500 ${
+              activeSlideIndex === dotIdx ? 'w-10 bg-gradient-to-r from-pop to-taro' : 'w-2.5 bg-white/25 hover:bg-white/50'
+            }`}
+          />
+        ))}
       </div>
     </section>
   );
