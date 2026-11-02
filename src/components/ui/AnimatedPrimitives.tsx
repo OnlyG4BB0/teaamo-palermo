@@ -59,9 +59,7 @@ export const RevealOnScroll: React.FC<RevealOnScrollProps> = ({
         transitionDelay: `${delayMs}ms`,
       }}
       className={`reveal-spring ${
-        visible
-          ? 'opacity-100 translate-x-0 translate-y-0 scale-100 blur-0'
-          : `opacity-0 ${hiddenTransform} blur-[2px]`
+        visible ? 'opacity-100 translate-x-0 translate-y-0 scale-100' : `opacity-0 ${hiddenTransform}`
       } ${className}`}
     >
       {children}
@@ -115,7 +113,7 @@ export const AnimatedPrice: React.FC<AnimatedPriceProps> = ({
   return (
     <span
       className={`inline-block transition-transform duration-300 ${
-        pulsing ? 'scale-110 text-[#DE3163]' : 'scale-100'
+        pulsing ? 'scale-110 text-pop-ink' : 'scale-100'
       } ${className}`}
     >
       {prefix}
@@ -137,38 +135,27 @@ export const MagneticWrap: React.FC<MagneticWrapProps> = ({
   strength = 0.22,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const [offset, setOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
+  // Writes the transform straight to the element: no React re-render per mouse move
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    setOffset({
-      x: (e.clientX - cx) * strength,
-      y: (e.clientY - cy) * strength,
-    });
+    const x = (e.clientX - (rect.left + rect.width / 2)) * strength;
+    const y = (e.clientY - (rect.top + rect.height / 2)) * strength;
+    el.style.transition = 'transform 0.08s linear';
+    el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
   };
 
   const handleMouseLeave = () => {
-    setOffset({ x: 0, y: 0 });
+    const el = ref.current;
+    if (!el) return;
+    el.style.transition = 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)';
+    el.style.transform = 'translate3d(0, 0, 0)';
   };
 
   return (
-    <div
-      ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        transform: `translate3d(${offset.x.toFixed(1)}px, ${offset.y.toFixed(1)}px, 0)`,
-        transition:
-          offset.x === 0 && offset.y === 0
-            ? 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)'
-            : 'transform 0.08s linear',
-      }}
-      className={className}
-    >
+    <div ref={ref} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} className={className}>
       {children}
     </div>
   );
@@ -195,7 +182,7 @@ export const triggerEditorialConfetti = (originEvent?: React.MouseEvent) => {
       gravity: 0.95,
       scalar: 0.85,
       origin: { x, y },
-      colors: ['#DE3163', '#1F0E19', '#F59E0B', '#FFC2D1', '#FAF7F2'],
+      colors: ['#FF2E7E', '#A98BFF', '#FFC94A', '#9AD96B', '#FFFFFF'],
       disableForReducedMotion: true,
     });
   } catch {

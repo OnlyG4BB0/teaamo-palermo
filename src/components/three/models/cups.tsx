@@ -23,6 +23,7 @@ import {
   strawTexture,
 } from '../kit';
 import { Layer, introProgress, useMotion } from '../motion';
+import { Instances } from '../instances';
 
 export interface Cup3DConfig {
   liquidTopColor: string;
@@ -291,7 +292,6 @@ const PearlBed: React.FC<{
         sheenColor: new THREE.Color('#ffffff'),
         sheenRoughness: 0.35,
         envMapIntensity: popping ? 2 : 1.4,
-        iridescence: popping ? 0.35 : 0,
       }),
     [popping]
   );
@@ -413,10 +413,8 @@ const GlassCup: React.FC<{ label?: boolean; accent?: string }> = ({ label = true
   );
 };
 
-const Straw: React.FC<{ base: string; stripe: string }> = ({ base, stripe }) => {
-  const geo = useMemo(
-    () =>
-      cachedGeometry('straw', () => {
+const strawGeometry = () =>
+  cachedGeometry('straw', () => {
         const g = new THREE.CylinderGeometry(0.1, 0.1, 3.5, 32, 16, true);
         // Diagonal cut at the top, like a real boba straw
         const pos = g.attributes.position as THREE.BufferAttribute;
@@ -426,9 +424,10 @@ const Straw: React.FC<{ base: string; stripe: string }> = ({ base, stripe }) => 
         }
         g.computeVertexNormals();
         return g;
-      }),
-    []
-  );
+  });
+
+const Straw: React.FC<{ base: string; stripe: string }> = ({ base, stripe }) => {
+  const geo = strawGeometry();
   const mat = useMemo(
     () =>
       new THREE.MeshPhysicalMaterial({
@@ -483,6 +482,8 @@ const IceCubes: React.FC<{ spots: [number, number, number, number][] }> = ({ spo
   );
 };
 
+const SPRINKLE_MAT = new THREE.MeshPhysicalMaterial({ roughness: 0.2, clearcoat: 1 });
+
 /** Piped cream swirl: a fluted, tapering tube on a conical helix, "piped" in during the intro */
 const CreamSwirl: React.FC<{ color: string; order: number }> = ({ color, order }) => {
   const m = useMotion();
@@ -496,8 +497,8 @@ const CreamSwirl: React.FC<{ color: string; order: number }> = ({ color, order }
   const geo = useMemo(
     () =>
       shapedTube(curve, {
-        tubular: 260,
-        radial: 22,
+        tubular: 200,
+        radial: 18,
         radius: 0.2,
         flutes: 8,
         fluteDepth: 0.13,
@@ -530,9 +531,13 @@ const CreamSwirl: React.FC<{ color: string; order: number }> = ({ color, order }
       const p = curve.getPointAt(t);
       const dir = new THREE.Vector3(p.x, 0, p.z).normalize();
       return {
-        pos: p.clone().addScaledVector(dir, 0.16 * lerp(1, 0.5, t)).add(new THREE.Vector3(0, 0.08, 0)),
-        color: ['#DE3163', '#FFFFFF', '#F2A65A', '#9B7BEA'][Math.floor(rand() * 4)],
-        s: 0.024 + rand() * 0.014,
+        position: p
+          .clone()
+          .addScaledVector(dir, 0.16 * lerp(1, 0.5, t))
+          .add(new THREE.Vector3(0, 0.08, 0))
+          .toArray() as [number, number, number],
+        color: ['#FF2E7E', '#FFFFFF', '#FFC94A', '#A98BFF'][Math.floor(rand() * 4)],
+        scale: 0.024 + rand() * 0.014,
       };
     });
   }, [curve]);
@@ -555,11 +560,7 @@ const CreamSwirl: React.FC<{ color: string; order: number }> = ({ color, order }
       <mesh ref={tipRef} position={tipPos} material={mat} scale={0.075}>
         <sphereGeometry args={[1, 20, 16]} />
       </mesh>
-      {sprinkles.map((s, i) => (
-        <mesh key={i} position={s.pos} scale={s.s} geometry={sphereGeometry()}>
-          <meshPhysicalMaterial color={s.color} roughness={0.2} clearcoat={1} />
-        </mesh>
-      ))}
+      <Instances geometry={sphereGeometry()} material={SPRINKLE_MAT} items={sprinkles} />
     </group>
   );
 };
@@ -858,3 +859,24 @@ export const FruitTeaMesh: React.FC<{ config: Cup3DConfig }> = ({ config }) => {
 
 /** Exposed for the stage's floating ambient particles */
 export const unitSphere = sphereGeometry;
+
+/** Builders warmed up in idle time so switching drinks never stalls */
+export const PREWARM_CUPS: (() => unknown)[] = [
+  cupWallGeometry,
+  () => liquidGeometry(0.13),
+  () => liquidGeometry(0.02),
+  labelBandGeometry,
+  domeLidGeometry,
+  foamGeometry,
+  sphereGeometry,
+  strawGeometry,
+  heartGeometry,
+  () => cachedGeometry('ice', () => roundedBox(0.34, 0.3, 0.34, 0.06)),
+  () => leafGeometry(0.46, 0.22),
+  () => cupLabelTexture('#DE3163'),
+  () => strawTexture('#F7D1DB', '#DE3163'),
+  () => strawTexture('#E8F9EE', '#16A34A'),
+  () => citrusTexture('#4D7C0F', '#A3E635'),
+  () => citrusTexture('#CA8A04', '#FDE047'),
+  () => citrusTexture('#C2410C', '#FB923C'),
+];

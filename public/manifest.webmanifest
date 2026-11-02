@@ -6,8 +6,8 @@
   "start_url": "/teaamo-palermo/",
   "scope": "/teaamo-palermo/",
   "display": "standalone",
-  "background_color": "#FFF8F3",
-  "theme_color": "#DE3163",
+  "background_color": "#FFF6F0",
+  "theme_color": "#FF2E7E",
   "icons": [
     { "src": "/teaamo-palermo/teaamo-logo.png", "sizes": "600x600", "type": "image/png", "purpose": "any" }
   ]

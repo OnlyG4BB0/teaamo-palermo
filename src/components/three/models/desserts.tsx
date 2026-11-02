@@ -25,8 +25,24 @@ import {
   warp,
 } from '../kit';
 import { Layer, useMotion } from '../motion';
+import { Instances, type InstanceItem } from '../instances';
 
-const SPRINKLE_COLORS = ['#DE3163', '#FFFFFF', '#F2A65A', '#9B7BEA', '#7FB77E', '#FDE047'];
+const SPRINKLE_COLORS = ['#FF2E7E', '#FFFFFF', '#FFC94A', '#A98BFF', '#9AD96B', '#FDE047'];
+
+// Shared materials/geometries for the many tiny repeated parts (one draw call each)
+const DOT_GEOMETRY = () => cachedGeometry('dot', () => new THREE.SphereGeometry(1, 10, 8));
+const SUGAR_MAT = new THREE.MeshStandardMaterial({ color: '#FFFFFF', roughness: 0.9 });
+const DRUPELET_MAT = new THREE.MeshPhysicalMaterial({ color: '#C2185B', roughness: 0.25, clearcoat: 0.8, sheen: 0.5, sheenColor: new THREE.Color('#FF8FB3') });
+const SUGAR_STAR_MAT = new THREE.MeshPhysicalMaterial({ color: '#FFFDF7', roughness: 0.4, clearcoat: 0.5 });
+
+const RASPBERRY: InstanceItem[] = Array.from({ length: 26 }, (_, i) => {
+  const phi = Math.acos(1 - ((i + 0.5) / 26) * 1.6);
+  const th = Math.PI * (1 + Math.sqrt(5)) * i;
+  return {
+    position: [Math.sin(phi) * Math.cos(th) * 0.1, Math.cos(phi) * 0.12, Math.sin(phi) * Math.sin(th) * 0.1],
+    scale: 0.045,
+  };
+});
 
 /* ============================================================================
    SHARED PIECES
@@ -148,16 +164,6 @@ const Drizzle: React.FC<{ center: [number, number, number]; radius: number; seed
 };
 
 const Berry: React.FC<{ kind: 'blue' | 'rasp' | 'cherry' }> = ({ kind }) => {
-  const rasp = useMemo(() => {
-    if (kind !== 'rasp') return [];
-    const out: [number, number, number][] = [];
-    for (let i = 0; i < 26; i++) {
-      const phi = Math.acos(1 - ((i + 0.5) / 26) * 1.6);
-      const th = Math.PI * (1 + Math.sqrt(5)) * i;
-      out.push([Math.sin(phi) * Math.cos(th) * 0.1, Math.cos(phi) * 0.12, Math.sin(phi) * Math.sin(th) * 0.1]);
-    }
-    return out;
-  }, [kind]);
   if (kind === 'blue') {
     return (
       <mesh scale={[0.085, 0.075, 0.085]}>
@@ -180,16 +186,7 @@ const Berry: React.FC<{ kind: 'blue' | 'rasp' | 'cherry' }> = ({ kind }) => {
       </group>
     );
   }
-  return (
-    <group>
-      {rasp.map((p, i) => (
-        <mesh key={i} position={p} scale={0.045}>
-          <sphereGeometry args={[1, 12, 10]} />
-          <meshPhysicalMaterial color="#C2185B" roughness={0.25} clearcoat={0.8} sheen={0.5} sheenColor="#FF8FB3" />
-        </mesh>
-      ))}
-    </group>
-  );
+  return <Instances geometry={DOT_GEOMETRY()} material={DRUPELET_MAT} items={RASPBERRY} />;
 };
 
 /** Piped soft-serve / cream swirl with an animated draw-on during the intro */
@@ -205,8 +202,8 @@ const PipedSwirl: React.FC<{
   const geo = useMemo(
     () =>
       shapedTube(curve, {
-        tubular: 260,
-        radial: 20,
+        tubular: 200,
+        radial: 16,
         radius,
         flutes,
         fluteDepth: 0.12,
@@ -299,19 +296,18 @@ const WaffleBubbles: React.FC = () => {
   return <instancedMesh ref={ref} args={[geo, mat, bubbles.length]} />;
 };
 
-const PaperSleeve: React.FC<{ accent: string }> = ({ accent }) => {
-  const geo = useMemo(
-    () =>
-      cachedGeometry('waffle-sleeve', () => {
+const sleeveGeometry = () =>
+  cachedGeometry('waffle-sleeve', () => {
         const pts: [number, number][] = [];
         for (let i = 0; i <= 10; i++) {
           const y = lerp(CONE.tipY - 0.02, -0.5, i / 10);
           pts.push([coneR(y) + 0.11, y]);
         }
         return lathe(pts, 96);
-      }),
-    []
-  );
+  });
+
+const PaperSleeve: React.FC<{ accent: string }> = ({ accent }) => {
+  const geo = sleeveGeometry();
   return (
     <mesh geometry={geo}>
       <meshPhysicalMaterial map={paperCupTexture(accent)} roughness={0.7} side={THREE.DoubleSide} />
@@ -450,7 +446,7 @@ const CrepeWedge: React.FC<{ seed: number }> = ({ seed }) => {
       const x = Math.cos(a) * r;
       const z = Math.sin(a) * r;
       const y = 0.07 * (1 - Math.pow(r / 1.25, 2)) + 0.015;
-      return [x, y, z] as [number, number, number];
+      return { position: [x, y, z] as [number, number, number], scale: 0.012 };
     });
   }, [seed]);
   return (
@@ -466,12 +462,7 @@ const CrepeWedge: React.FC<{ seed: number }> = ({ seed }) => {
       <mesh material={nutella} position={[0.02, -0.035, 0.62]} rotation={[Math.PI / 2, 0, 0]}>
         <capsuleGeometry args={[0.04, 1.05, 6, 12]} />
       </mesh>
-      {sugar.map((p, i) => (
-        <mesh key={i} position={p} scale={0.012}>
-          <sphereGeometry args={[1, 6, 4]} />
-          <meshStandardMaterial color="#FFFFFF" roughness={0.9} />
-        </mesh>
-      ))}
+      <Instances geometry={DOT_GEOMETRY()} material={SUGAR_MAT} items={sugar} />
     </group>
   );
 };
@@ -501,7 +492,7 @@ const PanDiStelle: React.FC<{ seed: number }> = ({ seed }) => {
     return Array.from({ length: 9 }, (_, i) => {
       const a = (i / 9) * Math.PI * 2 + rand() * 0.4;
       const r = i === 0 ? 0 : 0.12 + rand() * 0.12;
-      return { pos: [Math.cos(a) * r, 0.05, Math.sin(a) * r] as [number, number, number], rot: rand() * Math.PI };
+      return { position: [Math.cos(a) * r, 0.05, Math.sin(a) * r] as [number, number, number], rotation: [0, rand() * Math.PI, 0] as [number, number, number] };
     });
   }, [seed]);
   return (
@@ -510,11 +501,7 @@ const PanDiStelle: React.FC<{ seed: number }> = ({ seed }) => {
         <cylinderGeometry args={[0.32, 0.31, 0.08, 48]} />
         <meshPhysicalMaterial color="#3A2214" roughness={0.75} />
       </mesh>
-      {stars.map((s, i) => (
-        <mesh key={i} geometry={starGeometry(0.05, 0.022, 0.012)} position={s.pos} rotation={[0, s.rot, 0]}>
-          <meshPhysicalMaterial color="#FFFDF7" roughness={0.4} clearcoat={0.5} />
-        </mesh>
-      ))}
+      <Instances geometry={starGeometry(0.05, 0.022, 0.012)} material={SUGAR_STAR_MAT} items={stars} />
     </group>
   );
 };
@@ -817,3 +804,25 @@ export const GelatoCoppettaMesh: React.FC<{ accentColor?: string }> = ({ accentC
   );
 };
 
+
+/** Builders warmed up in idle time so switching desserts never stalls */
+export const PREWARM_DESSERTS: (() => unknown)[] = [
+  plateGeometry,
+  () => scoopGeometry(1),
+  () => scoopGeometry(2),
+  () => scoopGeometry(5),
+  coneGeometry,
+  sleeveGeometry,
+  ...[1, 2, 5, 6].map((seed) => () => crepeWedgeGeometry(seed)),
+  () => crepeRimGeometry(1),
+  () => crepeRimGeometry(5),
+  ...[1, 2, 3].map((seed) => () => pancakeGeometry(seed)),
+  syrupPoolGeometry,
+  paperCupGeometry,
+  yogurtMoundGeometry,
+  waferFanGeometry,
+  () => starGeometry(0.05, 0.022, 0.012),
+  crepeTexture,
+  waferTexture,
+  rollTexture,
+];

@@ -1,194 +1,198 @@
 import React from 'react';
 import {
   ArrowUpRight,
-  MapPin,
+  Bike,
   Clock,
-  Phone,
-  Star,
-  ShieldCheck,
+  Instagram,
   Leaf,
+  MapPin,
   MilkOff,
-  WheatOff,
   NutOff,
+  Phone,
+  Quote,
+  ShieldCheck,
+  Star,
+  Store,
+  WheatOff,
 } from 'lucide-react';
-import {
-  GOOGLE_REVIEWS,
-  INSTAGRAM_MOMENTS,
-  TEAAMO_LINKS,
-} from '../data/teaamoData';
-import {
-  RevealOnScroll,
-  MagneticWrap,
-  handleSpotlightMove,
-} from './ui/AnimatedPrimitives';
+import { GOOGLE_REVIEWS, INSTAGRAM_MOMENTS, TEAAMO_LINKS } from '../data/teaamoData';
+import { RevealOnScroll, MagneticWrap, handleSpotlightMove } from './ui/AnimatedPrimitives';
 
 interface SocialAndReviewsProps {
   isOpenNow: boolean;
 }
 
-export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({
-  isOpenNow,
-}) => {
+const SectionTitle: React.FC<{ eyebrow: string; id: string; children: React.ReactNode; aside?: React.ReactNode }> = ({
+  eyebrow,
+  id,
+  children,
+  aside,
+}) => (
+  <RevealOnScroll className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+    <div>
+      <span className="glass-night inline-flex rounded-full px-4 py-2 text-sm font-bold text-haze">{eyebrow}</span>
+      <h2 id={id} className="mt-5 font-display font-extrabold tracking-[-0.05em] leading-[0.9] text-[clamp(2.4rem,6vw,5rem)]">
+        {children}
+      </h2>
+    </div>
+    {aside}
+  </RevealOnScroll>
+);
+
+const ALLERGEN_CARDS = [
+  {
+    icon: Leaf,
+    title: '100% vegan friendly',
+    text: 'I tè alla frutta e i PokéTea (Bulbasaur, Blu Tropical, Red Passion) sono fatti con infusi naturali e perle agar vegetali, senza latte né derivati animali.',
+    color: '#9AD96B',
+  },
+  {
+    icon: WheatOff,
+    title: 'Senza glutine',
+    text: 'Le perle di tapioca nascono dalla radice di manioca e sono naturalmente senza glutine. Anche le coppette di gelato e yogurt (senza cono) lo sono.',
+    color: '#FFC94A',
+  },
+  {
+    icon: MilkOff,
+    title: 'Senza lattosio',
+    text: 'Ami il Taro o il Classic Milk Tea ma non tolleri il lattosio? Chiedi la versione con latte di cocco o vegetale.',
+    color: '#7CCBFF',
+  },
+  {
+    icon: NutOff,
+    title: 'Frutta a guscio sotto controllo',
+    text: 'La linea SpacePolly e i tè alla frutta non contengono frutta a guscio. Le creme a pistacchio o nocciola hanno dispenser dedicati.',
+    color: '#FF2E7E',
+  },
+];
+
+export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({ isOpenNow }) => {
   return (
     <>
-      {/* 04 / OFFICIAL DELIVERY CHANNELS & LINKTREE INDEX */}
-      <section
-        id="delivery"
-        className="border-b border-[#F3DFD8] dark:border-[#3B2231] py-14 sm:py-24 bg-white dark:bg-[#170A12]"
-      >
+      {/* ================= DELIVERY ================= */}
+      <section id="delivery" className="relative py-20 sm:py-28" aria-labelledby="delivery-title">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <RevealOnScroll className="flex flex-col md:flex-row md:items-end justify-between pb-8 sm:pb-10 border-b border-[#F3DFD8] dark:border-[#3B2231] gap-4 sm:gap-6">
-            <div>
-              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#DE3163] mb-2.5">
-                04 / CANALI DI DISTRIBUZIONE &amp; LINKTREE UFFICIALE
-              </p>
-              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-normal tracking-tight leading-none text-[#2B0F1D] dark:text-[#FCEFF2]">
-                Consegna a Domicilio{' '}
-                <span className="italic text-[#DE3163]">Palermo</span>
-              </h2>
-            </div>
-            <MagneticWrap strength={0.18} className="self-start md:self-auto">
-              <a
-                href={TEAAMO_LINKS.linktree}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest px-5 py-3.5 border border-[#DE3163] text-[#DE3163] hover:bg-[#DE3163] hover:text-white transition-colors"
-              >
-                <span>Linktree // @TeaAmoBubbleTeaPA</span>
-                <ArrowUpRight className="w-4 h-4 shrink-0" aria-hidden="true" />
-              </a>
-            </MagneticWrap>
-          </RevealOnScroll>
+          <SectionTitle
+            eyebrow="Delivery & take away"
+            id="delivery-title"
+            aside={
+              <MagneticWrap strength={0.15} className="self-start md:self-auto">
+                <a
+                  href={TEAAMO_LINKS.linktree}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-squish glass-night inline-flex items-center gap-2 rounded-full px-5 py-3 font-display font-bold text-white"
+                >
+                  Tutti i nostri link
+                  <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
+                </a>
+              </MagneticWrap>
+            }
+          >
+            Fame? <span className="text-neon">Arriviamo noi.</span>
+          </SectionTitle>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 border-x border-b border-[#F3DFD8] dark:border-[#3B2231] divide-y md:divide-y-0 md:divide-x divide-[#F3DFD8] dark:divide-[#3B2231]">
-            {/* Glovo Official Delivery */}
-            <RevealOnScroll delayMs={40}>
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-5">
+            <RevealOnScroll delayMs={40} className="md:col-span-7">
               <a
                 href={TEAAMO_LINKS.glovo}
                 target="_blank"
                 rel="noopener noreferrer"
-                onMouseMove={handleSpotlightMove}
-                className="spotlight-card group p-6 sm:p-8 lg:p-10 flex flex-col justify-between min-h-[220px] sm:min-h-[250px] bg-white dark:bg-[#1F0E19] hover:bg-[#FFF1EC] dark:hover:bg-white/[0.03] transition-all duration-300"
+                className="group relative block h-full overflow-hidden rounded-5xl bg-mango text-ink p-8 sm:p-10 min-h-[300px] card-lift"
               >
-                <div className="relative z-10 flex items-center justify-between font-mono text-xs text-[#76525F] dark:text-[#C9AEBB]">
-                  <span>DELIVERY ESCLUSIVO // STORE #296067</span>
-                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300 text-[#DE3163]" aria-hidden="true" />
-                </div>
-                <div className="relative z-10 mt-6">
-                  <h3 className="text-3xl sm:text-4xl font-serif mb-2 group-hover:text-[#DE3163] transition-colors text-[#2B0F1D] dark:text-white">
-                    Glovo Palermo
-                  </h3>
-                  <p className="text-sm text-[#76525F] dark:text-[#C9AEBB] leading-relaxed">
-                    Consegna rapida a domicilio in tutta Palermo da Viale Strasburgo 378. Menu completo con Bubble Tea sigillati, SpacePolly SmashBurger e Bubble Waffle.
-                  </p>
-                  <span className="editorial-link inline-block mt-4 font-mono text-xs uppercase tracking-widest text-[#DE3163] pb-0.5 font-semibold">
-                    Ordina su Glovo Store →
-                  </span>
+                <span className="blob w-72 h-72 -right-16 -bottom-24 bg-white/50" aria-hidden="true" />
+                <Bike className="absolute right-8 top-8 w-20 h-20 sm:w-28 sm:h-28 text-ink/15 group-hover:translate-x-3 transition-transform duration-700" aria-hidden="true" />
+                <div className="relative flex h-full flex-col justify-between gap-10">
+                  <span className="inline-flex self-start rounded-full bg-ink text-white px-4 py-2 text-sm font-bold">Consegna a domicilio</span>
+                  <div>
+                    <h3 className="font-display font-extrabold text-4xl sm:text-6xl tracking-[-0.045em] leading-[0.9]">Ordina su Glovo</h3>
+                    <p className="mt-4 text-base sm:text-lg font-medium max-w-md">
+                      Tutto il menu a casa tua in tutta Palermo: bubble tea sigillati, SpacePolly SmashBurger, waffle e gelato.
+                    </p>
+                    <span className="mt-6 inline-flex items-center gap-2 rounded-full bg-ink text-white px-6 py-3.5 font-display font-bold group-hover:gap-3 transition-all">
+                      Apri lo store
+                      <ArrowUpRight className="w-5 h-5" aria-hidden="true" />
+                    </span>
+                  </div>
                 </div>
               </a>
             </RevealOnScroll>
 
-            {/* Asporto & Ritiro al Banco */}
-            <RevealOnScroll delayMs={100}>
-              <a
-                href={TEAAMO_LINKS.googleMapsDirect}
-                target="_blank"
-                rel="noopener noreferrer"
-                onMouseMove={handleSpotlightMove}
-                className="spotlight-card group p-6 sm:p-8 lg:p-10 flex flex-col justify-between min-h-[220px] sm:min-h-[250px] bg-white dark:bg-[#1F0E19] hover:bg-[#FFF1EC] dark:hover:bg-white/[0.03] transition-all duration-300"
-              >
-                <div className="relative z-10 flex items-center justify-between font-mono text-xs text-[#76525F] dark:text-[#C9AEBB]">
-                  <span>ASPORTO & BANCO // VIALE STRASBURGO 378</span>
-                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300 text-[#DE3163]" aria-hidden="true" />
-                </div>
-                <div className="relative z-10 mt-6">
-                  <h3 className="text-3xl sm:text-4xl font-serif mb-2 group-hover:text-[#DE3163] transition-colors text-[#2B0F1D] dark:text-white">
-                    Take Away &amp; Notte
-                  </h3>
-                  <p className="text-sm text-[#76525F] dark:text-[#C9AEBB] leading-relaxed">
-                    Ritiro al locale senza attese o consumazione sul posto. Laboratorio artigianale attivo tutti i giorni dalle 12:30 fino alle 03:30 di notte.
-                  </p>
-                  <span className="editorial-link inline-block mt-4 font-mono text-xs uppercase tracking-widest text-[#DE3163] pb-0.5 font-semibold">
-                    Indicazioni Stradali (Maps) →
+            <div className="md:col-span-5 grid grid-cols-1 gap-4 sm:gap-5">
+              <RevealOnScroll delayMs={100}>
+                <a
+                  href={TEAAMO_LINKS.googleMapsDirect}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onMouseMove={handleSpotlightMove}
+                  className="spotlight group block h-full rounded-5xl glass-night p-7 sm:p-8 card-lift"
+                >
+                  <Store className="w-8 h-8 text-pop" aria-hidden="true" />
+                  <h3 className="mt-5 font-display font-extrabold text-3xl tracking-tight">Passa a prenderlo</h3>
+                  <p className="mt-2 text-haze">Ritiro al banco senza attese o consumazione sul posto, in Viale Strasburgo 378.</p>
+                  <span className="mt-5 inline-flex items-center gap-1.5 font-display font-bold text-white group-hover:gap-2.5 transition-all">
+                    Indicazioni stradali <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
                   </span>
+                </a>
+              </RevealOnScroll>
+              <RevealOnScroll delayMs={160}>
+                <div className="rounded-5xl bg-gradient-to-br from-pop-deep to-[#7B3FD0] p-7 sm:p-8 shadow-neon">
+                  <Clock className="w-8 h-8 text-white" aria-hidden="true" />
+                  <p className="mt-5 font-display font-extrabold text-4xl tracking-tight">12:30 – 03:30</p>
+                  <p className="mt-1 text-white/85 font-medium">Tutti i giorni, festivi compresi.</p>
                 </div>
-              </a>
-            </RevealOnScroll>
+              </RevealOnScroll>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 05 / INSTAGRAM EDITORIAL ARCHIVE (@teaamo_bubbletea) */}
-      <section
-        id="instagram"
-        className="border-b border-[#F3DFD8] dark:border-[#3B2231] py-14 sm:py-24 bg-[#FFF9FB] dark:bg-[#170A12]"
-      >
+      {/* ================= INSTAGRAM ================= */}
+      <section id="instagram" className="cv-auto relative py-16 sm:py-24" aria-labelledby="instagram-title">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <RevealOnScroll className="flex flex-col md:flex-row md:items-end justify-between pb-8 sm:pb-10 border-b border-[#F3DFD8] dark:border-[#3B2231] gap-4 sm:gap-6">
-            <div>
-              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#DE3163] mb-2.5">
-                05 / ARCHIVIO VISIVO &amp; SOCIAL
-              </p>
-              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-normal tracking-tight leading-none text-[#2B0F1D] dark:text-[#FCEFF2]">
-                Diario Visivo{' '}
-                <span className="italic text-[#DE3163]">@teaamo_bubbletea</span>
-              </h2>
-            </div>
-            <MagneticWrap strength={0.18} className="self-start md:self-auto">
-              <a
-                href={TEAAMO_LINKS.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest px-5 py-3.5 border border-[#DE3163] text-[#DE3163] hover:bg-[#DE3163] hover:text-white transition-colors"
-              >
-                <span>Segui su Instagram</span>
-                <ArrowUpRight className="w-4 h-4 shrink-0" aria-hidden="true" />
-              </a>
-            </MagneticWrap>
-          </RevealOnScroll>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 border-x border-b border-[#F3DFD8] dark:border-[#3B2231] divide-y md:divide-y-0 md:divide-x divide-[#F3DFD8] dark:divide-[#3B2231]">
-            {INSTAGRAM_MOMENTS.map((post, idx) => (
-              <RevealOnScroll key={post.id} delayMs={idx * 70}>
+          <SectionTitle
+            eyebrow="@teaamo_bubbletea"
+            id="instagram-title"
+            aside={
+              <MagneticWrap strength={0.15} className="self-start md:self-auto">
                 <a
                   href={TEAAMO_LINKS.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onMouseMove={handleSpotlightMove}
-                  className="spotlight-card group p-5 sm:p-7 flex flex-col justify-between bg-white dark:bg-[#1F0E19] hover:bg-[#FFF1EC] dark:hover:bg-white/[0.03] transition-all duration-300"
+                  className="btn-squish inline-flex items-center gap-2 rounded-full bg-white text-ink px-5 py-3 font-display font-bold"
                 >
-                  <div className="relative z-10 space-y-4">
-                    {/* Visual Media Preview Container with Hover Reveal */}
-                    <div className="w-full h-48 sm:h-56 overflow-hidden bg-black/5 dark:bg-white/5 border border-[#F3DFD8] dark:border-[#3B2231] relative group-hover:border-[#DE3163] transition-colors">
-                      <img
-                        src={post.imageUrl}
-                        alt={post.title}
-                        loading="lazy"
-                        decoding="async"
-                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
-                      />
-                      <div className="absolute top-2 right-2 px-2 py-0.5 bg-black/70 backdrop-blur-xs text-white font-mono text-[9px] uppercase tracking-wider flex items-center gap-1 border border-white/20">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#DE3163]" />
-                        <span>{post.tag || '@TEAAMO_BUBBLETEA'}</span>
-                      </div>
-                    </div>
+                  <Instagram className="w-4 h-4" aria-hidden="true" />
+                  Seguici su Instagram
+                </a>
+              </MagneticWrap>
+            }
+          >
+            Il nostro <span className="text-neon">diario</span>
+          </SectionTitle>
 
-                    <div>
-                      <span className="font-mono text-[10px] text-[#DE3163] tracking-widest uppercase block mb-1.5 font-semibold">
-                        DIARIO 0{idx + 1} // {post.tag || 'INSTAGRAM STORY'}
-                      </span>
-                      <h3 className="text-xl sm:text-2xl font-serif mb-2 group-hover:text-[#DE3163] transition-colors text-[#2B0F1D] dark:text-white leading-snug">
-                        {post.title}
-                      </h3>
-                      <p className="text-xs sm:text-sm text-[#76525F] dark:text-[#C9AEBB] leading-relaxed">
-                        {post.description}
-                      </p>
-                    </div>
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+            {INSTAGRAM_MOMENTS.map((post, idx) => (
+              <RevealOnScroll key={post.id} delayMs={idx * 80} direction="scale">
+                <a
+                  href={TEAAMO_LINKS.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`group relative block overflow-hidden rounded-5xl bg-night-2 card-lift ${idx === 1 ? 'md:mt-10' : ''}`}
+                >
+                  <div className="aspect-[4/5]">
+                    <img
+                      src={post.imageUrl}
+                      alt={post.title}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-110"
+                    />
                   </div>
-
-                  <div className="relative z-10 mt-6 pt-4 border-t border-[#F3DFD8] dark:border-[#3B2231] flex items-center justify-between font-mono text-xs text-[#76525F] dark:text-[#C9AEBB]">
-                    <span className="truncate">{post.subtitle}</span>
-                    <ArrowUpRight className="w-4 h-4 text-[#DE3163] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300 shrink-0" aria-hidden="true" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-night via-night/30 to-transparent" />
+                  <span className="absolute top-4 left-4 rounded-full bg-white/90 text-ink px-3 py-1.5 text-xs font-bold">{post.tag}</span>
+                  <div className="absolute bottom-0 inset-x-0 p-6">
+                    <h3 className="font-display font-extrabold text-2xl leading-tight tracking-tight">{post.title}</h3>
+                    <p className="mt-2 text-sm text-haze line-clamp-2">{post.description}</p>
                   </div>
                 </a>
               </RevealOnScroll>
@@ -197,208 +201,156 @@ export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({
         </div>
       </section>
 
-      {/* 05.5 / GUIDA ALLERGENI & SICUREZZA ALIMENTARE */}
-      <section
-        id="allergeni"
-        className="border-b border-[#F3DFD8] dark:border-[#3B2231] py-14 sm:py-20 bg-white dark:bg-[#170A12]"
-      >
+      {/* ================= ALLERGENS ================= */}
+      <section id="allergeni" className="cv-auto relative py-16 sm:py-24" aria-labelledby="allergeni-title">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <RevealOnScroll className="pb-8 border-b border-[#F3DFD8] dark:border-[#3B2231] flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#DE3163] mb-2.5">
-                05.5 / INFORMATIVA DIETETICA // ALLERGENI &amp; INTOLLERANZE
-              </p>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-[#2B0F1D] dark:text-[#FCEFF2]">
-                Trasparenza Ingredienti &amp;{' '}
-                <span className="italic text-[#DE3163]">Salute</span>
-              </h2>
-            </div>
-            <p className="text-sm text-[#76525F] dark:text-[#C9AEBB] max-w-md leading-relaxed">
-              Dalla tapioca calda naturalmente priva di glutine ai tè 100% vegani, ecco come gestiamo ingredienti e contaminazioni nel nostro laboratorio di Viale Strasburgo.
+          <SectionTitle eyebrow="Allergeni & intolleranze" id="allergeni-title">
+            Buono <span className="text-neon">per tutti.</span>
+          </SectionTitle>
+
+          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+            {ALLERGEN_CARDS.map((card, i) => {
+              const Icon = card.icon;
+              return (
+                <RevealOnScroll key={card.title} delayMs={i * 70}>
+                  <div
+                    onMouseMove={handleSpotlightMove}
+                    className="spotlight h-full rounded-5xl glass-night p-7 card-lift"
+                  >
+                    <span
+                      className="w-14 h-14 rounded-2xl flex items-center justify-center rotate-[-6deg]"
+                      style={{ backgroundColor: `${card.color}26`, color: card.color }}
+                    >
+                      <Icon className="w-7 h-7" aria-hidden="true" />
+                    </span>
+                    <h3 className="mt-6 font-display font-extrabold text-xl tracking-tight">{card.title}</h3>
+                    <p className="mt-2 text-sm text-haze leading-relaxed">{card.text}</p>
+                  </div>
+                </RevealOnScroll>
+              );
+            })}
+          </div>
+
+          <RevealOnScroll delayMs={120}>
+            <p className="mt-5 flex items-start gap-3 rounded-3xl border border-mango/40 bg-mango/10 p-5 text-sm text-white/90">
+              <ShieldCheck className="w-5 h-5 text-mango shrink-0" aria-hidden="true" />
+              <span>
+                <strong className="text-white">Allergie gravi (celiachia o anafilassi)?</strong> Nel laboratorio si lavorano anche glutine e latte: segnala sempre la tua allergia allo staff prima di ordinare.
+              </span>
             </p>
           </RevealOnScroll>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-x border-b border-[#F3DFD8] dark:border-[#3B2231] divide-y md:divide-y-0 md:divide-x divide-[#F3DFD8] dark:divide-[#3B2231]">
-            <div className="p-6 sm:p-7 space-y-3 bg-[#FFFDFE] dark:bg-[#1F0E19]">
-              <div className="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                <Leaf className="w-5 h-5" aria-hidden="true" />
-              </div>
-              <h3 className="font-serif text-xl text-[#2B0F1D] dark:text-white">100% Vegan Friendly</h3>
-              <p className="text-xs text-[#76525F] dark:text-[#C9AEBB] leading-relaxed">
-                Tutti i tè aromatizzati alla frutta e i PokéTea (Bulbasaur, Blu Tropical, Red Passion) sono a base di infusi naturali e perle agar vegetali, privi di latte o derivati animali.
-              </p>
-            </div>
-
-            <div className="p-6 sm:p-7 space-y-3 bg-[#FFFDFE] dark:bg-[#1F0E19]">
-              <div className="w-10 h-10 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                <WheatOff className="w-5 h-5" aria-hidden="true" />
-              </div>
-              <h3 className="font-serif text-xl text-[#2B0F1D] dark:text-white">Senza Glutine (Tapioca)</h3>
-              <p className="text-xs text-[#76525F] dark:text-[#C9AEBB] leading-relaxed">
-                Le nostre celebri perle di tapioca nere sono ricavate al 100% dalla radice di manioca (cassava), naturalmente gluten-free. Anche le coppette di gelato/yogurt (senza cono) sono senza glutine.
-              </p>
-            </div>
-
-            <div className="p-6 sm:p-7 space-y-3 bg-[#FFFDFE] dark:bg-[#1F0E19]">
-              <div className="w-10 h-10 rounded-full bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 flex items-center justify-center">
-                <MilkOff className="w-5 h-5" aria-hidden="true" />
-              </div>
-              <h3 className="font-serif text-xl text-[#2B0F1D] dark:text-white">Opzioni Senza Lattosio</h3>
-              <p className="text-xs text-[#76525F] dark:text-[#C9AEBB] leading-relaxed">
-                Ami il Taro o il Classic Milk Tea ma non tolleri il lattosio? Chiedi la preparazione con latte di cocco o latte vegetale per gustare il tuo boba in totale leggerezza.
-              </p>
-            </div>
-
-            <div className="p-6 sm:p-7 space-y-3 bg-[#FFFDFE] dark:bg-[#1F0E19]">
-              <div className="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center">
-                <NutOff className="w-5 h-5" aria-hidden="true" />
-              </div>
-              <h3 className="font-serif text-xl text-[#2B0F1D] dark:text-white">Sicurezza Frutta a Guscio</h3>
-              <p className="text-xs text-[#76525F] dark:text-[#C9AEBB] leading-relaxed">
-                La linea salata SpacePolly e i tè alla frutta non contengono frutta a guscio. Le creme con pistacchio o nocciola sono isolate con dispenser dedicati.
-              </p>
-            </div>
-          </div>
-
-          <div className="p-4 border-x border-b border-[#F3DFD8] dark:border-[#3B2231] bg-[#FFF1EC] dark:bg-[#150D11] flex items-center gap-3 text-xs font-mono text-[#76525F] dark:text-[#C9AEBB]">
-            <ShieldCheck className="w-4 h-4 text-[#DE3163] shrink-0" aria-hidden="true" />
-            <span>
-              <strong>Attenzione per allergie gravi (celiachia o anafilassi):</strong> sebbene adottiamo procedure igieniche rigorose, nel laboratorio vengono manipolati glutine e latte. Segnala sempre eventuali allergie gravi allo staff prima di ordinare.
-            </span>
-          </div>
         </div>
       </section>
 
-      {/* 06 / VERIFIED GOOGLE REVIEWS & VIALE STRASBURGO 378 DOSSIER */}
-      <section
-        id="dove-siamo"
-        className="py-14 sm:py-24 bg-white dark:bg-[#170A12]"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <RevealOnScroll className="flex flex-col md:flex-row md:items-end justify-between pb-8 sm:pb-10 border-b border-[#F3DFD8] dark:border-[#3B2231] gap-4 sm:gap-6">
-            <div>
-              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#DE3163] mb-2.5">
-                06 / RECENSIONI VERIFICATE &amp; COORDINATE SEDE
-              </p>
-              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-normal tracking-tight leading-none text-[#2B0F1D] dark:text-[#FCEFF2]">
-                Viale Strasburgo, 378 —{' '}
-                <span className="italic text-[#DE3163]">Palermo</span>
-              </h2>
-            </div>
-            <MagneticWrap strength={0.18} className="self-start md:self-auto">
+      {/* ================= REVIEWS & LOCATION ================= */}
+      <section id="dove-siamo" className="cv-auto relative py-16 sm:py-24" aria-labelledby="dove-title">
+        <span className="blob w-[520px] h-[520px] -left-60 top-40 bg-pop/20" aria-hidden="true" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionTitle
+            eyebrow="Recensioni & sede"
+            id="dove-title"
+            aside={
               <a
                 href={TEAAMO_LINKS.googleShare}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest px-5 py-3.5 border border-[#DE3163] text-[#DE3163] hover:bg-[#DE3163] hover:text-white transition-colors"
+                className="self-start md:self-auto glass-night rounded-4xl px-6 py-4 flex items-center gap-4 card-lift"
               >
-                <Star className="w-3.5 h-3.5 fill-current shrink-0 text-[#DE3163]" aria-hidden="true" />
-                <span>Rating Google 4.2 / 5.0 • Scheda Ufficiale</span>
-                <ArrowUpRight className="w-4 h-4 shrink-0" aria-hidden="true" />
+                <span className="font-display font-extrabold text-5xl">4.2</span>
+                <span>
+                  <span className="flex gap-0.5 text-mango" aria-label="4,2 stelle su 5">
+                    {[0, 1, 2, 3, 4].map((i) => (
+                      <Star key={i} className={`w-4 h-4 fill-current ${i === 4 ? 'opacity-40' : ''}`} aria-hidden="true" />
+                    ))}
+                  </span>
+                  <span className="block mt-1 text-sm text-haze">540+ recensioni su Google</span>
+                </span>
               </a>
-            </MagneticWrap>
-          </RevealOnScroll>
+            }
+          >
+            Viale Strasburgo 378,
+            <br />
+            <span className="text-neon">Palermo.</span>
+          </SectionTitle>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 border-x border-b border-[#F3DFD8] dark:border-[#3B2231]">
-            {/* Left 6 Cols: Editorial Customer Reviews */}
-            <div className="lg:col-span-6 divide-y divide-[#F3DFD8] dark:divide-[#3B2231] lg:border-r border-[#F3DFD8] dark:border-[#3B2231]">
+          <div className="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5">
+            <div className="lg:col-span-5 grid grid-cols-1 gap-4 sm:gap-5">
               {GOOGLE_REVIEWS.map((rev, i) => (
                 <RevealOnScroll key={rev.id} delayMs={i * 80} direction="left">
-                  <blockquote
-                    onMouseMove={handleSpotlightMove}
-                    className="spotlight-card p-6 sm:p-8 lg:p-10 transition-colors bg-white dark:bg-[#1F0E19]"
-                  >
-                    <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 font-mono text-xs text-[#76525F] dark:text-[#C9AEBB] mb-4">
+                  <blockquote className={`relative rounded-5xl p-7 ${i === 1 ? 'bg-white text-ink' : 'glass-night'}`}>
+                    <Quote className={`w-8 h-8 ${i === 1 ? 'text-pop' : 'text-pop/80'}`} aria-hidden="true" />
+                    <p className="mt-3 font-display font-semibold text-lg sm:text-xl leading-snug tracking-tight">{rev.text}</p>
+                    <footer className={`mt-5 flex items-center justify-between gap-3 text-sm ${i === 1 ? 'text-ink-soft' : 'text-haze'}`}>
                       <span>
-                        RECENSIONE 0{i + 1} // {rev.author.toUpperCase()} ({rev.badge})
+                        <strong className={i === 1 ? 'text-ink' : 'text-white'}>{rev.author}</strong> · {rev.badge}
                       </span>
-                      <div className="flex items-center gap-0.5" aria-label="Valutazione 5 su 5 stelle">
-                        {[...Array(5)].map((_, sIdx) => (
-                          <Star key={sIdx} className="w-3.5 h-3.5 fill-[#DE3163] text-[#DE3163]" aria-hidden="true" />
+                      <span className="flex gap-0.5 text-mango" aria-label="5 stelle su 5">
+                        {[0, 1, 2, 3, 4].map((s) => (
+                          <Star key={s} className="w-3.5 h-3.5 fill-current" aria-hidden="true" />
                         ))}
-                      </div>
-                    </div>
-                    <p className="relative z-10 text-lg sm:text-2xl font-serif leading-snug text-[#2B0F1D] dark:text-[#FCEFF2]">
-                      &ldquo;{rev.text}&rdquo;
-                    </p>
-                    <footer className="relative z-10 mt-4 font-mono text-[11px] uppercase tracking-wider text-[#76525F] dark:text-[#C9AEBB]">
-                      ORDINE RILEVATO: {rev.favoriteOrder}
+                      </span>
                     </footer>
                   </blockquote>
                 </RevealOnScroll>
               ))}
             </div>
 
-            {/* Right 6 Cols: Architectural Location & Map Dossier */}
-            <RevealOnScroll
-              direction="right"
-              delayMs={120}
-              className="lg:col-span-6 flex flex-col justify-between bg-[#FFF1EC] dark:bg-[#1F0E19] border-t lg:border-t-0 border-[#F3DFD8] dark:border-[#3B2231]"
-            >
-              <div className="p-6 sm:p-8 lg:p-10 space-y-6">
-                <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-xs border-b border-[#F3DFD8] dark:border-[#3B2231] pb-4">
-                  <span>GPS // 38°09&apos;22.0&quot;N 13°19&apos;40.8&quot;E</span>
-                  <span className="inline-flex items-center gap-2 text-[#DE3163] font-semibold">
-                    <span className="w-2 h-2 rounded-full bg-[#DE3163] live-dot" />
-                    {isOpenNow ? 'APERTO ORA' : 'ORARIO 12:30 – 03:30'}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div>
-                    <p className="font-mono text-[11px] uppercase tracking-widest text-[#76525F] dark:text-[#C9AEBB] flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-[#DE3163]" aria-hidden="true" />
-                      INDIRIZZO FISICO
-                    </p>
-                    <p className="font-medium text-base mt-1 text-[#2B0F1D] dark:text-[#FCEFF2]">
-                      Viale Strasburgo, 378
-                      <br />
-                      90146 Palermo (PA), Italia
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="font-mono text-[11px] uppercase tracking-widest text-[#76525F] dark:text-[#C9AEBB] flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5 text-[#DE3163]" aria-hidden="true" />
-                      ORARIO CONTINUATO &amp; NOTTURNO
-                    </p>
-                    <p className="font-medium text-base mt-1 text-[#2B0F1D] dark:text-[#FCEFF2]">
-                      Lunedì – Domenica
-                      <br />
-                      12:30 — 03:30 di notte
-                    </p>
-                  </div>
-                </div>
-
-                {/* Official Native Google Maps Frame */}
-                <div className="border border-[#F3DFD8] dark:border-[#3B2231] rounded-sm overflow-hidden h-60 sm:h-72 shadow-xs bg-white">
+            <RevealOnScroll direction="right" delayMs={120} className="lg:col-span-7">
+              <div className="h-full rounded-5xl glass-night p-3 flex flex-col">
+                <div className="relative flex-1 min-h-[320px] rounded-[2rem] overflow-hidden">
                   <iframe
-                    title="Mappa Ufficiale Google Maps TeaAmo Palermo - Viale Strasburgo 378"
+                    title="Mappa di TeaAmo Palermo in Viale Strasburgo 378"
                     src="https://maps.google.com/maps?q=TeaAmo+Bubble+Tea,+Viale+Strasburgo+378,+Palermo&t=&z=16&ie=UTF8&iwloc=&output=embed"
-                    className="w-full h-full border-0"
+                    className="absolute inset-0 w-full h-full border-0 [filter:saturate(1.1)_contrast(1.05)]"
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
                   />
+                  <span className="absolute top-4 right-4 inline-flex items-center gap-2 rounded-full bg-white text-ink px-4 py-2 text-sm font-bold shadow-soft">
+                    <span className={`w-2 h-2 rounded-full ${isOpenNow ? 'bg-emerald-400 live-dot' : 'bg-ink/30'}`} />
+                    {isOpenNow ? 'Aperto ora' : 'Aperti 12:30 – 03:30'}
+                  </span>
                 </div>
-              </div>
-
-              <div className="p-6 sm:p-8 lg:p-10 border-t border-[#F3DFD8] dark:border-[#3B2231] grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 bg-white dark:bg-[#170A12]">
-                <a
-                  href={TEAAMO_LINKS.googleShare}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 py-4 px-5 bg-[#DE3163] text-white font-mono text-xs uppercase tracking-widest hover:bg-[#2B0F1D] transition-all hover:-translate-y-0.5 shadow-xs"
-                >
-                  <span>Apri su Google Maps</span>
-                  <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
-                </a>
-                <a
-                  href={`tel:${TEAAMO_LINKS.phone}`}
-                  className="inline-flex items-center justify-center gap-2 py-4 px-5 border border-[#DE3163] text-[#DE3163] font-mono text-xs uppercase tracking-widest hover:bg-[#FFF1EC] transition-all hover:-translate-y-0.5"
-                >
-                  <Phone className="w-3.5 h-3.5 text-[#DE3163]" aria-hidden="true" />
-                  <span>{TEAAMO_LINKS.phoneDisplay}</span>
-                </a>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 sm:p-5">
+                  <p className="flex gap-3 text-sm">
+                    <MapPin className="w-5 h-5 text-pop shrink-0" aria-hidden="true" />
+                    <span>
+                      <strong className="block font-display">Indirizzo</strong>
+                      <span className="text-haze">Viale Strasburgo, 378 · 90146 Palermo</span>
+                    </span>
+                  </p>
+                  <p className="flex gap-3 text-sm">
+                    <Clock className="w-5 h-5 text-pop shrink-0" aria-hidden="true" />
+                    <span>
+                      <strong className="block font-display">Orari</strong>
+                      <span className="text-haze">Lun – Dom · 12:30 – 03:30</span>
+                    </span>
+                  </p>
+                  <a href={`tel:${TEAAMO_LINKS.phone}`} className="flex gap-3 text-sm group">
+                    <Phone className="w-5 h-5 text-pop shrink-0" aria-hidden="true" />
+                    <span>
+                      <strong className="block font-display">Telefono</strong>
+                      <span className="text-haze group-hover:text-white transition-colors">{TEAAMO_LINKS.phoneDisplay}</span>
+                    </span>
+                  </a>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 px-2 pb-2">
+                  <a
+                    href={TEAAMO_LINKS.googleShare}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-squish inline-flex items-center justify-center gap-2 rounded-full bg-white text-ink px-6 py-4 font-display font-bold"
+                  >
+                    Apri su Google Maps
+                    <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
+                  </a>
+                  <a
+                    href={`tel:${TEAAMO_LINKS.phone}`}
+                    className="btn-squish inline-flex items-center justify-center gap-2 rounded-full border-2 border-white/25 text-white px-6 py-4 font-display font-bold hover:border-white/60"
+                  >
+                    <Phone className="w-4 h-4" aria-hidden="true" />
+                    Chiamaci
+                  </a>
+                </div>
               </div>
             </RevealOnScroll>
           </div>
