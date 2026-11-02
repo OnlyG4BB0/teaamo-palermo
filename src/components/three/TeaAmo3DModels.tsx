@@ -3,8 +3,11 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import {
   OrbitControls,
   ContactShadows,
+  Environment,
   Float,
+  Lightformer,
   RoundedBox,
+  Sparkles,
 } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -302,15 +305,15 @@ export const BobaCupMesh: React.FC<{
         </mesh>
         <mesh position={[0, 0.33, 0]} rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[0.935, 0.015, 16, 48]} />
-          <meshStandardMaterial color="#D4365C" roughness={0.3} />
+          <meshStandardMaterial color="#DE3163" roughness={0.3} />
         </mesh>
         <mesh position={[0, -0.33, 0]} rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[0.876, 0.015, 16, 48]} />
-          <meshStandardMaterial color="#D4365C" roughness={0.3} />
+          <meshStandardMaterial color="#DE3163" roughness={0.3} />
         </mesh>
         <mesh position={[0, 0, 0.91]} rotation={[0, 0, Math.PI / 4]}>
           <boxGeometry args={[0.34, 0.34, 0.03]} />
-          <meshStandardMaterial color="#D4365C" roughness={0.25} />
+          <meshStandardMaterial color="#DE3163" roughness={0.25} />
         </mesh>
       </group>
 
@@ -417,7 +420,7 @@ export const BobaCupMesh: React.FC<{
 
       <mesh position={[0, 1.38, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[1.045, 0.048, 20, 48]} />
-        <meshStandardMaterial color="#D4365C" roughness={0.22} metalness={0.08} />
+        <meshStandardMaterial color="#DE3163" roughness={0.22} metalness={0.08} />
       </mesh>
 
       <group ref={crownGroupRef} position={[0, 1.32, 0]}>
@@ -448,7 +451,7 @@ export const BobaCupMesh: React.FC<{
               position={[0, 0.72, 0]}
             >
               <meshPhysicalMaterial
-                color="#D4365C"
+                color="#DE3163"
                 roughness={0.15}
                 metalness={0.1}
                 clearcoat={1}
@@ -485,7 +488,7 @@ export const BobaCupMesh: React.FC<{
         </mesh>
         <mesh position={[0, 1.45, 0]}>
           <cylinderGeometry args={[0.098, 0.098, 0.28, 24]} />
-          <meshStandardMaterial color="#D4365C" roughness={0.2} />
+          <meshStandardMaterial color="#DE3163" roughness={0.2} />
         </mesh>
       </group>
     </group>
@@ -626,7 +629,7 @@ export const SpacePollyBurgerMesh: React.FC<{
   impulseTick?: number;
 }> = ({
   variant = 'giove',
-  accentColor = '#D4365C',
+  accentColor = '#DE3163',
   exploded = false,
   impulseTick = 0,
 }) => {
@@ -901,7 +904,7 @@ export const BubbleWaffleMesh: React.FC<{
   accentColor?: string;
   exploded?: boolean;
   impulseTick?: number;
-}> = ({ accentColor = '#D4365C', exploded = false, impulseTick = 0 }) => {
+}> = ({ accentColor = '#DE3163', exploded = false, impulseTick = 0 }) => {
   const groupRef = useRef<THREE.Group>(null);
   const coneGroupRef = useRef<THREE.Group>(null);
   const puffsGroupRef = useRef<THREE.Group>(null);
@@ -1069,7 +1072,7 @@ export const CrepeMesh: React.FC<{
       </mesh>
       <mesh position={[0, -0.3, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[1.48, 0.015, 16, 48]} />
-        <meshStandardMaterial color="#D4365C" roughness={0.3} />
+        <meshStandardMaterial color="#DE3163" roughness={0.3} />
       </mesh>
 
       {/* Folded Golden Crêpe Envelope */}
@@ -1127,7 +1130,7 @@ export const CrepeMesh: React.FC<{
 export const PancakeStackMesh: React.FC<{
   accentColor?: string;
   autoRotate?: boolean;
-}> = ({ accentColor = '#D4365C', autoRotate = true }) => {
+}> = ({ accentColor = '#DE3163', autoRotate = true }) => {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame((_, delta) => {
@@ -1188,7 +1191,7 @@ export const PancakeStackMesh: React.FC<{
 export const GelatoCoppettaMesh: React.FC<{
   accentColor?: string;
   autoRotate?: boolean;
-}> = ({ accentColor = '#D4365C', autoRotate = true }) => {
+}> = ({ accentColor = '#DE3163', autoRotate = true }) => {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame((_, delta) => {
@@ -1211,12 +1214,12 @@ export const GelatoCoppettaMesh: React.FC<{
       {/* Carmine Brand Rim */}
       <mesh position={[0, 0.18, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[1.05, 0.03, 16, 40]} />
-        <meshStandardMaterial color="#D4365C" roughness={0.3} />
+        <meshStandardMaterial color="#DE3163" roughness={0.3} />
       </mesh>
       {/* Brand logo diamond badge */}
       <mesh position={[0, -0.35, 0.94]} rotation={[0, 0, Math.PI / 4]}>
         <boxGeometry args={[0.32, 0.32, 0.02]} />
-        <meshStandardMaterial color="#D4365C" roughness={0.3} />
+        <meshStandardMaterial color="#DE3163" roughness={0.3} />
       </mesh>
 
       {/* Swirl 1: Fior di Latte / Yogurt Naturale */}
@@ -1238,7 +1241,7 @@ export const GelatoCoppettaMesh: React.FC<{
       {/* Colorful Gelato Paddle Spoon */}
       <group position={[0.42, 0.65, -0.2]} rotation={[0.2, 0.1, -0.3]}>
         <RoundedBox args={[0.14, 0.95, 0.025]} radius={0.01}>
-          <meshPhysicalMaterial color="#D4365C" transparent opacity={0.85} roughness={0.1} />
+          <meshPhysicalMaterial color="#DE3163" transparent opacity={0.85} roughness={0.1} />
         </RoundedBox>
       </group>
 
@@ -1386,7 +1389,7 @@ class CanvasErrorBoundary extends React.Component<
   }
 }
 
-interface StudioViewport3DProps {
+export interface StudioViewport3DProps {
   modelType: ModelType;
   cupConfig: Cup3DConfig;
   accentColor?: string;
@@ -1494,11 +1497,31 @@ export const StudioViewport3D: React.FC<StudioViewport3DProps> = ({
             style={{ touchAction: isTouch ? 'pan-y' : 'none' }}
           >
             <Suspense fallback={null}>
-              <ambientLight intensity={1.1} />
-              <hemisphereLight args={['#ffffff', '#f2ece4', 0.85]} />
-              <directionalLight position={[5, 8, 5]} intensity={1.8} />
-              <directionalLight position={[-5, 4, -4]} intensity={0.9} color="#ffd6e0" />
-              <pointLight position={[0, 3, 4]} intensity={1.2} color="#ffffff" />
+              <ambientLight intensity={0.55} />
+              <hemisphereLight args={['#fff6f1', '#f3d6dc', 0.7]} />
+              <directionalLight position={[4, 7, 5]} intensity={1.9} color="#fff4ea" />
+              <directionalLight position={[-5, 3, -4]} intensity={1.1} color="#ffc4d6" />
+              <pointLight position={[0, -1.2, 3.5]} intensity={0.6} color={accentColor} />
+
+              {/* Procedural studio HDRI: soft boxes give the clearcoat cups, pearls and buns
+                  real reflections without downloading an environment map */}
+              <Environment resolution={isTouch ? 64 : 128} frames={1}>
+                <Lightformer form="rect" intensity={2.2} position={[0, 5, -2]} scale={[8, 3, 1]} rotation-x={Math.PI / 2} />
+                <Lightformer form="rect" intensity={1.6} position={[-5, 1, 1]} scale={[3, 6, 1]} rotation-y={Math.PI / 2} color="#ffe3ea" />
+                <Lightformer form="rect" intensity={1.3} position={[5, 1, 1]} scale={[3, 6, 1]} rotation-y={-Math.PI / 2} color="#fff1dc" />
+                <Lightformer form="ring" intensity={1.2} position={[0, 1, 6]} scale={3} color={accentColor} />
+              </Environment>
+
+              {!reducedMotion && (
+                <Sparkles
+                  count={isTouch ? 14 : 28}
+                  scale={[fit.w * 1.5, fit.h * 1.1, fit.d * 1.4]}
+                  size={2.4}
+                  speed={0.35}
+                  opacity={0.7}
+                  color={accentColor}
+                />
+              )}
 
               <Float
                 speed={reducedMotion ? 0 : 1.75}
@@ -1601,10 +1624,12 @@ export const StudioViewport3D: React.FC<StudioViewport3DProps> = ({
 
               <ContactShadows
                 position={[0, fit.shadowY, 0]}
-                opacity={0.32}
+                opacity={0.42}
                 scale={5.8}
-                blur={2.4}
+                blur={2.8}
                 far={4}
+                resolution={isTouch ? 256 : 512}
+                color="#5B1A33"
               />
 
               {!isTouch && (
@@ -1625,7 +1650,7 @@ export const StudioViewport3D: React.FC<StudioViewport3DProps> = ({
       </div>
 
       <div className="pointer-events-none absolute bottom-3 inset-x-4 flex items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-widest text-[#7A5A66] dark:text-[#A3939B]">
-        <span className="truncate">R3F / WEBGL 3D</span>
+        <span className="truncate">Modello 3D interattivo</span>
         <span className="truncate text-right">
           {interactiveHint || (isTouch ? 'Rotazione automatica 360°' : 'Trascina 360° • Hover Parallasse')}
         </span>

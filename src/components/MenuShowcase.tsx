@@ -19,7 +19,7 @@ import {
   DIETARY_FILTERS,
   DietaryOption,
 } from '../data/teaamoData';
-import { ModelType, StudioViewport3D } from './three/TeaAmo3DModels';
+import { ModelType, StudioViewport3D } from './three/LazyStudioViewport3D';
 import {
   RevealOnScroll,
   AnimatedPrice,
@@ -129,16 +129,16 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
         liquidTopColor: inspectedItem.cupConfig.liquidTop,
         liquidBottomColor: inspectedItem.cupConfig.liquidBottom,
         bobaColor: inspectedItem.cupConfig.boba,
-        bobaSecondaryColor: '#FFD8E1',
+        bobaSecondaryColor: '#FFD9DE',
         creamColor: inspectedItem.cupConfig.cream,
         hasPinkCream: true,
         showIce: true,
       }
     : {
         liquidTopColor: '#FF85A2',
-        liquidBottomColor: '#FD5E86',
+        liquidBottomColor: '#DE3163',
         bobaColor: '#881337',
-        bobaSecondaryColor: '#FFF5F8',
+        bobaSecondaryColor: '#FFF1EC',
         creamColor: '#FFFFFF',
         hasPinkCream: true,
         showIce: false,
@@ -147,25 +147,25 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
   return (
     <section
       id="menu"
-      className="border-b border-[#FCE4EC] dark:border-[#281E23] py-14 sm:py-24 bg-white dark:bg-[#0D090B]"
+      className="border-b border-[#F3DFD8] dark:border-[#3B2231] py-14 sm:py-24 bg-white dark:bg-[#170A12]"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <RevealOnScroll className="flex flex-col md:flex-row md:items-end justify-between pb-8 sm:pb-10 border-b border-[#FCE4EC] dark:border-[#281E23] gap-4 sm:gap-6">
+        <RevealOnScroll className="flex flex-col md:flex-row md:items-end justify-between pb-8 sm:pb-10 border-b border-[#F3DFD8] dark:border-[#3B2231] gap-4 sm:gap-6">
           <div>
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#FD5E86] mb-2.5">
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#DE3163] mb-2.5">
               01 / CATALOGO VETRINA &amp; ISPETTORE 3D GLOVO
             </p>
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-normal tracking-tight leading-none text-[#1C0D12] dark:text-[#F5EFEA]">
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-normal tracking-tight leading-none text-[#2B0F1D] dark:text-[#FCEFF2]">
               SpacePolly, Bubble Tea &amp;{' '}
-              <span className="italic text-[#FD5E86]">Sweet Patisserie</span>
+              <span className="italic text-[#DE3163]">Sweet Patisserie</span>
             </h2>
           </div>
           <div className="max-w-md space-y-2">
-            <p className="text-sm sm:text-base text-[#7A5A66] dark:text-[#A3939B] leading-relaxed">
+            <p className="text-sm sm:text-base text-[#76525F] dark:text-[#C9AEBB] leading-relaxed">
               Consulta le foto reali del locale e dei prodotti presenti su Glovo Palermo. Filtra per categoria o preferenza alimentare (Vegan, Senza Lattosio, Senza Glutine) e ispeziona ogni elemento in 3D.
             </p>
-            <div className="flex items-center gap-2 font-mono text-[11px] text-[#FD5E86]">
+            <div className="flex items-center gap-2 font-mono text-[11px] text-[#DE3163]">
               <ShieldCheck className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
               <span>Ingredienti trasparenti e gestione allergeni verificata</span>
             </div>
@@ -175,7 +175,7 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
         {/* Primary Category Filter Bar */}
         <RevealOnScroll delayMs={60}>
           <div
-            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 border-x border-b border-[#FCE4EC] dark:border-[#281E23]"
+            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 border-x border-b border-[#F3DFD8] dark:border-[#3B2231]"
             role="tablist"
             aria-label="Filtra categorie menu"
           >
@@ -188,15 +188,15 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                   role="tab"
                   aria-selected={isActive}
                   onClick={() => handleCategoryChange(cat.id)}
-                  className={`py-3.5 px-4 text-left border-b lg:border-b-0 border-r border-[#FCE4EC] dark:border-[#281E23] transition-all duration-300 cursor-pointer ${
+                  className={`py-3.5 px-4 text-left border-b lg:border-b-0 border-r border-[#F3DFD8] dark:border-[#3B2231] transition-all duration-300 cursor-pointer ${
                     idx === categories.length - 1 ? 'col-span-2 sm:col-span-1 lg:border-r-0' : ''
                   } ${
                     isActive
-                      ? 'bg-[#FD5E86] text-white shadow-xs font-semibold'
-                      : 'bg-white hover:bg-[#FFF5F8] text-[#1C0D12] dark:bg-transparent dark:hover:bg-white/5 dark:text-[#F5EFEA]'
+                      ? 'bg-[#DE3163] text-white shadow-xs font-semibold'
+                      : 'bg-white hover:bg-[#FFF1EC] text-[#2B0F1D] dark:bg-transparent dark:hover:bg-white/5 dark:text-[#FCEFF2]'
                   }`}
                 >
-                  <span className={`font-mono text-[10px] uppercase tracking-widest block ${isActive ? 'text-white/80' : 'text-[#7A5A66]'}`}>
+                  <span className={`font-mono text-[10px] uppercase tracking-widest block ${isActive ? 'text-white/80' : 'text-[#76525F]'}`}>
                     [{cat.code}]
                   </span>
                   <span className="font-medium text-xs sm:text-sm mt-0.5 block truncate">
@@ -210,10 +210,10 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
 
         {/* Secondary Dietary & Allergen Filter Strip */}
         <RevealOnScroll delayMs={100}>
-          <div className="border-x border-b border-[#FCE4EC] dark:border-[#281E23] bg-[#FFF9FB] dark:bg-[#120B0E] p-3 sm:p-4">
+          <div className="border-x border-b border-[#F3DFD8] dark:border-[#3B2231] bg-[#FFF9FB] dark:bg-[#1F0E19] p-3 sm:p-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-[#7A5A66] dark:text-[#A3939B] shrink-0">
-                <Filter className="w-3.5 h-3.5 text-[#FD5E86]" aria-hidden="true" />
+              <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-[#76525F] dark:text-[#C9AEBB] shrink-0">
+                <Filter className="w-3.5 h-3.5 text-[#DE3163]" aria-hidden="true" />
                 <span>FILTRA PER DIETA &amp; ALLERGENI:</span>
               </div>
 
@@ -228,13 +228,13 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                       onClick={() => handleDietaryChange(df.id)}
                       className={`inline-flex items-center gap-1.5 px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-colors duration-150 cursor-pointer border ${
                         isActive
-                          ? 'bg-[#1C0D12] dark:bg-white text-white dark:text-[#1C0D12] border-[#1C0D12] dark:border-white shadow-xs font-semibold'
-                          : 'bg-white dark:bg-transparent border-[#FCE4EC] dark:border-[#281E23] text-[#7A5A66] dark:text-[#A3939B] hover:border-[#FD5E86] hover:text-[#FD5E86]'
+                          ? 'bg-[#2B0F1D] dark:bg-white text-white dark:text-[#2B0F1D] border-[#2B0F1D] dark:border-white shadow-xs font-semibold'
+                          : 'bg-white dark:bg-transparent border-[#F3DFD8] dark:border-[#3B2231] text-[#76525F] dark:text-[#C9AEBB] hover:border-[#DE3163] hover:text-[#DE3163]'
                       }`}
                       title={df.description}
                     >
                       {df.iconKey === 'all' && (
-                        <Sparkles className="w-3.5 h-3.5 text-[#FD5E86]" aria-hidden="true" />
+                        <Sparkles className="w-3.5 h-3.5 text-[#DE3163]" aria-hidden="true" />
                       )}
                       {df.iconKey === 'vegan' && (
                         <Leaf className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
@@ -256,13 +256,13 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
             </div>
 
             {/* Active Counter & Clear Indicator */}
-            <div className="mt-2.5 pt-2 border-t border-[#FCE4EC]/60 dark:border-[#281E23]/60 flex items-center justify-between font-mono text-[11px] text-[#7A5A66] dark:text-[#A3939B]">
+            <div className="mt-2.5 pt-2 border-t border-[#F3DFD8]/60 dark:border-[#3B2231]/60 flex items-center justify-between font-mono text-[11px] text-[#76525F] dark:text-[#C9AEBB]">
               <span className="flex items-center gap-1.5">
                 <span>Mostrando:</span>
-                <strong className="text-[#FD5E86]">{filteredItems.length}</strong>
+                <strong className="text-[#DE3163]">{filteredItems.length}</strong>
                 <span>di {MENU_ITEMS.length} prodotti</span>
                 {activeDietary !== 'all' && (
-                  <span className="text-xs text-[#FD5E86] font-semibold">
+                  <span className="text-xs text-[#DE3163] font-semibold">
                     • Filtro attivo: {DIETARY_FILTERS.find((d) => d.id === activeDietary)?.label}
                   </span>
                 )}
@@ -272,7 +272,7 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                 <button
                   type="button"
                   onClick={resetFilters}
-                  className="inline-flex items-center gap-1.5 text-[11px] text-[#FD5E86] hover:underline cursor-pointer font-mono"
+                  className="inline-flex items-center gap-1.5 text-[11px] text-[#DE3163] hover:underline cursor-pointer font-mono"
                 >
                   <RotateCcw className="w-3 h-3" aria-hidden="true" />
                   <span>Reimposta filtri</span>
@@ -283,22 +283,22 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
         </RevealOnScroll>
 
         {/* Split Layout: Left Menu with Real Photos, Right Sticky 3D Inspector */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 border-x border-b border-[#FCE4EC] dark:border-[#281E23] items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 border-x border-b border-[#F3DFD8] dark:border-[#3B2231] items-start">
           {/* Left 7 Cols: Showcase Menu List */}
-          <div className="order-2 lg:order-1 lg:col-span-7 divide-y divide-[#FCE4EC] dark:divide-[#281E23] lg:border-r border-[#FCE4EC] dark:border-[#281E23] bg-white dark:bg-[#0D090B]">
+          <div className="order-2 lg:order-1 lg:col-span-7 divide-y divide-[#F3DFD8] dark:divide-[#3B2231] lg:border-r border-[#F3DFD8] dark:border-[#3B2231] bg-white dark:bg-[#170A12]">
             {filteredItems.length === 0 ? (
               <div className="p-10 text-center space-y-4">
-                <Info className="w-8 h-8 mx-auto text-[#FD5E86]" aria-hidden="true" />
-                <h3 className="text-xl font-serif text-[#1C0D12] dark:text-white">
+                <Info className="w-8 h-8 mx-auto text-[#DE3163]" aria-hidden="true" />
+                <h3 className="text-xl font-serif text-[#2B0F1D] dark:text-white">
                   Nessun prodotto corrisponde a questo filtro
                 </h3>
-                <p className="text-sm text-[#7A5A66] dark:text-[#A3939B] max-w-sm mx-auto">
+                <p className="text-sm text-[#76525F] dark:text-[#C9AEBB] max-w-sm mx-auto">
                   Non ci sono prodotti che soddisfano contemporaneamente la categoria &quot;{categories.find((c) => c.id === activeCategory)?.label}&quot; e la preferenza &quot;{DIETARY_FILTERS.find((d) => d.id === activeDietary)?.label}&quot;.
                 </p>
                 <button
                   type="button"
                   onClick={resetFilters}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#FD5E86] text-white font-mono text-xs uppercase tracking-wider hover:bg-[#1C0D12] transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#DE3163] text-white font-mono text-xs uppercase tracking-wider hover:bg-[#2B0F1D] transition-colors"
                 >
                   <span>Reimposta Tutti i Filtri</span>
                 </button>
@@ -314,14 +314,14 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                       onClick={() => setInspectedItem(item)}
                       className={`spotlight-card scroll-mt-24 sm:scroll-mt-28 relative p-5 sm:p-6 lg:p-7 transition-all duration-300 cursor-pointer ${
                         isInspected
-                          ? 'bg-[#FFF5F8] dark:bg-[#1A1216]'
+                          ? 'bg-[#FFF1EC] dark:bg-[#2A1422]'
                           : 'bg-white hover:bg-[#FFF9FB] dark:bg-transparent dark:hover:bg-white/[0.02]'
                       }`}
                     >
                       {/* Animated Left Accent Indicator */}
                       <span
                         className={`absolute left-0 top-0 bottom-0 w-1 transition-transform duration-300 origin-top ${
-                          item.category === 'spacepolly' ? 'bg-[#F59E0B]' : 'bg-[#FD5E86]'
+                          item.category === 'spacepolly' ? 'bg-[#F59E0B]' : 'bg-[#DE3163]'
                         } ${isInspected ? 'scale-y-100' : 'scale-y-0'}`}
                       />
 
@@ -329,7 +329,7 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                         {/* Left: Thumbnail from Glovo */}
                         <div className="flex items-start gap-4 min-w-0 flex-1">
                           {item.imageUrl ? (
-                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-md overflow-hidden bg-black/5 shrink-0 border border-[#FCE4EC] dark:border-[#281E23] shadow-xs">
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-md overflow-hidden bg-black/5 shrink-0 border border-[#F3DFD8] dark:border-[#3B2231] shadow-xs">
                               <img
                                 src={item.imageUrl}
                                 alt={item.name}
@@ -339,21 +339,21 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                               />
                             </div>
                           ) : (
-                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-md bg-[#FFF0F5] flex items-center justify-center font-mono text-[10px] uppercase text-[#FD5E86] shrink-0 border border-[#FCE4EC]">
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-md bg-[#FFEDE6] flex items-center justify-center font-mono text-[10px] uppercase text-[#DE3163] shrink-0 border border-[#F3DFD8]">
                               3D Model
                             </div>
                           )}
 
                           <div className="min-w-0 flex-1">
                             <div className="flex flex-wrap items-baseline gap-2">
-                              <span className="font-mono text-xs text-[#FD5E86]">
+                              <span className="font-mono text-xs text-[#DE3163]">
                                 {String(idx + 1).padStart(2, '0')}
                               </span>
-                              <h3 className="text-lg sm:text-xl font-serif text-[#1C0D12] dark:text-white">
+                              <h3 className="text-lg sm:text-xl font-serif text-[#2B0F1D] dark:text-white">
                                 {item.name}
                               </h3>
                               {item.badge && (
-                                <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider px-1.5 py-0.5 border border-[#FD5E86] text-[#FD5E86]">
+                                <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-wider px-1.5 py-0.5 border border-[#DE3163] text-[#DE3163]">
                                   {item.badge}
                                 </span>
                               )}
@@ -364,7 +364,7 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                               )}
                             </div>
 
-                            <p className="text-xs sm:text-sm text-[#7A5A66] dark:text-[#A3939B] mt-1 line-clamp-2 leading-relaxed">
+                            <p className="text-xs sm:text-sm text-[#76525F] dark:text-[#C9AEBB] mt-1 line-clamp-2 leading-relaxed">
                               {item.description}
                             </p>
 
@@ -403,7 +403,7 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                               {item.ingredients.map((ing) => (
                                 <span
                                   key={ing}
-                                  className="font-mono text-[10px] px-1.5 py-0.5 border border-[#FCE4EC] dark:border-[#281E23] bg-[#FFF5F8] dark:bg-transparent text-[#7A5A66] dark:text-[#A3939B]"
+                                  className="font-mono text-[10px] px-1.5 py-0.5 border border-[#F3DFD8] dark:border-[#3B2231] bg-[#FFF1EC] dark:bg-transparent text-[#76525F] dark:text-[#C9AEBB]"
                                 >
                                   {ing}
                                 </span>
@@ -413,7 +413,7 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                             {/* Transparent Allergen Notice */}
                             {item.allergens && (
                               <p className="font-mono text-[10px] text-[#A3828F] dark:text-[#7D6B74] mt-1.5">
-                                <span className="font-medium text-[#7A5A66] dark:text-[#A3939B]">Allergeni:</span>{' '}
+                                <span className="font-medium text-[#76525F] dark:text-[#C9AEBB]">Allergeni:</span>{' '}
                                 {item.allergens.join(', ')}
                               </p>
                             )}
@@ -421,19 +421,19 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                         </div>
 
                         {/* Right: Price & Actions */}
-                        <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#FCE4EC]/60">
+                        <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#F3DFD8]/60">
                           <div className="text-left sm:text-right font-mono">
                             {item.promoPrice ? (
                               <div className="flex items-baseline gap-1.5">
-                                <span className="text-xs line-through text-[#7A5A66] dark:text-[#A3939B]">
+                                <span className="text-xs line-through text-[#76525F] dark:text-[#C9AEBB]">
                                   €{item.price.toFixed(2)}
                                 </span>
-                                <span className="text-base sm:text-lg font-semibold text-[#FD5E86]">
+                                <span className="text-base sm:text-lg font-semibold text-[#DE3163]">
                                   €{item.promoPrice.toFixed(2)}
                                 </span>
                               </div>
                             ) : (
-                              <span className="text-base sm:text-lg font-semibold text-[#1C0D12] dark:text-white">
+                              <span className="text-base sm:text-lg font-semibold text-[#2B0F1D] dark:text-white">
                                 €{item.price.toFixed(2)}
                               </span>
                             )}
@@ -448,8 +448,8 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                               }}
                               className={`inline-flex items-center gap-1.5 px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-all cursor-pointer ${
                                 isInspected
-                                  ? 'bg-[#FD5E86] text-white shadow-xs'
-                                  : 'border border-[#FCE4EC] hover:border-[#FD5E86] text-[#1C0D12] bg-white'
+                                  ? 'bg-[#DE3163] text-white shadow-xs'
+                                  : 'border border-[#F3DFD8] hover:border-[#DE3163] text-[#2B0F1D] bg-white'
                               }`}
                             >
                               <Eye className="w-3.5 h-3.5" aria-hidden="true" />
@@ -462,7 +462,7 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                               rel="noopener noreferrer"
                               onClick={(e) => e.stopPropagation()}
                               aria-label={`Ordina ${item.name} su Glovo`}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#FFF0F5] border border-[#FCE4EC] hover:border-[#FD5E86] hover:text-[#FD5E86] text-[#1C0D12] font-mono text-[11px] uppercase transition-colors"
+                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#FFEDE6] border border-[#F3DFD8] hover:border-[#DE3163] hover:text-[#DE3163] text-[#2B0F1D] font-mono text-[11px] uppercase transition-colors"
                             >
                               <span>Glovo</span>
                               <ArrowUpRight className="w-3 h-3" aria-hidden="true" />
@@ -478,17 +478,17 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
           </div>
 
           {/* Right 5 Cols: Sticky 3D WebGL Product Inspector */}
-          <div className="order-1 lg:order-2 lg:col-span-5 bg-[#FFF5F8] dark:bg-[#140E11] border-b lg:border-b-0 border-[#FCE4EC] dark:border-[#281E23] lg:sticky lg:top-24 flex flex-col justify-between relative overflow-hidden">
+          <div className="order-1 lg:order-2 lg:col-span-5 bg-[#FFF1EC] dark:bg-[#1F0E19] border-b lg:border-b-0 border-[#F3DFD8] dark:border-[#3B2231] lg:sticky lg:top-24 flex flex-col justify-between relative overflow-hidden">
             {/* Subtle Pink Ambient Underglow */}
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(253,94,134,0.1),transparent_70%)]" />
-            <span className="absolute top-2 left-2 font-mono text-[10px] text-[#FD5E86]/40 select-none pointer-events-none z-10">+</span>
-            <span className="absolute top-2 right-2 font-mono text-[10px] text-[#FD5E86]/40 select-none pointer-events-none z-10">+</span>
-            <div className="p-4 sm:p-5 border-b border-[#FCE4EC] dark:border-[#281E23] flex items-center justify-between gap-2">
-              <span className="font-mono text-[11px] sm:text-xs uppercase tracking-widest text-[#FD5E86] truncate flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#FD5E86] live-dot shrink-0" />
+            <span className="absolute top-2 left-2 font-mono text-[10px] text-[#DE3163]/40 select-none pointer-events-none z-10">+</span>
+            <span className="absolute top-2 right-2 font-mono text-[10px] text-[#DE3163]/40 select-none pointer-events-none z-10">+</span>
+            <div className="p-4 sm:p-5 border-b border-[#F3DFD8] dark:border-[#3B2231] flex items-center justify-between gap-2">
+              <span className="font-mono text-[11px] sm:text-xs uppercase tracking-widest text-[#DE3163] truncate flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#DE3163] live-dot shrink-0" />
                 ISPETTORE 3D // {resolvedModelType.toUpperCase()}
               </span>
-              <span className="font-mono text-[11px] text-[#7A5A66] dark:text-[#A3939B] shrink-0">
+              <span className="font-mono text-[11px] text-[#76525F] dark:text-[#C9AEBB] shrink-0">
                 STRASBURGO 378
               </span>
             </div>
@@ -501,13 +501,13 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
               className="h-[310px] sm:h-[360px] lg:h-[360px] xl:h-[400px]"
             />
 
-            <div className="p-5 sm:p-6 border-t border-[#FCE4EC] dark:border-[#281E23] bg-white dark:bg-[#0D090B] space-y-3">
+            <div className="p-5 sm:p-6 border-t border-[#F3DFD8] dark:border-[#3B2231] bg-white dark:bg-[#170A12] space-y-3">
               <div className="flex items-center justify-between gap-3">
-                <span className="font-mono text-[10px] uppercase tracking-widest text-[#7A5A66] dark:text-[#A3939B]">
+                <span className="font-mono text-[10px] uppercase tracking-widest text-[#76525F] dark:text-[#C9AEBB]">
                   PRODOTTO IN ISPEZIONE 3D
                 </span>
                 {inspectedItem.imageUrl && (
-                  <span className="font-mono text-[10px] uppercase text-[#FD5E86] tracking-wider">
+                  <span className="font-mono text-[10px] uppercase text-[#DE3163] tracking-wider">
                     ● Foto Glovo Sincronizzata
                   </span>
                 )}
@@ -515,29 +515,29 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
 
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h4 className="text-xl sm:text-2xl font-serif italic text-[#1C0D12] dark:text-white">
+                  <h4 className="text-xl sm:text-2xl font-serif italic text-[#2B0F1D] dark:text-white">
                     {inspectedItem.name}
                   </h4>
-                  <p className="text-xs text-[#7A5A66] dark:text-[#A3939B] mt-1 leading-relaxed">
+                  <p className="text-xs text-[#76525F] dark:text-[#C9AEBB] mt-1 leading-relaxed">
                     {inspectedItem.description}
                   </p>
                 </div>
                 <AnimatedPrice
                   value={inspectedItem.promoPrice || inspectedItem.price}
-                  className="font-mono text-lg sm:text-xl font-semibold text-[#FD5E86] shrink-0"
+                  className="font-mono text-lg sm:text-xl font-semibold text-[#DE3163] shrink-0"
                 />
               </div>
 
               {/* Dietary Profile of Inspected Product */}
-              <div className="pt-2 border-t border-[#FCE4EC] dark:border-[#281E23] space-y-1.5">
+              <div className="pt-2 border-t border-[#F3DFD8] dark:border-[#3B2231] space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-[10px] uppercase tracking-wider text-[#7A5A66] dark:text-[#A3939B]">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-[#76525F] dark:text-[#C9AEBB]">
                     Profilo Dietetico:
                   </span>
                   {inspectedItem.dietary && inspectedItem.dietary.length > 0 ? (
                     <div className="flex items-center gap-1 font-mono text-[10px]">
                       {inspectedItem.dietary.map((d) => (
-                        <span key={d} className="inline-flex items-center gap-1 px-1.5 py-0.5 border border-[#FD5E86]/40 text-[#FD5E86] bg-[#FFF5F8] dark:bg-[#1A1216]">
+                        <span key={d} className="inline-flex items-center gap-1 px-1.5 py-0.5 border border-[#DE3163]/40 text-[#DE3163] bg-[#FFF1EC] dark:bg-[#2A1422]">
                           {d === 'vegan' && (
                             <>
                               <Leaf className="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden="true" />
@@ -566,7 +566,7 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                       ))}
                     </div>
                   ) : (
-                    <span className="font-mono text-[10px] text-[#7A5A66] dark:text-[#A3939B]">
+                    <span className="font-mono text-[10px] text-[#76525F] dark:text-[#C9AEBB]">
                       Ricetta classica artigianale
                     </span>
                   )}
@@ -574,13 +574,13 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
 
                 {/* Allergen Breakdown */}
                 {inspectedItem.allergens && (
-                  <div className="p-2 bg-[#FFF5F8] dark:bg-white/5 border border-[#FCE4EC] dark:border-[#281E23] flex items-start gap-1.5 text-[11px] font-mono">
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#FD5E86] shrink-0 mt-0.5" aria-hidden="true" />
+                  <div className="p-2 bg-[#FFF1EC] dark:bg-white/5 border border-[#F3DFD8] dark:border-[#3B2231] flex items-start gap-1.5 text-[11px] font-mono">
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#DE3163] shrink-0 mt-0.5" aria-hidden="true" />
                     <div>
-                      <span className="font-semibold text-[#1C0D12] dark:text-white block">
+                      <span className="font-semibold text-[#2B0F1D] dark:text-white block">
                         Allergeni Presenti:
                       </span>
-                      <span className="text-[#7A5A66] dark:text-[#A3939B]">
+                      <span className="text-[#76525F] dark:text-[#C9AEBB]">
                         {inspectedItem.allergens.join(', ')}
                       </span>
                     </div>
@@ -588,8 +588,8 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                 )}
               </div>
 
-              <div className="pt-2 flex items-center justify-between gap-3 border-t border-[#FCE4EC] dark:border-[#281E23]">
-                <span className="font-mono text-[11px] text-[#7A5A66] dark:text-[#A3939B]">
+              <div className="pt-2 flex items-center justify-between gap-3 border-t border-[#F3DFD8] dark:border-[#3B2231]">
+                <span className="font-mono text-[11px] text-[#76525F] dark:text-[#C9AEBB]">
                   Disponibile per asporto &amp; delivery
                 </span>
                 <a
@@ -597,7 +597,7 @@ export const MenuShowcase: React.FC<MenuShowcaseProps> = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Ordina ${inspectedItem.name} su Glovo`}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#FD5E86] text-white font-mono text-xs uppercase tracking-wider hover:bg-[#1C0D12] transition-colors shadow-xs"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#DE3163] text-white font-mono text-xs uppercase tracking-wider hover:bg-[#2B0F1D] transition-colors shadow-xs"
                 >
                   <span>Ordina su Glovo</span>
                   <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />

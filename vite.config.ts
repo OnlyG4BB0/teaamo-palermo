@@ -8,7 +8,6 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          three: ['three', '@react-three/fiber', '@react-three/drei'],
           vendor: ['react', 'react-dom', 'lucide-react', 'canvas-confetti'],
         },
       },

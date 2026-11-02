@@ -115,7 +115,7 @@ export const AnimatedPrice: React.FC<AnimatedPriceProps> = ({
   return (
     <span
       className={`inline-block transition-transform duration-300 ${
-        pulsing ? 'scale-110 text-[#D4365C]' : 'scale-100'
+        pulsing ? 'scale-110 text-[#DE3163]' : 'scale-100'
       } ${className}`}
     >
       {prefix}
@@ -195,7 +195,7 @@ export const triggerEditorialConfetti = (originEvent?: React.MouseEvent) => {
       gravity: 0.95,
       scalar: 0.85,
       origin: { x, y },
-      colors: ['#D4365C', '#140E11', '#F59E0B', '#FFC2D1', '#FAF7F2'],
+      colors: ['#DE3163', '#1F0E19', '#F59E0B', '#FFC2D1', '#FAF7F2'],
       disableForReducedMotion: true,
     });
   } catch {

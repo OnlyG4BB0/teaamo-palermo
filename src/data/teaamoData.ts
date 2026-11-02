@@ -43,7 +43,7 @@ export const DIETARY_FILTERS: DietaryFilterItem[] = [
     label: 'Tutti gli Stili',
     shortLabel: 'TUTTI',
     iconKey: 'all',
-    badgeClass: 'border-[#FD5E86] text-[#FD5E86]',
+    badgeClass: 'border-[#DE3163] text-[#DE3163]',
     description: 'Mostra l\'intero catalogo prodotti',
   },
   {
@@ -102,6 +102,8 @@ export interface MenuItem {
     cream: string;
   };
 }
+
+const BASE = import.meta.env.BASE_URL || '/';
 
 export const GLOVO_STORE_SECTIONS = {
   store: 'https://glovoapp.com/it/it/palermo/stores/teaamo-bubble-tea-pmo',
@@ -365,7 +367,7 @@ export const MENU_ITEMS: MenuItem[] = [
     dietary: ['nut-free'],
     allergens: ['Glutine', 'Lattosio'],
     colorAccent: '#E11D48',
-    imageUrl: '/teaamo-palermo/images/burgers/giove.jpg',
+    imageUrl: `${BASE}images/burgers/giove.jpg`,
     glovoUrl: GLOVO_STORE_SECTIONS.spacepolly,
   },
   {
@@ -380,7 +382,7 @@ export const MENU_ITEMS: MenuItem[] = [
     dietary: ['nut-free'],
     allergens: ['Glutine', 'Senape'],
     colorAccent: '#7C3AED',
-    imageUrl: '/teaamo-palermo/images/burgers/plutone.jpg',
+    imageUrl: `${BASE}images/burgers/plutone.jpg`,
     glovoUrl: GLOVO_STORE_SECTIONS.spacepolly,
   },
   {
@@ -395,7 +397,7 @@ export const MENU_ITEMS: MenuItem[] = [
     dietary: ['nut-free'],
     allergens: ['Glutine'],
     colorAccent: '#DD6B20',
-    imageUrl: '/teaamo-palermo/images/burgers/marte.jpg',
+    imageUrl: `${BASE}images/burgers/marte.jpg`,
     glovoUrl: GLOVO_STORE_SECTIONS.spacepolly,
   },
   {
@@ -713,7 +715,7 @@ export const INSTAGRAM_MOMENTS = [
     tag: '@TEAAMO_BUBBLETEA',
     description: 'Il binomio serale preferito a Palermo: smash burger caldo con cipolla croccante e Bubble Tea Taro ghiacciato fino alle 03:30.',
     subtitle: 'Viale Strasburgo 378 • Night Shift',
-    imageUrl: '/teaamo-palermo/images/burgers/giove.jpg',
+    imageUrl: `${BASE}images/burgers/giove.jpg`,
   },
   {
     id: 'ig-2',
@@ -721,7 +723,7 @@ export const INSTAGRAM_MOMENTS = [
     tag: 'SWEET CORNER',
     description: 'La cialda ad alveare cotta al momento e le crêpes con impasto al cacao e biscotto stellato.',
     subtitle: 'Produzione Artigianale Quotidiana',
-    imageUrl: '/teaamo-palermo/videos/tiktok_7688302222492372256_cover.jpg',
+    imageUrl: `${BASE}videos/tiktok_7688302222492372256_cover.jpg`,
   },
   {
     id: 'ig-3',
@@ -774,7 +776,6 @@ export interface TikTokVideo {
   badge?: string;
 }
 
-const BASE = import.meta.env.BASE_URL || '/';
 
 export const TIKTOK_VIDEOS: TikTokVideo[] = [
   {
@@ -867,5 +868,44 @@ export const TIKTOK_VIDEOS: TikTokVideo[] = [
     music: 'Suono Originale - teaamobubbletea',
     tag: 'OPEN 03:30 AM',
     badge: 'TOP PLAY',
+  },
+];
+
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+// Shared by the visible FAQ section and the FAQPage JSON-LD injected at prerender time
+export const FAQ_ITEMS: FaqItem[] = [
+  {
+    question: 'Fino a che ora è aperto TeaAmo a Palermo?',
+    answer:
+      'TeaAmo in Viale Strasburgo 378 è aperto tutti i giorni, festivi compresi, dalle 12:30 alle 03:30 di notte: uno dei pochi posti a Palermo dove trovare Bubble Tea, dolci e smash burger anche a tarda notte.',
+  },
+  {
+    question: 'Dove si trova TeaAmo Bubble Tea a Palermo?',
+    answer:
+      'Ci trovi in Viale Strasburgo 378, 90146 Palermo (PA). Puoi aprire il percorso su Google Maps direttamente dalla sezione "Dove siamo" di questa pagina oppure chiamarci al +39 351 703 2607.',
+  },
+  {
+    question: 'TeaAmo fa consegna a domicilio a Palermo?',
+    answer:
+      'Sì, consegniamo a domicilio a Palermo tramite il nostro store ufficiale su Glovo, con l\'intero menu: Bubble Tea, SpacePolly SmashBurger, Bubble Waffle, crêpes, pancake e gelato artigianale. È disponibile anche il ritiro al locale.',
+  },
+  {
+    question: 'Cos\'è il Bubble Tea e cosa sono le perle di tapioca?',
+    answer:
+      'Il Bubble Tea è una bevanda nata a Taiwan a base di tè (al latte o alla frutta) servita con le perle di tapioca: palline morbide e gommose cotte ogni giorno e lavorate con zucchero di canna. Puoi scegliere anche le popping boba, perle che scoppiano in bocca rilasciando succo di frutta.',
+  },
+  {
+    question: 'Ci sono opzioni vegane, senza lattosio o senza glutine?',
+    answer:
+      'Sì. Molti tè alla frutta sono 100% vegan, le basi possono essere preparate con latte vegetale per una versione senza lattosio e le perle di tapioca sono naturalmente senza glutine. Nella sezione Menu puoi filtrare i prodotti per esigenza alimentare e consultare gli allergeni di ogni prodotto.',
+  },
+  {
+    question: 'Cosa sono gli SpacePolly SmashBurger?',
+    answer:
+      'SpacePolly è la nostra linea di smash burger notturni: carne schiacciata sulla piastra rovente per una crosticina caramellizzata, cheddar fuso e salse speciali. I gusti prendono il nome dai pianeti: Giove, Plutone, Marte, Mercurio e altri.',
   },
 ];
