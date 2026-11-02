@@ -50,7 +50,65 @@ async function prerender() {
       throw new Error(`Target '</body>' not found after root element in dist/index.html`);
     }
 
-    const beforeRoot = template.slice(0, rootStart);
+    // Structured data built from the same data module the page renders,
+    // so the Menu and FAQPage schema can never drift from the visible content.
+    const { MENU_ITEMS, FAQ_ITEMS } = await vite.ssrLoadModule('/src/data/teaamoData.ts');
+    const siteUrl = 'https://onlyg4bb0.github.io/teaamo-palermo/';
+    const absolute = (url) => (url && url.startsWith('/') ? new URL(url, siteUrl).href : url);
+    const menuSections = [
+      { id: 'bubble-tea', name: 'Bubble Tea & Pokémon Edition' },
+      { id: 'spacepolly', name: 'SpacePolly SmashBurger' },
+      { id: 'sweet', name: 'Bubble Waffle, Crêpes & Pancake' },
+      { id: 'frozen', name: 'Gelato artigianale & Frozen Yogurt' },
+    ];
+    const structuredData = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'WebSite',
+          '@id': `${siteUrl}#website`,
+          url: siteUrl,
+          name: 'TeaAmo Bubble Tea Palermo',
+          inLanguage: 'it-IT',
+          publisher: { '@id': `${siteUrl}#teaamo` },
+        },
+        {
+          '@type': 'Menu',
+          '@id': `${siteUrl}#menu-schema`,
+          name: 'Menu TeaAmo Palermo',
+          inLanguage: 'it-IT',
+          hasMenuSection: menuSections.map((section) => ({
+            '@type': 'MenuSection',
+            name: section.name,
+            hasMenuItem: MENU_ITEMS.filter((item) => item.category === section.id).map((item) => ({
+              '@type': 'MenuItem',
+              name: item.name,
+              description: item.description,
+              ...(item.imageUrl ? { image: absolute(item.imageUrl) } : {}),
+              offers: {
+                '@type': 'Offer',
+                price: (item.promoPrice ?? item.price).toFixed(2),
+                priceCurrency: 'EUR',
+              },
+              ...(item.dietary?.includes('vegan') ? { suitableForDiet: 'https://schema.org/VeganDiet' } : {}),
+            })),
+          })),
+        },
+        {
+          '@type': 'FAQPage',
+          '@id': `${siteUrl}#faq`,
+          mainEntity: FAQ_ITEMS.map((faq) => ({
+            '@type': 'Question',
+            name: faq.question,
+            acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+          })),
+        },
+      ],
+    };
+    const jsonLd = `<script type="application/ld+json">${JSON.stringify(structuredData).replace(/</g, '\\u003c')}</script>\n  </head>`;
+
+    const head = template.slice(0, rootStart);
+    const beforeRoot = head.includes('"@type":"FAQPage"') ? head : head.replace('</head>', jsonLd);
     const afterRoot = template.slice(bodyClose);
     const preRenderedHtml = `${beforeRoot}<div id="root">${appHtml}</div>\n  ${afterRoot}`;
 
@@ -89,4 +147,6 @@ async function prerender() {
   }
 }
 
-prerender();
+// Vite's SSR loader can leave handles open (e.g. lazily imported chunks), keeping Node alive
+// after the work is done, which would stall `npm run build` and the Pages deploy.
+prerender().then(() => process.exit(0));

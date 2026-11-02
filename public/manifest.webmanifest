@@ -1,0 +1,14 @@
+{
+  "name": "TeaAmo Bubble Tea Palermo",
+  "short_name": "TeaAmo",
+  "description": "Bubble Tea, SpacePolly Smash Burger e dolci in Viale Strasburgo 378, Palermo. Aperto 12:30 – 03:30.",
+  "lang": "it",
+  "start_url": "/teaamo-palermo/",
+  "scope": "/teaamo-palermo/",
+  "display": "standalone",
+  "background_color": "#FFF8F3",
+  "theme_color": "#DE3163",
+  "icons": [
+    { "src": "/teaamo-palermo/teaamo-logo.png", "sizes": "600x600", "type": "image/png", "purpose": "any" }
+  ]
+}

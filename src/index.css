@@ -4,21 +4,36 @@
 
 @layer base {
   :root {
-    --bg-primary: #FFFFFF;
-    --bg-secondary: #FFF5F8;
-    --text-primary: #1C0D12;
-    --text-muted: #7A5A66;
-    --border-hairline: #FCE4EC;
-    --accent-carmine: #FD5E86;
+    --bg-primary: #FFF8F3;
+    --bg-secondary: #FFF1EC;
+    --text-primary: #2B0F1D;
+    --text-muted: #76525F;
+    --border-hairline: #F3DFD8;
+    --accent-carmine: #DE3163;
+    --blush: #FD5E86;
+    --taro: #9B7BEA;
+    --matcha: #7FB77E;
+    --caramel: #F2A65A;
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .dark {
-    --bg-primary: #0D090B;
-    --bg-secondary: #161013;
-    --text-primary: #F5EFEA;
-    --text-muted: #A3939B;
-    --border-hairline: #281E23;
-    --accent-carmine: #FD5E86;
+    --bg-primary: #170A12;
+    --bg-secondary: #1F0E19;
+    --text-primary: #FCEFF2;
+    --text-muted: #C9AEBB;
+    --border-hairline: #3B2231;
+    --accent-carmine: #FF5C8A;
+  }
+
+  ::selection {
+    background: #DE3163;
+    color: #FFFFFF;
+  }
+
+  :focus-visible {
+    outline: 2px solid #DE3163;
+    outline-offset: 3px;
   }
 
   html {
@@ -73,18 +88,18 @@
   }
 }
 
-/* Subtle architectural grid background with gentle pink drift on pure white */
+/* Warm cream architectural grid with a gentle pink drift */
 .arch-grid-bg {
   background-size: 48px 48px;
-  background-color: #FFFFFF;
+  background-color: #FFF8F3;
   background-image: 
-    linear-gradient(to right, rgba(253, 94, 134, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(253, 94, 134, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(222, 49, 99, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(222, 49, 99, 0.045) 1px, transparent 1px);
   animation: gridDrift 28s linear infinite;
 }
 
 .dark .arch-grid-bg {
-  background-color: #0D090B;
+  background-color: #170A12;
   background-image: 
     linear-gradient(to right, rgba(253, 94, 134, 0.08) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(253, 94, 134, 0.08) 1px, transparent 1px);
@@ -121,7 +136,7 @@
   transition: opacity 0.35s ease;
   background: radial-gradient(
     420px circle at var(--spot-x, 50%) var(--spot-y, 50%),
-    rgba(253, 94, 134, 0.12),
+    rgba(253, 94, 134, 0.14),
     transparent 65%
   );
 }
@@ -150,7 +165,7 @@
   bottom: -2px;
   width: 100%;
   height: 1px;
-  background-color: #FD5E86;
+  background: linear-gradient(90deg, #DE3163, #9B7BEA);
   transform: scaleX(0);
   transform-origin: right;
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
@@ -218,7 +233,161 @@
   animation: flameFlicker 1.8s ease-in-out infinite;
 }
 
+/* ---------------------------------------------------------------------------
+   Brand surfaces: film grain, aurora blobs, floating pearls
+   --------------------------------------------------------------------------- */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.aurora {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(64px);
+  opacity: 0.55;
+  pointer-events: none;
+  will-change: transform;
+  animation: auroraDrift 18s ease-in-out infinite alternate;
+}
+
+@keyframes auroraDrift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(6%, -8%, 0) scale(1.12); }
+  100% { transform: translate3d(-5%, 6%, 0) scale(0.94); }
+}
+
+.pearl {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  background: radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.85) 0 8%, #5B2A3C 22%, #2B0F1D 70%);
+  box-shadow: 0 10px 24px -8px rgba(43, 15, 29, 0.45);
+  animation: pearlFloat 9s ease-in-out infinite;
+}
+
+@keyframes pearlFloat {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50% { transform: translate3d(0, -22px, 0) rotate(12deg); }
+}
+
+/* Animated multi-flavour gradient text (rose → taro → caramel) */
+.text-flavor {
+  background: linear-gradient(100deg, #DE3163 0%, #FD5E86 25%, #9B7BEA 50%, #F2A65A 75%, #DE3163 100%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: flavorShift 9s linear infinite;
+  padding-right: 0.06em;
+}
+
+@keyframes flavorShift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 220% 50%; }
+}
+
+/* Load-time hero entrance (CSS only, so prerendered HTML animates before hydration) */
+.hero-enter {
+  opacity: 0;
+  animation: heroEnter 1s var(--ease-out-expo) forwards;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes heroEnter {
+  from { opacity: 0; transform: translate3d(0, 28px, 0); filter: blur(6px); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); filter: blur(0); }
+}
+
+.word-rise {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.word-rise > span {
+  display: inline-block;
+  transform: translate3d(0, 105%, 0);
+  animation: wordRise 1.1s var(--ease-out-expo) forwards;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes wordRise {
+  to { transform: translate3d(0, 0, 0); }
+}
+
+/* Shine sweep on primary CTAs */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.38) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.8s var(--ease-out-expo);
+}
+
+.btn-shine:hover::after {
+  transform: translateX(120%);
+}
+
+/* Reading progress bar driven by a CSS variable set on scroll */
+.scroll-progress {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 2px;
+  width: 100%;
+  transform-origin: left;
+  transform: scaleX(var(--progress, 0));
+  background: linear-gradient(90deg, #DE3163, #9B7BEA, #F2A65A);
+}
+
+/* Reverse marquee for the second ticker row */
+.animate-marquee-reverse {
+  animation: marquee 38s linear infinite reverse;
+}
+
+/* Tilt-lift card hover */
+.lift-card {
+  transition: transform 0.5s var(--ease-out-expo), box-shadow 0.5s var(--ease-out-expo);
+}
+
+.lift-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 48px -24px rgba(222, 49, 99, 0.35);
+}
+
+/* FAQ accordion marker */
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item[open] .faq-icon {
+  transform: rotate(45deg);
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .hero-enter,
+  .word-rise > span {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
   *, ::before, ::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;

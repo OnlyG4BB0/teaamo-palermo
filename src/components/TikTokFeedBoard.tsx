@@ -94,30 +94,30 @@ const TikTokVideoCard: React.FC<VideoCardProps> = ({
   return (
     <div
       ref={cardRef}
-      className={`snap-start shrink-0 w-[270px] xs:w-[290px] sm:w-[310px] md:w-[320px] rounded-2xl border-2 bg-white dark:bg-[#120B0E] overflow-hidden flex flex-col justify-between shadow-md transition-all duration-300 ${
+      className={`snap-start shrink-0 w-[270px] xs:w-[290px] sm:w-[310px] md:w-[320px] rounded-2xl border-2 bg-white dark:bg-[#1F0E19] overflow-hidden flex flex-col justify-between shadow-md transition-all duration-300 ${
         isActive
-          ? 'border-[#FD5E86] shadow-xl scale-100 ring-4 ring-[#FD5E86]/10'
-          : 'border-[#FCE4EC] dark:border-[#281E23] opacity-85 scale-[0.98] hover:opacity-100 hover:scale-[1]'
+          ? 'border-[#DE3163] shadow-xl scale-100 ring-4 ring-[#DE3163]/10'
+          : 'border-[#F3DFD8] dark:border-[#3B2231] opacity-85 scale-[0.98] hover:opacity-100 hover:scale-[1]'
       }`}
     >
       {/* Card Top Bar */}
-      <div className="p-3 border-b border-[#FCE4EC] dark:border-[#281E23] bg-[#FFF5F8] dark:bg-[#180E13] flex items-center justify-between gap-2">
+      <div className="p-3 border-b border-[#F3DFD8] dark:border-[#3B2231] bg-[#FFF1EC] dark:bg-[#180E13] flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="w-6 h-6 rounded-full bg-[#FD5E86] text-white flex items-center justify-center font-mono text-[11px] font-bold shrink-0">
+          <span className="w-6 h-6 rounded-full bg-[#DE3163] text-white flex items-center justify-center font-mono text-[11px] font-bold shrink-0">
             0{index + 1}
           </span>
           <div className="min-w-0">
-            <p className="font-mono text-xs font-semibold text-[#1C0D12] dark:text-white truncate">
+            <p className="font-mono text-xs font-semibold text-[#2B0F1D] dark:text-white truncate">
               @teaamobubbletea
             </p>
-            <p className="font-mono text-[9px] text-[#FD5E86] uppercase tracking-wider truncate">
+            <p className="font-mono text-[9px] text-[#DE3163] uppercase tracking-wider truncate">
               {video.tag}
             </p>
           </div>
         </div>
 
         {video.badge && (
-          <span className="font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-white dark:bg-black border border-[#FD5E86] text-[#FD5E86] font-bold shrink-0 shadow-2xs">
+          <span className="font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-white dark:bg-black border border-[#DE3163] text-[#DE3163] font-bold shrink-0 shadow-2xs">
             {video.badge}
           </span>
         )}
@@ -155,8 +155,8 @@ const TikTokVideoCard: React.FC<VideoCardProps> = ({
             aria-label={isUnmuted ? 'Disattiva audio' : 'Attiva audio'}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono font-medium backdrop-blur-md transition-all duration-300 shadow-md ${
               isUnmuted
-                ? 'bg-[#FD5E86] text-white ring-2 ring-[#FD5E86]/50 animate-pulse'
-                : 'bg-black/60 text-white hover:bg-[#FD5E86] hover:text-white border border-white/20'
+                ? 'bg-[#DE3163] text-white ring-2 ring-[#DE3163]/50 animate-pulse'
+                : 'bg-black/60 text-white hover:bg-[#DE3163] hover:text-white border border-white/20'
             }`}
           >
             {isUnmuted ? (
@@ -191,7 +191,7 @@ const TikTokVideoCard: React.FC<VideoCardProps> = ({
         {/* Pause Overlay (when paused by tap) */}
         {!isPlaying && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-xs z-10 pointer-events-none">
-            <div className="w-16 h-16 rounded-full bg-[#FD5E86]/90 flex items-center justify-center text-white shadow-xl animate-scale-up">
+            <div className="w-16 h-16 rounded-full bg-[#DE3163]/90 flex items-center justify-center text-white shadow-xl animate-scale-up">
               <Play className="w-8 h-8 fill-current ml-1" />
             </div>
           </div>
@@ -202,11 +202,11 @@ const TikTokVideoCard: React.FC<VideoCardProps> = ({
           {/* Metrics Pill (Views + Likes) */}
           <div className="flex items-center gap-3 text-xs font-mono font-medium drop-shadow-md">
             <span className="inline-flex items-center gap-1 bg-black/50 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/15">
-              <Eye className="w-3.5 h-3.5 text-[#FD5E86]" />
+              <Eye className="w-3.5 h-3.5 text-[#DE3163]" />
               {video.views}
             </span>
             <span className="inline-flex items-center gap-1 bg-black/50 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/15">
-              <Heart className="w-3.5 h-3.5 text-[#FD5E86] fill-current" />
+              <Heart className="w-3.5 h-3.5 text-[#DE3163] fill-current" />
               {video.likes}
             </span>
           </div>
@@ -218,7 +218,7 @@ const TikTokVideoCard: React.FC<VideoCardProps> = ({
 
           {/* Music Track Note */}
           <div className="flex items-center gap-1.5 text-[11px] font-mono text-white/80 drop-shadow-xs truncate">
-            <Music className="w-3 h-3 text-[#FD5E86] shrink-0 animate-spin-slow" />
+            <Music className="w-3 h-3 text-[#DE3163] shrink-0 animate-spin-slow" />
             <span className="truncate">{video.music}</span>
           </div>
         </div>
@@ -226,15 +226,15 @@ const TikTokVideoCard: React.FC<VideoCardProps> = ({
         {/* Pink Scrub / Progress Bar */}
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 z-20">
           <div
-            className="h-full bg-[#FD5E86] transition-all duration-100 ease-linear"
+            className="h-full bg-[#DE3163] transition-all duration-100 ease-linear"
             style={{ width: `${progress}%` }}
           />
         </div>
       </div>
 
       {/* Card Footer Bar */}
-      <div className="p-3 bg-white dark:bg-[#120B0E] border-t border-[#FCE4EC] dark:border-[#281E23] flex items-center justify-between gap-2">
-        <span className="font-mono text-[10px] text-[#7A5A66] dark:text-[#A3939B] truncate">
+      <div className="p-3 bg-white dark:bg-[#1F0E19] border-t border-[#F3DFD8] dark:border-[#3B2231] flex items-center justify-between gap-2">
+        <span className="font-mono text-[10px] text-[#76525F] dark:text-[#C9AEBB] truncate">
           Viale Strasburgo 378
         </span>
 
@@ -242,7 +242,7 @@ const TikTokVideoCard: React.FC<VideoCardProps> = ({
           href={video.tiktokUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FFF0F5] dark:bg-white/5 border border-[#FCE4EC] hover:border-[#FD5E86] hover:bg-[#FD5E86] hover:text-white text-[#FD5E86] font-mono text-xs font-semibold uppercase tracking-wider transition-all duration-200 shrink-0 shadow-2xs"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FFEDE6] dark:bg-white/5 border border-[#F3DFD8] hover:border-[#DE3163] hover:bg-[#DE3163] hover:text-white text-[#DE3163] font-mono text-xs font-semibold uppercase tracking-wider transition-all duration-200 shrink-0 shadow-2xs"
         >
           <span>Apri su TikTok</span>
           <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
@@ -322,23 +322,23 @@ export const TikTokFeedBoard: React.FC<TikTokFeedBoardProps> = () => {
   return (
     <section
       id="tiktok"
-      className="border-b border-[#FCE4EC] dark:border-[#281E23] py-14 sm:py-24 bg-[#FFF9FA] dark:bg-[#0D090B] overflow-hidden"
+      className="border-b border-[#F3DFD8] dark:border-[#3B2231] py-14 sm:py-24 bg-[#FFF9FA] dark:bg-[#170A12] overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <RevealOnScroll className="flex flex-col md:flex-row md:items-end justify-between pb-8 sm:pb-10 border-b border-[#FCE4EC] dark:border-[#281E23] gap-4 sm:gap-6">
+        <RevealOnScroll className="flex flex-col md:flex-row md:items-end justify-between pb-8 sm:pb-10 border-b border-[#F3DFD8] dark:border-[#3B2231] gap-4 sm:gap-6">
           <div>
             <div className="flex items-center gap-2 mb-2.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#FD5E86] live-dot shrink-0" />
-              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#FD5E86] font-semibold">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#DE3163] live-dot shrink-0" />
+              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#DE3163] font-semibold">
                 03 / CAROSELLO VIDEO UFFICIALI • @TEAAMOBUBBLETEA
               </p>
             </div>
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-normal tracking-tight leading-none text-[#1C0D12] dark:text-[#F5EFEA]">
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-normal tracking-tight leading-none text-[#2B0F1D] dark:text-[#FCEFF2]">
               Bacheca Video{' '}
-              <span className="italic text-[#FD5E86]">TikTok</span>
+              <span className="italic text-[#DE3163]">TikTok</span>
             </h2>
-            <p className="mt-3 text-sm text-[#7A5A66] dark:text-[#A3939B] max-w-xl">
+            <p className="mt-3 text-sm text-[#76525F] dark:text-[#C9AEBB] max-w-xl">
               I 7 video originali del nostro canale: riproduzione continua in silenzioso. Tocca <strong>"Ascolta"</strong> su qualsiasi video per attivare l'audio originale.
             </p>
           </div>
@@ -346,7 +346,7 @@ export const TikTokFeedBoard: React.FC<TikTokFeedBoardProps> = () => {
           {/* Carousel Navigation Controls & Official Channel Link */}
           <div className="flex items-center gap-3 self-start md:self-auto">
             {/* Arrow Navigation */}
-            <div className="inline-flex items-center rounded-full border-2 border-[#FCE4EC] dark:border-[#281E23] bg-white dark:bg-[#120B0E] p-1 shadow-xs">
+            <div className="inline-flex items-center rounded-full border-2 border-[#F3DFD8] dark:border-[#3B2231] bg-white dark:bg-[#1F0E19] p-1 shadow-xs">
               <button
                 type="button"
                 onClick={() => scrollCarousel('left')}
@@ -354,13 +354,13 @@ export const TikTokFeedBoard: React.FC<TikTokFeedBoardProps> = () => {
                 aria-label="Video precedente"
                 className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                   canScrollLeft
-                    ? 'text-[#1C0D12] dark:text-white hover:bg-[#FD5E86] hover:text-white'
+                    ? 'text-[#2B0F1D] dark:text-white hover:bg-[#DE3163] hover:text-white'
                     : 'text-gray-300 dark:text-gray-700 cursor-not-allowed'
                 }`}
               >
                 <ChevronLeft className="w-5 h-5" aria-hidden="true" />
               </button>
-              <span className="w-px h-5 bg-[#FCE4EC] dark:bg-[#281E23] mx-1" />
+              <span className="w-px h-5 bg-[#F3DFD8] dark:bg-[#3B2231] mx-1" />
               <button
                 type="button"
                 onClick={() => scrollCarousel('right')}
@@ -368,7 +368,7 @@ export const TikTokFeedBoard: React.FC<TikTokFeedBoardProps> = () => {
                 aria-label="Video successivo"
                 className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                   canScrollRight
-                    ? 'text-[#1C0D12] dark:text-white hover:bg-[#FD5E86] hover:text-white'
+                    ? 'text-[#2B0F1D] dark:text-white hover:bg-[#DE3163] hover:text-white'
                     : 'text-gray-300 dark:text-gray-700 cursor-not-allowed'
                 }`}
               >
@@ -382,7 +382,7 @@ export const TikTokFeedBoard: React.FC<TikTokFeedBoardProps> = () => {
                 href={TEAAMO_LINKS.tiktok}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#FD5E86] text-white font-mono text-xs uppercase tracking-widest hover:bg-[#1C0D12] transition-colors shadow-sm font-semibold"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#DE3163] text-white font-mono text-xs uppercase tracking-widest hover:bg-[#2B0F1D] transition-colors shadow-sm font-semibold"
               >
                 <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.85.12V9.41a6.33 6.33 0 0 0-.85-.06A6.34 6.34 0 0 0 3.14 15.7a6.34 6.34 0 0 0 10.74 4.54 6.3 6.3 0 0 0 1.95-4.57V8.71a8.21 8.21 0 0 0 4.76 1.5V6.76a4.87 4.87 0 0 1-1-.07z" />
@@ -396,22 +396,22 @@ export const TikTokFeedBoard: React.FC<TikTokFeedBoardProps> = () => {
         </RevealOnScroll>
 
         {/* Channel Status Banner */}
-        <div className="py-3 px-4 border-x border-b border-[#FCE4EC] dark:border-[#281E23] bg-white dark:bg-[#140E11] flex items-center justify-between text-xs font-mono text-[#7A5A66] dark:text-[#A3939B]">
+        <div className="py-3 px-4 border-x border-b border-[#F3DFD8] dark:border-[#3B2231] bg-white dark:bg-[#1F0E19] flex items-center justify-between text-xs font-mono text-[#76525F] dark:text-[#C9AEBB]">
           <div className="flex items-center gap-2 min-w-0">
-            <span className="w-2 h-2 rounded-full bg-[#FD5E86] live-dot shrink-0" />
-            <span className="font-medium text-[#1C0D12] dark:text-white truncate">
+            <span className="w-2 h-2 rounded-full bg-[#DE3163] live-dot shrink-0" />
+            <span className="font-medium text-[#2B0F1D] dark:text-white truncate">
               {TIKTOK_VIDEOS.length} Video Originali Caricati
             </span>
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
             {unmutedVideoId && (
-              <span className="inline-flex items-center gap-1 text-[11px] text-[#FD5E86] font-semibold">
+              <span className="inline-flex items-center gap-1 text-[11px] text-[#DE3163] font-semibold">
                 <Volume2 className="w-3.5 h-3.5" />
                 Audio Attivo
               </span>
             )}
-            <div className="font-mono text-xs text-[#FD5E86] font-bold">
+            <div className="font-mono text-xs text-[#DE3163] font-bold">
               Video {activeSlideIndex + 1} di {TIKTOK_VIDEOS.length}
             </div>
           </div>
@@ -420,7 +420,7 @@ export const TikTokFeedBoard: React.FC<TikTokFeedBoardProps> = () => {
         {/* 7-Video Horizontal Native Carousel (Left-Aligned Layout) */}
         <div
           ref={carouselRef}
-          className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory py-6 px-4 sm:px-6 lg:px-8 justify-start border-x border-b border-[#FCE4EC] dark:border-[#281E23] bg-[#FFF9FA] dark:bg-[#0D090B]"
+          className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory py-6 px-4 sm:px-6 lg:px-8 justify-start border-x border-b border-[#F3DFD8] dark:border-[#3B2231] bg-[#FFF9FA] dark:bg-[#170A12]"
           style={{
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
@@ -442,7 +442,7 @@ export const TikTokFeedBoard: React.FC<TikTokFeedBoardProps> = () => {
         </div>
 
         {/* Carousel Pagination Dots (1:1 with all 7 accessible videos) */}
-        <div className="py-4 border-x border-b border-[#FCE4EC] dark:border-[#281E23] bg-white dark:bg-[#120B0E] flex items-center justify-center gap-2">
+        <div className="py-4 border-x border-b border-[#F3DFD8] dark:border-[#3B2231] bg-white dark:bg-[#1F0E19] flex items-center justify-center gap-2">
           {TIKTOK_VIDEOS.map((_, dotIdx) => (
             <button
               key={dotIdx}
@@ -451,8 +451,8 @@ export const TikTokFeedBoard: React.FC<TikTokFeedBoardProps> = () => {
               aria-label={`Vai al video ${dotIdx + 1}`}
               className={`h-2 transition-all duration-300 rounded-full cursor-pointer ${
                 activeSlideIndex === dotIdx
-                  ? 'w-8 bg-[#FD5E86]'
-                  : 'w-2 bg-[#FCE4EC] dark:bg-[#281E23] hover:bg-[#FD5E86]/50'
+                  ? 'w-8 bg-[#DE3163]'
+                  : 'w-2 bg-[#F3DFD8] dark:bg-[#3B2231] hover:bg-[#DE3163]/50'
               }`}
             />
           ))}

@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ArrowUpRight,
+  Clock,
+  MapPin,
+  Phone,
+  Plus,
   Sparkles,
   Star,
 } from 'lucide-react';
@@ -9,8 +13,9 @@ import {
   HeroPresetFlavor,
   TEAAMO_LINKS,
   GLOVO_STORE_SECTIONS,
+  FAQ_ITEMS,
 } from './data/teaamoData';
-import { StudioViewport3D, ModelType } from './components/three/TeaAmo3DModels';
+import { StudioViewport3D } from './components/three/LazyStudioViewport3D';
 import { BobaLabBuilder } from './components/BobaLabBuilder';
 import { MenuShowcase } from './components/MenuShowcase';
 import { TikTokFeedBoard } from './components/TikTokFeedBoard';
@@ -35,7 +40,7 @@ interface HeroModelTab {
 const HERO_MODELS_LIST: HeroModelTab[] = [
   {
     id: 'cup',
-    label: '01 Boba',
+    label: 'Boba',
     badge: 'SIGNATURE BOBA LAB',
     title: 'Taro Dream • Milk Tea con Perle di Tapioca',
     price: '7,00 €',
@@ -44,7 +49,7 @@ const HERO_MODELS_LIST: HeroModelTab[] = [
   },
   {
     id: 'fruittea',
-    label: '02 Fruit',
+    label: 'Fruit',
     badge: 'TÈ CRISTALLINO & FRUTTA',
     title: 'Bulbasaur • Fruit Tea con Fette di Lime & Boba',
     price: '7,00 €',
@@ -53,7 +58,7 @@ const HERO_MODELS_LIST: HeroModelTab[] = [
   },
   {
     id: 'burger-giove',
-    label: '03 Burger',
+    label: 'Burger',
     badge: 'LINEA SMASH NOTTURNA',
     title: 'Giove • Doppio Smash, Bacon & Cipolla Croccante',
     price: '11,90 €',
@@ -62,7 +67,7 @@ const HERO_MODELS_LIST: HeroModelTab[] = [
   },
   {
     id: 'waffle',
-    label: '04 Waffle',
+    label: 'Waffle',
     badge: 'PATISSERIE A NIDO D\'APE',
     title: 'Bubble Waffle Cono con Doppio Gelato & Fudge',
     price: '10,90 €',
@@ -71,7 +76,7 @@ const HERO_MODELS_LIST: HeroModelTab[] = [
   },
   {
     id: 'crepe',
-    label: '05 Crêpes',
+    label: 'Crêpes',
     badge: 'DOLCI AL PIATTO',
     title: 'Crêpe Ripiegata con Nutella, Panna & Biscotto',
     price: '8,50 €',
@@ -80,7 +85,7 @@ const HERO_MODELS_LIST: HeroModelTab[] = [
   },
   {
     id: 'pancake',
-    label: '06 Pancake',
+    label: 'Pancake',
     badge: 'AMERICAN BAKERY',
     title: 'Triple Stack Pancakes con Glassa d\'Acero',
     price: '7,90 €',
@@ -89,6 +94,74 @@ const HERO_MODELS_LIST: HeroModelTab[] = [
   },
 ];
 
+const NAV_LINKS = [
+  { href: '#menu', label: 'Menu', desc: 'SpacePolly, Bubble Tea & Sweet' },
+  { href: '#boba-lab', label: 'Boba Lab 3D', desc: 'Crea il tuo bubble tea in 3D' },
+  { href: '#tiktok', label: 'TikTok', desc: 'Video & trend @teaamobubbletea' },
+  { href: '#delivery', label: 'Delivery', desc: 'Glovo Store & ritiro al locale' },
+  { href: '#allergeni', label: 'Allergeni', desc: 'Vegan, senza glutine & lattosio' },
+  { href: '#faq', label: 'FAQ', desc: 'Orari, consegna, domande frequenti' },
+  { href: '#dove-siamo', label: 'Dove siamo', desc: 'Viale Strasburgo 378 Palermo' },
+];
+
+const MARQUEE_TOP = [
+  'Bubble Tea artigianale',
+  'Tapioca calda ogni giorno',
+  'SpacePolly SmashBurger',
+  'Bubble Waffle & Gelato',
+  'Crêpes & Pancake',
+  'Aperto fino alle 03:30',
+];
+
+const MARQUEE_BOTTOM = [
+  'Viale Strasburgo 378 — Palermo',
+  'Consegna a domicilio su Glovo',
+  'Giove · Plutone · Marte · Mercurio',
+  'Pokémon Limited Edition',
+  'Vegan & gluten-free friendly',
+];
+
+// Pearls scattered behind the hero headline (percent positions, px size, animation offset)
+const HERO_PEARLS = [
+  { left: '90%', top: '6%', size: 18, delay: '0s' },
+  { left: '95%', top: '46%', size: 12, delay: '-3s' },
+  { left: '86%', top: '70%', size: 22, delay: '-5s' },
+  { left: '70%', top: '4%', size: 9, delay: '-6.5s' },
+];
+
+/** Opening hours 12:30 – 03:30, evaluated in Palermo's time zone */
+const computeIsOpenNow = (): boolean => {
+  const parts = new Intl.DateTimeFormat('it-IT', {
+    timeZone: 'Europe/Rome',
+    hour: 'numeric',
+    minute: 'numeric',
+    hourCycle: 'h23',
+  }).formatToParts(new Date());
+  const hour = Number(parts.find((p) => p.type === 'hour')?.value ?? 0);
+  const minute = Number(parts.find((p) => p.type === 'minute')?.value ?? 0);
+  const totalMinutes = hour * 60 + minute;
+  return totalMinutes >= 750 || totalMinutes < 210;
+};
+
+/** Splits a phrase into masked words that rise in sequence */
+const RisingWords: React.FC<{ text: string; startMs: number; className?: string }> = ({
+  text,
+  startMs,
+  className = '',
+}) => (
+  <>
+    {text.split(' ').map((word, i) => (
+      <React.Fragment key={`${word}-${i}`}>
+        <span className="word-rise">
+          <span className={className} style={{ '--d': `${startMs + i * 70}ms` } as React.CSSProperties}>
+            {word}
+          </span>
+        </span>{' '}
+      </React.Fragment>
+    ))}
+  </>
+);
+
 export function App() {
   const [selectedHeroFlavor, setSelectedHeroFlavor] = useState<HeroPresetFlavor>(
     HERO_FLAVORS[0]
@@ -96,6 +169,11 @@ export function App() {
   const [heroModelType, setHeroModelType] = useState<HeroModelCategory>('cup');
   const [autoCycleHero, setAutoCycleHero] = useState<boolean>(true);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
+  // null until mounted, so the prerendered HTML never disagrees with the client clock
+  const [isOpenNow, setIsOpenNow] = useState<boolean | null>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>('');
+  const headerRef = useRef<HTMLElement>(null);
 
   const activeHeroModel =
     HERO_MODELS_LIST.find((m) => m.id === heroModelType) || HERO_MODELS_LIST[0];
@@ -111,6 +189,52 @@ export function App() {
     }, 4500);
     return () => window.clearInterval(id);
   }, [autoCycleHero, heroModelType]);
+
+  // Live open/closed status, refreshed every minute
+  useEffect(() => {
+    const update = () => setIsOpenNow(computeIsOpenNow());
+    update();
+    const id = window.setInterval(update, 60_000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  // Compact header + reading progress bar (written as a CSS variable, no re-render per frame)
+  useEffect(() => {
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = max > 0 ? window.scrollY / max : 0;
+        headerRef.current?.style.setProperty('--progress', progress.toFixed(4));
+        setIsScrolled(window.scrollY > 12);
+      });
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, []);
+
+  // Highlight the nav link of the section currently in view
+  useEffect(() => {
+    if (typeof IntersectionObserver === 'undefined') return;
+    const sections = NAV_LINKS.map((l) => document.querySelector(l.href)).filter(
+      (el): el is Element => el !== null
+    );
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActiveSection(`#${entry.target.id}`);
+        });
+      },
+      { rootMargin: '-45% 0px -50% 0px' }
+    );
+    sections.forEach((s) => io.observe(s));
+    return () => io.disconnect();
+  }, []);
 
   // Close the mobile menu when resizing up to desktop
   useEffect(() => {
@@ -131,80 +255,94 @@ export function App() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isMobileNavOpen]);
 
-  const navLinks = [
-    { href: '#menu', label: '01 / Catalogo Glovo', desc: 'SpacePolly, Bubble Tea & Sweet' },
-    { href: '#boba-lab', label: '02 / Simulatore 3D', desc: 'Laboratorio di formulazione 3D' },
-    { href: '#tiktok', label: '03 / Bacheca TikTok', desc: 'Video & trend @teaamobubbletea' },
-    { href: '#delivery', label: '04 / Delivery & Take Away', desc: 'Glovo Store & Ritiro al Locale' },
-    { href: '#allergeni', label: '05 / Dieta & Allergeni', desc: 'Vegan, Senza Glutine & Lattosio' },
-    { href: '#dove-siamo', label: '06 / Sede & Orari', desc: 'Viale Strasburgo 378 Palermo' },
-  ];
-
-  const checkIsOpenNow = (): boolean => {
-    const now = new Date();
-    const totalMinutes = now.getHours() * 60 + now.getMinutes();
-    return totalMinutes >= 750 || totalMinutes <= 210;
-  };
-
-  const isOpenNow = checkIsOpenNow();
-
-  const marqueeItems = [
-    'TEAAMO® PALERMO — VIALE STRASBURGO 378',
-    'APERTO TUTTI I GIORNI 12:30 — 03:30 CET',
-    'BUBBLE TEA ARTIGIANALE & TAPIOCA CALDA',
-    'SPACEPOLLY SMASHBURGER: GIOVE / PLUTONE / MARTE / MERCURIO',
-    'BUBBLE WAFFLE CON GELATO ARTIGIANALE & CRÊPES PAN DI STELLE',
-    'CONSEGNA A DOMICILIO UFFICIALE SU GLOVO',
-  ];
+  const stageAccent = heroModelType === 'cup' ? selectedHeroFlavor.accentHex : '#FD5E86';
 
   return (
     <div className="min-h-screen arch-grid-bg transition-colors duration-300">
-      {/* Fixed Editorial Header - Stays pinned at top on all screens */}
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-[#FCE4EC] dark:border-[#281E23] bg-white/95 dark:bg-[#0D090B]/95 backdrop-blur-md">
+      <div className="grain-overlay" aria-hidden="true" />
 
+      {/* Fixed glass header with reading progress */}
+      <header
+        ref={headerRef}
+        className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-500 ${
+          isScrolled || isMobileNavOpen
+            ? 'bg-[#FFF8F3]/85 border-[#F3DFD8] shadow-[0_10px_30px_-18px_rgba(43,15,29,0.35)] backdrop-blur-xl'
+            : 'bg-[#FFF8F3]/60 border-transparent backdrop-blur-md'
+        }`}
+      >
         <nav
           aria-label="Navigazione Principale"
-          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-3"
+          className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3 transition-[height] duration-500 ${
+            isScrolled ? 'h-16' : 'h-16 sm:h-20'
+          }`}
         >
           {/* Brand Identity */}
-          <a href="#" className="group flex items-center gap-2.5 sm:gap-3.5 min-w-0">
-            <img
-              src={`${import.meta.env.BASE_URL}teaamo-logo.png`}
-              alt="Logo TeaAmo Palermo"
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border border-[#FD5E86] shrink-0 group-hover:scale-105 transition-transform duration-300"
-            />
-            <div className="min-w-0">
-              <span className="text-xl sm:text-2xl font-serif tracking-tight block leading-none text-[#1C0D12] dark:text-white">
-                TeaAmo<span className="text-[#FD5E86] italic">.</span>
+          <a href="#top" className="group flex items-center gap-2.5 sm:gap-3 min-w-0" aria-label="TeaAmo Palermo — torna all'inizio">
+            <span className="relative shrink-0">
+              <span className="absolute -inset-1 rounded-full bg-[conic-gradient(from_0deg,#DE3163,#9B7BEA,#F2A65A,#DE3163)] opacity-0 group-hover:opacity-100 blur-[2px] transition-opacity duration-500" />
+              <img
+                src={`${import.meta.env.BASE_URL}teaamo-logo.png`}
+                alt=""
+                width={40}
+                height={40}
+                className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-white shadow-sm group-hover:rotate-[-8deg] transition-transform duration-500"
+              />
+            </span>
+            <span className="min-w-0">
+              <span className="text-xl sm:text-2xl font-serif tracking-tight block leading-none text-[#2B0F1D]">
+                TeaAmo<span className="text-[#DE3163] italic">.</span>
               </span>
-              <span className="hidden sm:block font-mono text-[10px] uppercase tracking-[0.2em] text-[#7A5A66] dark:text-[#A3939B] truncate">
-                SWEET, COFFEE &amp; BOBA LAB
+              <span className="hidden sm:block font-mono text-[10px] uppercase tracking-[0.2em] text-[#76525F] truncate">
+                Bubble Tea · Palermo
               </span>
-            </div>
+            </span>
           </a>
 
           {/* Navigation Index (desktop) */}
-          <div className="hidden lg:flex items-center gap-6 xl:gap-8 font-mono text-xs uppercase tracking-widest text-[#1C0D12] dark:text-[#F5EFEA]">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="editorial-link hover:text-[#FD5E86] transition-colors py-1"
-              >
-                {link.label}
-              </a>
-            ))}
+          <div className="hidden lg:flex items-center gap-1 xl:gap-2 font-mono text-[11px] uppercase tracking-[0.14em] text-[#2B0F1D]">
+            {NAV_LINKS.map((link) => {
+              const isActive = activeSection === link.href;
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  aria-current={isActive ? 'location' : undefined}
+                  className={`relative px-2.5 xl:px-3 py-2 whitespace-nowrap transition-colors ${
+                    isActive ? 'text-[#DE3163]' : 'hover:text-[#DE3163]'
+                  }`}
+                >
+                  {link.label}
+                  <span
+                    className={`absolute left-2.5 right-2.5 xl:left-3 xl:right-3 -bottom-0.5 h-[2px] bg-gradient-to-r from-[#DE3163] to-[#9B7BEA] origin-left transition-transform duration-500 ${
+                      isActive ? 'scale-x-100' : 'scale-x-0'
+                    }`}
+                  />
+                </a>
+              );
+            })}
           </div>
 
-          {/* Actions: Direct Official Delivery Showcase CTA */}
+          {/* Actions */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {isOpenNow !== null && (
+              <span
+                className={`hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-mono text-[10px] uppercase tracking-wider border ${
+                  isOpenNow
+                    ? 'border-emerald-300/70 bg-emerald-50 text-emerald-700'
+                    : 'border-[#F3DFD8] bg-white text-[#76525F]'
+                }`}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${isOpenNow ? 'bg-emerald-500 animate-pulse' : 'bg-[#C9AEBB]'}`} />
+                {isOpenNow ? 'Aperto ora' : 'Apre 12:30'}
+              </span>
+            )}
             <a
               href={TEAAMO_LINKS.glovo}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 bg-[#FD5E86] text-white font-mono text-xs uppercase tracking-widest hover:bg-[#1C0D12] transition-all cursor-pointer shadow-xs"
+              className="btn-shine inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 bg-[#DE3163] text-white font-mono text-xs uppercase tracking-widest hover:bg-[#2B0F1D] transition-colors cursor-pointer shadow-[0_8px_20px_-10px_rgba(222,49,99,0.8)]"
             >
-              <span>Ordina su Glovo</span>
+              <span>Ordina<span className="hidden sm:inline"> su Glovo</span></span>
               <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
             </a>
 
@@ -215,31 +353,26 @@ export function App() {
               aria-expanded={isMobileNavOpen}
               aria-controls="mobile-nav-panel"
               aria-label={isMobileNavOpen ? 'Chiudi menu di navigazione' : 'Apri menu di navigazione'}
-              className="lg:hidden relative w-10 h-10 flex flex-col items-center justify-center border border-[#FCE4EC] dark:border-[#281E23] hover:border-[#FD5E86] bg-[#FFF0F5] dark:bg-[#0D090B] transition-colors cursor-pointer group focus:outline-hidden focus:ring-2 focus:ring-[#FD5E86]/40"
+              className="lg:hidden relative w-10 h-10 flex flex-col items-center justify-center border border-[#F3DFD8] hover:border-[#DE3163] bg-white transition-colors cursor-pointer group"
             >
               <div className="w-5 h-3.5 relative flex flex-col justify-between items-center pointer-events-none">
-                {/* Top line -> 45deg diagonal */}
                 <span
                   className={`w-5 h-[1.75px] rounded-full transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-center ${
                     isMobileNavOpen
-                      ? 'rotate-45 translate-y-[6px] bg-[#FD5E86]'
-                      : 'bg-[#1C0D12] dark:bg-[#F5EFEA] group-hover:bg-[#FD5E86]'
+                      ? 'rotate-45 translate-y-[6px] bg-[#DE3163]'
+                      : 'bg-[#2B0F1D] group-hover:bg-[#DE3163]'
                   }`}
                 />
-                {/* Middle line -> collapse & fade */}
                 <span
                   className={`w-5 h-[1.75px] rounded-full transition-all duration-200 ease-out origin-left ${
-                    isMobileNavOpen
-                      ? 'opacity-0 scale-x-0'
-                      : 'bg-[#1C0D12] dark:bg-[#F5EFEA] group-hover:bg-[#FD5E86]'
+                    isMobileNavOpen ? 'opacity-0 scale-x-0' : 'bg-[#2B0F1D] group-hover:bg-[#DE3163]'
                   }`}
                 />
-                {/* Bottom line -> -45deg diagonal */}
                 <span
                   className={`w-5 h-[1.75px] rounded-full transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-center ${
                     isMobileNavOpen
-                      ? '-rotate-45 -translate-y-[6px] bg-[#FD5E86]'
-                      : 'bg-[#1C0D12] dark:bg-[#F5EFEA] group-hover:bg-[#FD5E86]'
+                      ? '-rotate-45 -translate-y-[6px] bg-[#DE3163]'
+                      : 'bg-[#2B0F1D] group-hover:bg-[#DE3163]'
                   }`}
                 />
               </div>
@@ -252,16 +385,15 @@ export function App() {
           id="mobile-nav-panel"
           role="region"
           aria-label="Menu di navigazione mobile"
-          className={`lg:hidden overflow-hidden transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] border-t border-[#FCE4EC] dark:border-[#281E23] bg-white/98 dark:bg-[#0D090B]/98 backdrop-blur-md ${
+          className={`lg:hidden overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] border-t border-[#F3DFD8] bg-[#FFF8F3]/95 backdrop-blur-xl ${
             isMobileNavOpen
-              ? 'max-h-[640px] opacity-100 shadow-xl'
+              ? 'max-h-[720px] opacity-100'
               : 'max-h-0 opacity-0 pointer-events-none'
           }`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 space-y-4">
-            {/* Staggered Navigation Links */}
-            <div className="space-y-1.5 font-mono text-xs uppercase tracking-wider">
-              {navLinks.map((link, idx) => (
+            <div className="space-y-1.5">
+              {NAV_LINKS.map((link, idx) => (
                 <a
                   key={link.href}
                   href={link.href}
@@ -269,200 +401,228 @@ export function App() {
                   style={{
                     transitionDelay: isMobileNavOpen ? `${idx * 45 + 70}ms` : '0ms',
                   }}
-                  className={`group flex items-center justify-between p-3.5 border border-[#FCE4EC] dark:border-[#281E23] hover:border-[#FD5E86] hover:bg-[#FFF5F8] dark:hover:bg-[#1A1216] transition-all duration-300 transform ${
-                    isMobileNavOpen
-                      ? 'opacity-100 translate-y-0'
-                      : 'opacity-0 translate-y-3'
+                  className={`group flex items-center justify-between px-4 py-3 border border-[#F3DFD8] bg-white/70 hover:border-[#DE3163] hover:bg-white transition-all duration-300 transform ${
+                    isMobileNavOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
                   }`}
                 >
-                  <div className="min-w-0 flex-1">
-                    <span className="font-semibold block group-hover:text-[#FD5E86] transition-colors truncate text-[#1C0D12] dark:text-white">
-                      {link.label}
-                    </span>
-                    <span className="text-[10px] text-[#7A5A66] dark:text-[#A3939B] lowercase font-sans block truncate mt-0.5">
-                      {link.desc}
+                  <div className="min-w-0 flex-1 flex items-baseline gap-3">
+                    <span className="font-mono text-[10px] text-[#DE3163]">0{idx + 1}</span>
+                    <span className="min-w-0">
+                      <span className="font-serif text-xl leading-tight block group-hover:text-[#DE3163] transition-colors truncate text-[#2B0F1D]">
+                        {link.label}
+                      </span>
+                      <span className="text-[11px] text-[#76525F] block truncate">
+                        {link.desc}
+                      </span>
                     </span>
                   </div>
                   <ArrowUpRight
-                    className="w-4 h-4 text-[#7A5A66] dark:text-[#A3939B] group-hover:text-[#FD5E86] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200 shrink-0 ml-2"
+                    className="w-4 h-4 text-[#76525F] group-hover:text-[#DE3163] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200 shrink-0 ml-2"
                     aria-hidden="true"
                   />
                 </a>
               ))}
             </div>
 
-            {/* Quick-Action Channels */}
             <div
               style={{
-                transitionDelay: isMobileNavOpen ? `${navLinks.length * 45 + 90}ms` : '0ms',
+                transitionDelay: isMobileNavOpen ? `${NAV_LINKS.length * 45 + 90}ms` : '0ms',
               }}
-              className={`pt-3 border-t border-[#FCE4EC] dark:border-[#281E23] grid grid-cols-3 gap-2 font-mono text-[10px] sm:text-[11px] uppercase tracking-wider transition-all duration-300 transform ${
+              className={`pt-3 border-t border-[#F3DFD8] grid grid-cols-3 gap-2 font-mono text-[10px] sm:text-[11px] uppercase tracking-wider transition-all duration-300 transform ${
                 isMobileNavOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
               }`}
             >
-              <a
-                href={TEAAMO_LINKS.glovo}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setIsMobileNavOpen(false)}
-                className="flex items-center justify-center gap-1 py-3 px-2 bg-[#FD5E86] text-white hover:bg-[#1C0D12] transition-colors text-center font-medium shadow-xs"
-              >
-                <span>Glovo</span>
-                <ArrowUpRight className="w-3 h-3 shrink-0" aria-hidden="true" />
-              </a>
-
-              <a
-                href={TEAAMO_LINKS.tiktok}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setIsMobileNavOpen(false)}
-                className="flex items-center justify-center gap-1 py-3 px-2 border border-[#FD5E86] text-[#FD5E86] hover:bg-[#FFF5F8] dark:hover:bg-white/5 transition-colors text-center font-medium"
-              >
-                <span>TikTok</span>
-                <ArrowUpRight className="w-3 h-3 shrink-0" aria-hidden="true" />
-              </a>
-
-              <a
-                href={TEAAMO_LINKS.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setIsMobileNavOpen(false)}
-                className="flex items-center justify-center gap-1 py-3 px-2 border border-[#FD5E86] text-[#FD5E86] hover:bg-[#FFF5F8] dark:hover:bg-white/5 transition-colors text-center font-medium"
-              >
-                <span>Instagram</span>
-                <ArrowUpRight className="w-3 h-3 shrink-0" aria-hidden="true" />
-              </a>
+              {[
+                { href: TEAAMO_LINKS.glovo, label: 'Glovo', primary: true },
+                { href: TEAAMO_LINKS.tiktok, label: 'TikTok' },
+                { href: TEAAMO_LINKS.instagram, label: 'Instagram' },
+              ].map((ch) => (
+                <a
+                  key={ch.label}
+                  href={ch.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setIsMobileNavOpen(false)}
+                  className={`flex items-center justify-center gap-1 py-3 px-2 text-center font-medium transition-colors ${
+                    ch.primary
+                      ? 'bg-[#DE3163] text-white hover:bg-[#2B0F1D]'
+                      : 'border border-[#DE3163] text-[#DE3163] hover:bg-white'
+                  }`}
+                >
+                  <span>{ch.label}</span>
+                  <ArrowUpRight className="w-3 h-3 shrink-0" aria-hidden="true" />
+                </a>
+              ))}
             </div>
           </div>
         </div>
+
+        <span className="scroll-progress" aria-hidden="true" />
       </header>
 
-      {/* ARCHITECTURAL HERO SECTION WITH REAL-TIME R3F 3D VIEWPORT */}
-      <main className="pt-16 sm:pt-20">
-        <section className="border-b border-[#FCE4EC] dark:border-[#281E23] bg-white dark:bg-[#0D090B]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-12 border-x border-[#FCE4EC] dark:border-[#281E23]">
-              {/* Left 7 Cols: Editorial Typography & Architectural Specs */}
-              <div className="lg:col-span-7 p-6 sm:p-10 lg:p-14 xl:p-16 flex flex-col justify-between lg:border-r border-b lg:border-b-0 border-[#FCE4EC] dark:border-[#281E23] bg-white dark:bg-[#0D090B]">
-                <div className="space-y-6 sm:space-y-8">
-                  <RevealOnScroll delayMs={40}>
-                    <div className="inline-flex items-center gap-2 font-mono text-[11px] sm:text-xs uppercase tracking-[0.18em] text-[#FD5E86]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#FD5E86] live-dot" />
-                      <span>VIALE STRASBURGO 378 • PALERMO</span>
-                    </div>
-                  </RevealOnScroll>
+      <main id="top" className="pt-16 sm:pt-20">
+        {/* HERO: kinetic headline + live R3F stage */}
+        <section className="relative border-b border-[#F3DFD8] overflow-hidden" aria-labelledby="hero-title">
+          {/* Aurora flavour glows */}
+          <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+            <span className="aurora w-[520px] h-[520px] -left-40 -top-40 bg-[#FD5E86]/40" />
+            <span className="aurora w-[460px] h-[460px] left-[30%] top-[45%] bg-[#9B7BEA]/30" style={{ animationDelay: '-6s' }} />
+            <span className="aurora w-[380px] h-[380px] right-[-120px] top-[-80px] bg-[#F2A65A]/30" style={{ animationDelay: '-11s' }} />
+          </div>
 
-                  <RevealOnScroll delayMs={80}>
-                    <h1 className="text-4xl sm:text-6xl lg:text-[4.4rem] xl:text-[5.1rem] font-serif font-normal tracking-tight leading-[0.98] text-[#1C0D12] dark:text-white">
-                      L&apos;arte dello{' '}
-                      <span className="italic text-[#FD5E86]">Smash Burger</span>,
-                      Bubble Tea &amp;{' '}
-                      <span className="italic text-[#FD5E86]">Sweet.</span>
-                    </h1>
-                  </RevealOnScroll>
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 border-x border-[#F3DFD8]">
+              {/* Left 7 Cols: Editorial Typography */}
+              <div className="relative lg:col-span-7 p-6 sm:p-10 lg:p-14 xl:p-16 flex flex-col justify-between lg:border-r border-b lg:border-b-0 border-[#F3DFD8]">
+                <div className="absolute inset-0 pointer-events-none hidden sm:block" aria-hidden="true">
+                  {HERO_PEARLS.map((p, i) => (
+                    <span
+                      key={i}
+                      className="pearl opacity-80"
+                      style={{ left: p.left, top: p.top, width: p.size, height: p.size, animationDelay: p.delay }}
+                    />
+                  ))}
+                </div>
 
-                  <RevealOnScroll delayMs={160}>
-                    <p className="text-sm sm:text-base lg:text-lg text-[#7A5A66] dark:text-[#A3939B] max-w-xl leading-relaxed">
-                      Dalle autentiche infusioni di tè con perle di tapioca calda ai Bubble Waffle con gelato artigianale, fino agli irresistibili smash burger notturni della linea SpacePolly (Giove, Plutone, Marte). Aperto a Palermo tutti i giorni dalle 12:30 alle 03:30 di notte.
-                    </p>
-                  </RevealOnScroll>
+                <div className="relative space-y-6 sm:space-y-8">
+                  <div className="hero-enter flex flex-wrap items-center gap-2" style={{ '--d': '0ms' } as React.CSSProperties}>
+                    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 border border-[#F3DFD8] backdrop-blur-sm font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.18em] text-[#DE3163] shadow-sm">
+                      <MapPin className="w-3 h-3" aria-hidden="true" />
+                      Viale Strasburgo 378 · Palermo
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#2B0F1D] font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.18em] text-white">
+                      <Clock className="w-3 h-3 text-[#FD5E86]" aria-hidden="true" />
+                      Fino alle 03:30
+                    </span>
+                  </div>
 
-                  {/* Primary Editorial CTAs */}
-                  <RevealOnScroll
-                    delayMs={220}
-                    className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-1"
+                  <h1
+                    id="hero-title"
+                    className="text-[2.6rem] sm:text-6xl lg:text-[4.4rem] xl:text-[5.2rem] font-serif font-normal tracking-tight leading-[0.98] text-[#2B0F1D]"
+                  >
+                    <RisingWords text="L'arte del" startMs={80} />
+                    <RisingWords text="Bubble Tea," startMs={220} className="italic text-flavor" />
+                    <RisingWords text="dello" startMs={360} />
+                    <RisingWords text="Smash Burger" startMs={430} className="italic text-flavor" />
+                    <RisingWords text="& del" startMs={570} />
+                    <RisingWords text="Sweet" startMs={710} className="italic text-flavor" />
+                    <RisingWords text="a Palermo." startMs={780} />
+                  </h1>
+
+                  <p
+                    className="hero-enter text-[15px] sm:text-base lg:text-lg text-[#76525F] max-w-xl leading-relaxed"
+                    style={{ '--d': '700ms' } as React.CSSProperties}
+                  >
+                    Tè taiwanese con perle di tapioca calde preparate ogni giorno, Bubble Waffle con gelato artigianale, crêpes e gli smash burger notturni della linea SpacePolly. In Viale Strasburgo 378, aperti tutti i giorni dalle 12:30 alle 03:30.
+                  </p>
+
+                  <div
+                    className="hero-enter flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-1"
+                    style={{ '--d': '850ms' } as React.CSSProperties}
                   >
                     <MagneticWrap strength={0.18}>
                       <a
                         href="#menu"
-                        className="group inline-flex w-full sm:w-auto items-center justify-center gap-3 px-6 py-4 bg-[#FD5E86] text-white font-mono text-xs uppercase tracking-widest hover:bg-[#1C0D12] transition-colors shadow-xs"
+                        className="btn-shine group inline-flex w-full sm:w-auto items-center justify-center gap-3 px-6 py-4 bg-[#DE3163] text-white font-mono text-xs uppercase tracking-widest hover:bg-[#2B0F1D] transition-colors shadow-[0_18px_40px_-18px_rgba(222,49,99,0.9)]"
                       >
-                        <span>Esplora Menu &amp; Modelli 3D</span>
+                        <span>Scopri il Menu</span>
                         <ArrowUpRight className="w-4 h-4 shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" aria-hidden="true" />
                       </a>
                     </MagneticWrap>
 
                     <MagneticWrap strength={0.15}>
                       <a
-                        href={TEAAMO_LINKS.glovo}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex w-full sm:w-auto items-center justify-center gap-3 px-6 py-4 border border-[#FD5E86] text-[#FD5E86] font-mono text-xs uppercase tracking-widest hover:bg-[#FFF5F8] dark:hover:bg-white/5 transition-colors text-center"
+                        href="#boba-lab"
+                        className="inline-flex w-full sm:w-auto items-center justify-center gap-3 px-6 py-4 border border-[#2B0F1D]/80 bg-white/60 backdrop-blur-sm text-[#2B0F1D] font-mono text-xs uppercase tracking-widest hover:bg-[#2B0F1D] hover:text-white transition-colors text-center"
                       >
-                        <Sparkles className="w-3.5 h-3.5 text-[#FD5E86]" aria-hidden="true" />
-                        <span>Vedi Store Ufficiale Glovo</span>
+                        <Sparkles className="w-3.5 h-3.5 text-[#DE3163]" aria-hidden="true" />
+                        <span>Crea il tuo Boba 3D</span>
                       </a>
                     </MagneticWrap>
-                  </RevealOnScroll>
+                  </div>
                 </div>
 
-                {/* Bottom Architectural Metrics Grid */}
-                <RevealOnScroll
-                  delayMs={280}
-                  className="grid grid-cols-3 gap-3 sm:gap-6 pt-8 sm:pt-12 mt-8 sm:mt-12 border-t border-[#FCE4EC] dark:border-[#281E23]"
+                {/* Bottom metrics */}
+                <div
+                  className="hero-enter relative grid grid-cols-3 gap-3 sm:gap-6 pt-8 sm:pt-10 mt-8 sm:mt-12 border-t border-[#F3DFD8]"
+                  style={{ '--d': '1000ms' } as React.CSSProperties}
                 >
                   <div>
-                    <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-wider sm:tracking-widest text-[#7A5A66] dark:text-[#A3939B] block">
-                      ORARIO 7/7
+                    <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-wider sm:tracking-widest text-[#76525F] block">
+                      Orario 7/7
                     </span>
-                    <span className="font-serif text-lg sm:text-2xl lg:text-3xl mt-1 block text-[#1C0D12] dark:text-white">
+                    <span className="font-serif text-lg sm:text-2xl lg:text-3xl mt-1 block text-[#2B0F1D]">
                       12:30 – 03:30
                     </span>
                   </div>
                   <div>
-                    <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-wider sm:tracking-widest text-[#7A5A66] dark:text-[#A3939B] block">
-                      GOOGLE RATING
+                    <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-wider sm:tracking-widest text-[#76525F] block">
+                      Google
                     </span>
-                    <span className="font-serif text-lg sm:text-2xl lg:text-3xl mt-1 flex items-center text-[#1C0D12] dark:text-white">
-                      <span>4.2 / 5.0</span>
-                      <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-[#FD5E86] text-[#FD5E86] ml-1.5 shrink-0 inline-block" aria-hidden="true" />
+                    <span className="font-serif text-lg sm:text-2xl lg:text-3xl mt-1 flex items-center text-[#2B0F1D]">
+                      <span>4.2 / 5</span>
+                      <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-[#F2A65A] text-[#F2A65A] ml-1.5 shrink-0 inline-block" aria-hidden="true" />
                     </span>
                   </div>
                   <div>
-                    <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-wider sm:tracking-widest text-[#7A5A66] dark:text-[#A3939B] block">
-                      DELIVERY GLOVO
+                    <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-wider sm:tracking-widest text-[#76525F] block">
+                      Delivery
                     </span>
-                    <span className="font-serif text-lg sm:text-2xl lg:text-3xl mt-1 block text-[#FD5E86]">
-                      Attivo a PMO
+                    <span className="font-serif italic text-lg sm:text-2xl lg:text-3xl mt-1 block text-[#DE3163]">
+                      Glovo PMO
                     </span>
                   </div>
-                </RevealOnScroll>
+                </div>
               </div>
 
               {/* Right 5 Cols: Interactive 3D WebGL Showcase Stage */}
-              <div className="lg:col-span-5 bg-[#FFF5F8] dark:bg-[#140E11] flex flex-col justify-between relative overflow-hidden">
-                {/* Subtle Pink Ambient Glow */}
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(253,94,134,0.12),transparent_70%)]" />
-                <span className="absolute top-2 left-2 font-mono text-[10px] text-[#FD5E86]/40 select-none pointer-events-none z-10">+</span>
-                <span className="absolute top-2 right-2 font-mono text-[10px] text-[#FD5E86]/40 select-none pointer-events-none z-10">+</span>
-                {/* 3D Model Category Switcher Header */}
-                <div className="flex overflow-x-auto no-scrollbar sm:grid sm:grid-cols-6 border-b border-[#FCE4EC] dark:border-[#281E23] font-mono text-[10px] sm:text-[11px] uppercase tracking-wider text-center divide-x divide-[#FCE4EC] dark:divide-[#281E23]">
-                  {HERO_MODELS_LIST.map((m) => {
+              <div
+                className="hero-enter lg:col-span-5 flex flex-col justify-between relative overflow-hidden bg-white/40 backdrop-blur-[2px]"
+                style={{ '--d': '300ms' } as React.CSSProperties}
+              >
+                {/* Stage glow follows the active flavour */}
+                <div
+                  className="pointer-events-none absolute inset-0 transition-[background] duration-1000"
+                  style={{
+                    background: `radial-gradient(60% 50% at 50% 48%, ${stageAccent}38, transparent 72%), radial-gradient(40% 30% at 50% 85%, ${stageAccent}22, transparent 70%)`,
+                  }}
+                />
+
+                {/* Model switcher */}
+                <div
+                  role="tablist"
+                  aria-label="Scegli il prodotto 3D"
+                  className="relative flex overflow-x-auto no-scrollbar sm:grid sm:grid-cols-6 border-b border-[#F3DFD8] font-mono text-[10px] sm:text-[11px] uppercase tracking-wider text-center bg-white/70 backdrop-blur-md"
+                >
+                  {HERO_MODELS_LIST.map((m, idx) => {
                     const isSelected = heroModelType === m.id;
                     return (
                       <button
                         key={m.id}
                         type="button"
+                        role="tab"
+                        aria-selected={isSelected}
                         onClick={() => {
                           setHeroModelType(m.id);
-                          if (m.id !== 'cup') {
-                            setAutoCycleHero(false);
-                          }
+                          if (m.id !== 'cup') setAutoCycleHero(false);
                         }}
-                        className={`py-3 px-3.5 sm:px-1 flex-1 sm:flex-initial shrink-0 transition-colors cursor-pointer whitespace-nowrap text-center ${
-                          isSelected
-                            ? 'bg-[#FD5E86] text-white font-semibold shadow-xs'
-                            : 'hover:bg-[#FFD8E1]/40 text-[#1C0D12] dark:text-[#F5EFEA] bg-white dark:bg-[#120B0E]'
+                        className={`relative py-3 px-3.5 sm:px-1 flex-1 sm:flex-initial shrink-0 transition-colors cursor-pointer whitespace-nowrap text-center ${
+                          isSelected ? 'text-[#DE3163] font-semibold' : 'text-[#2B0F1D] hover:text-[#DE3163]'
                         }`}
                         title={m.title}
                       >
+                        <span className="text-[9px] text-[#C9AEBB] mr-1">0{idx + 1}</span>
                         {m.label}
+                        <span
+                          className={`absolute inset-x-2 bottom-0 h-[2px] bg-[#DE3163] origin-center transition-transform duration-500 ${
+                            isSelected ? 'scale-x-100' : 'scale-x-0'
+                          }`}
+                        />
                       </button>
                     );
                   })}
                 </div>
 
-                {/* Live Three.js / R3F Viewport */}
                 <StudioViewport3D
                   modelType={heroModelType}
                   cupConfig={{
@@ -474,33 +634,27 @@ export function App() {
                     hasPinkCream: true,
                     showIce: true,
                   }}
-                  accentColor={selectedHeroFlavor.accentHex}
-                  className="h-[340px] sm:h-[400px] lg:h-[430px]"
+                  accentColor={heroModelType === 'cup' || heroModelType === 'fruittea' ? selectedHeroFlavor.accentHex : '#DE3163'}
+                  className="h-[340px] sm:h-[400px] lg:h-[440px]"
                 />
 
-                {/* Bottom Flavor Preset Bar inside 3D Hero Stage */}
-                <div className="p-5 sm:p-6 border-t border-[#FCE4EC] dark:border-[#281E23] bg-white dark:bg-[#0D090B] space-y-4">
+                {/* Product caption */}
+                <div className="relative p-5 sm:p-6 border-t border-[#F3DFD8] bg-white/85 backdrop-blur-md space-y-4">
                   <div className="flex items-baseline justify-between gap-3">
-                    <div className="min-w-0">
-                      <span className="font-mono text-[10px] uppercase tracking-widest text-[#FD5E86] block truncate">
-                        {heroModelType === 'cup'
-                          ? selectedHeroFlavor.badge
-                          : activeHeroModel.badge}
+                    <div className="min-w-0" aria-live="polite">
+                      <span className="font-mono text-[10px] uppercase tracking-widest text-[#DE3163] block truncate">
+                        {heroModelType === 'cup' ? selectedHeroFlavor.badge : activeHeroModel.badge}
                       </span>
-                      <h2 className="text-xl sm:text-2xl font-serif italic truncate transition-all duration-300 text-[#1C0D12] dark:text-white">
-                        {heroModelType === 'cup'
-                          ? selectedHeroFlavor.name
-                          : activeHeroModel.title}
-                      </h2>
-                      <p className="font-mono text-[11px] text-[#7A5A66] dark:text-[#A3939B] truncate mt-0.5">
+                      <p key={heroModelType === 'cup' ? selectedHeroFlavor.id : heroModelType} className="hero-enter text-xl sm:text-2xl font-serif italic truncate text-[#2B0F1D]">
+                        {heroModelType === 'cup' ? selectedHeroFlavor.name : activeHeroModel.title}
+                      </p>
+                      <p className="text-[12px] text-[#76525F] truncate mt-0.5">
                         {activeHeroModel.description}
                       </p>
                     </div>
                     <div className="flex items-center gap-2.5 shrink-0">
-                      <span className="font-mono text-lg sm:text-xl font-semibold text-[#FD5E86]">
-                        {heroModelType === 'cup'
-                          ? selectedHeroFlavor.price
-                          : activeHeroModel.price}
+                      <span className="font-serif text-2xl text-[#DE3163]">
+                        {heroModelType === 'cup' ? selectedHeroFlavor.price : activeHeroModel.price}
                       </span>
                       <a
                         href={
@@ -510,8 +664,8 @@ export function App() {
                         }
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label="Ordina su Glovo"
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#FD5E86] text-white hover:bg-[#1C0D12] transition-colors font-mono text-[10px] uppercase tracking-wider shadow-xs"
+                        aria-label="Ordina questo prodotto su Glovo"
+                        className="btn-shine inline-flex items-center gap-1 px-2.5 py-1.5 bg-[#DE3163] text-white hover:bg-[#2B0F1D] transition-colors font-mono text-[10px] uppercase tracking-wider"
                       >
                         <span>Glovo</span>
                         <ArrowUpRight className="w-3 h-3" aria-hidden="true" />
@@ -519,11 +673,10 @@ export function App() {
                     </div>
                   </div>
 
-                  {/* Swatch Selector for 3D Cup & Fruit Tea */}
                   {(heroModelType === 'cup' || heroModelType === 'fruittea') && (
-                    <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-[#FCE4EC] dark:border-[#281E23]">
-                      <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-wider text-[#7A5A66] dark:text-[#A3939B]">
-                        PALETTE INFUSIONE {autoCycleHero && heroModelType === 'cup' ? '(AUTO-CYCLE)' : ''}:
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-[#F3DFD8]">
+                      <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-wider text-[#76525F]">
+                        Gusti {autoCycleHero && heroModelType === 'cup' ? '· auto' : ''}
                       </span>
                       <div className="flex items-center gap-2.5">
                         {HERO_FLAVORS.map((flav) => {
@@ -537,12 +690,15 @@ export function App() {
                                 setSelectedHeroFlavor(flav);
                               }}
                               aria-label={`Seleziona ${flav.name}`}
-                              className={`w-6 h-6 rounded-full border transition-all duration-300 cursor-pointer ${
+                              aria-pressed={active}
+                              className={`w-7 h-7 rounded-full border-2 transition-all duration-300 cursor-pointer shadow-[inset_0_-6px_10px_rgba(0,0,0,0.12)] ${
                                 active
-                                  ? 'scale-125 border-[#FD5E86] ring-2 ring-[#FD5E86]/40'
-                                  : 'border-black/20 opacity-75 hover:opacity-100 hover:scale-110'
+                                  ? 'scale-110 border-white ring-2 ring-[#DE3163]'
+                                  : 'border-white opacity-80 hover:opacity-100 hover:scale-110'
                               }`}
-                              style={{ backgroundColor: flav.liquidTopColor }}
+                              style={{
+                                background: `linear-gradient(160deg, ${flav.liquidTopColor}, ${flav.liquidBottomColor})`,
+                              }}
                             />
                           );
                         })}
@@ -555,91 +711,168 @@ export function App() {
           </div>
         </section>
 
-        {/* VIBRANT BRAND PINK MONOSPACE TICKER */}
-        <div className="border-b border-[#FCE4EC] dark:border-[#281E23] py-3.5 bg-[#FD5E86] text-white overflow-hidden font-mono text-xs uppercase tracking-[0.2em] shadow-xs">
-          <div className="flex whitespace-nowrap animate-marquee marquee-track">
-            {[...marqueeItems, ...marqueeItems].map((text, index) => (
-              <div key={index} className="inline-flex items-center gap-6 mx-6">
-                <span className="w-1.5 h-1.5 bg-white rounded-full" />
-                <span>{text}</span>
-              </div>
-            ))}
+        {/* Double sticker ticker */}
+        <div className="relative overflow-hidden py-6 sm:py-8" aria-hidden="true">
+          <div className="-rotate-[1.5deg] scale-[1.03] bg-[#DE3163] text-white py-3 font-mono text-xs sm:text-sm uppercase tracking-[0.2em] shadow-[0_10px_30px_-12px_rgba(222,49,99,0.6)]">
+            <div className="flex whitespace-nowrap animate-marquee marquee-track w-max">
+              {[...MARQUEE_TOP, ...MARQUEE_TOP].map((text, index) => (
+                <div key={index} className="inline-flex items-center gap-6 mx-6">
+                  <span className="w-2 h-2 rounded-full bg-white/90 shadow-[inset_-2px_-2px_0_rgba(0,0,0,0.15)]" />
+                  <span>{text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="rotate-[1deg] scale-[1.03] -mt-1 bg-[#2B0F1D] text-[#FCEFF2] py-2.5 font-serif italic text-base sm:text-lg">
+            <div className="flex whitespace-nowrap animate-marquee-reverse marquee-track w-max">
+              {[...MARQUEE_BOTTOM, ...MARQUEE_BOTTOM].map((text, index) => (
+                <div key={index} className="inline-flex items-center gap-6 mx-6">
+                  <Star className="w-3.5 h-3.5 fill-[#F2A65A] text-[#F2A65A]" />
+                  <span>{text}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* 01 / MENU INDEX & 3D PRODUCT INSPECTOR WITH REAL GLOVO PHOTOS */}
         <MenuShowcase />
 
-        {/* 02 / 3D BOBA FORMULATION SIMULATOR */}
         <BobaLabBuilder />
 
-        {/* 03 / OFFICIAL TIKTOK FEED BOARD (@TEAAMOBUBBLETEA) */}
-        <TikTokFeedBoard />
+        {/* Night-mode band: the TikTok board renders with its dark palette */}
+        <div className="dark">
+          <TikTokFeedBoard />
+        </div>
 
-        {/* 04, 05, 06 / DELIVERY HUB, INSTAGRAM ARCHIVE & LOCATION DOSSIER */}
-        <SocialAndReviews isOpenNow={isOpenNow} />
+        <SocialAndReviews isOpenNow={isOpenNow === true} />
+
+        {/* FAQ — mirrored in the FAQPage JSON-LD injected at prerender time */}
+        <section id="faq" className="relative py-16 sm:py-24 border-t border-[#F3DFD8] overflow-hidden" aria-labelledby="faq-title">
+          <span className="aurora w-[420px] h-[420px] -right-32 top-10 bg-[#9B7BEA]/20" aria-hidden="true" />
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
+            <RevealOnScroll className="lg:col-span-5 lg:sticky lg:top-28 self-start">
+              <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#DE3163] mb-3">
+                07 / Domande frequenti
+              </p>
+              <h2 id="faq-title" className="text-4xl sm:text-5xl lg:text-6xl font-serif tracking-tight leading-[0.95] text-[#2B0F1D]">
+                Tutto quello che vuoi sapere su <span className="italic text-flavor">TeaAmo</span>
+              </h2>
+              <p className="mt-5 text-[15px] text-[#76525F] leading-relaxed max-w-md">
+                Orari, consegna a domicilio, ingredienti e allergeni. Non trovi la risposta? Chiamaci o scrivici su Instagram.
+              </p>
+              <a
+                href={`tel:${TEAAMO_LINKS.phone}`}
+                className="mt-6 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-[#2B0F1D] editorial-link"
+              >
+                <Phone className="w-3.5 h-3.5 text-[#DE3163]" aria-hidden="true" />
+                {TEAAMO_LINKS.phoneDisplay}
+              </a>
+            </RevealOnScroll>
+
+            <div className="lg:col-span-7 border-t border-[#F3DFD8]">
+              {FAQ_ITEMS.map((item, i) => (
+                <RevealOnScroll key={item.question} delayMs={i * 60}>
+                  <details className="faq-item group border-b border-[#F3DFD8]" open={i === 0}>
+                    <summary className="flex items-start justify-between gap-6 py-6 cursor-pointer list-none">
+                      <h3 className="font-serif text-xl sm:text-2xl leading-snug text-[#2B0F1D] group-hover:text-[#DE3163] transition-colors">
+                        {item.question}
+                      </h3>
+                      <span className="faq-icon mt-1 w-8 h-8 shrink-0 rounded-full border border-[#F3DFD8] bg-white flex items-center justify-center text-[#DE3163] transition-transform duration-500">
+                        <Plus className="w-4 h-4" aria-hidden="true" />
+                      </span>
+                    </summary>
+                    <p className="pb-6 pr-12 text-[15px] leading-relaxed text-[#76525F]">{item.answer}</p>
+                  </details>
+                </RevealOnScroll>
+              ))}
+            </div>
+          </div>
+        </section>
       </main>
 
-      {/* ARCHITECTURAL FOOTER */}
-      <footer className="border-t border-[#FCE4EC] dark:border-[#281E23] py-12 sm:py-16 px-4 sm:px-6 lg:px-8 font-mono text-xs bg-[#FFF5F8] dark:bg-[#0D090B]">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <img
-              src={`${import.meta.env.BASE_URL}teaamo-logo.png`}
-              alt="TeaAmo Logo"
-              className="w-9 h-9 rounded-full border border-[#FD5E86] shrink-0"
-            />
-            <div>
-              <p className="font-serif text-lg normal-case text-[#1C0D12] dark:text-white">
-                TeaAmo Bubble Tea — Sweet &amp; Coffee
+      {/* FOOTER */}
+      <footer className="relative overflow-hidden bg-[#2B0F1D] text-[#FCEFF2]">
+        <span className="aurora w-[520px] h-[520px] -left-40 -bottom-60 bg-[#DE3163]/40" aria-hidden="true" />
+        <span className="aurora w-[420px] h-[420px] right-0 -top-40 bg-[#9B7BEA]/25" style={{ animationDelay: '-8s' }} aria-hidden="true" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-24 pb-10">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8">
+            <div className="md:col-span-5 space-y-5">
+              <p className="font-serif text-4xl sm:text-5xl leading-[0.95]">
+                Ci vediamo in <span className="italic text-[#FD5E86]">Viale Strasburgo</span>.
               </p>
-              <p className="text-[#7A5A66] dark:text-[#A3939B] text-[11px]">
-                VIALE STRASBURGO, 378 — 90146 PALERMO (PA) • TEL. {TEAAMO_LINKS.phoneDisplay}
+              <p className="text-sm text-[#C9AEBB] max-w-sm leading-relaxed">
+                Bubble Tea, dolci e SpacePolly SmashBurger a Palermo, tutti i giorni dalle 12:30 alle 03:30. Anche a domicilio su Glovo.
               </p>
+              <a
+                href={TEAAMO_LINKS.glovo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-shine inline-flex items-center gap-2 px-5 py-3.5 bg-[#DE3163] text-white font-mono text-xs uppercase tracking-widest hover:bg-white hover:text-[#2B0F1D] transition-colors"
+              >
+                Ordina ora su Glovo
+                <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
+              </a>
+            </div>
+
+            <address className="md:col-span-3 not-italic space-y-4 text-sm">
+              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#FD5E86]">Visita</p>
+              <p className="flex gap-2.5 text-[#FCEFF2]/90">
+                <MapPin className="w-4 h-4 mt-0.5 text-[#FD5E86] shrink-0" aria-hidden="true" />
+                <span>Viale Strasburgo, 378<br />90146 Palermo (PA)</span>
+              </p>
+              <p className="flex gap-2.5 text-[#FCEFF2]/90">
+                <Clock className="w-4 h-4 mt-0.5 text-[#FD5E86] shrink-0" aria-hidden="true" />
+                <span>Lun – Dom<br />12:30 – 03:30</span>
+              </p>
+              <a href={`tel:${TEAAMO_LINKS.phone}`} className="flex gap-2.5 text-[#FCEFF2]/90 hover:text-white">
+                <Phone className="w-4 h-4 mt-0.5 text-[#FD5E86] shrink-0" aria-hidden="true" />
+                <span>{TEAAMO_LINKS.phoneDisplay}</span>
+              </a>
+            </address>
+
+            <nav className="md:col-span-2 space-y-3 text-sm" aria-label="Sezioni del sito">
+              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#FD5E86]">Esplora</p>
+              {NAV_LINKS.map((link) => (
+                <a key={link.href} href={link.href} className="block text-[#FCEFF2]/80 hover:text-white transition-colors">
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+
+            <div className="md:col-span-2 space-y-3 text-sm">
+              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#FD5E86]">Social</p>
+              {[
+                { href: TEAAMO_LINKS.instagram, label: 'Instagram' },
+                { href: TEAAMO_LINKS.tiktok, label: 'TikTok' },
+                { href: TEAAMO_LINKS.googleShare, label: 'Google Maps' },
+                { href: TEAAMO_LINKS.linktree, label: 'Linktree' },
+              ].map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-1 text-[#FCEFF2]/80 hover:text-white transition-colors"
+                >
+                  {s.label}
+                  <ArrowUpRight className="w-3.5 h-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" aria-hidden="true" />
+                </a>
+              ))}
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-5 sm:gap-6 uppercase tracking-widest">
-            <a
-              href={TEAAMO_LINKS.glovo}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="editorial-link hover:text-[#FD5E86] font-semibold text-[#FD5E86]"
-            >
-              Glovo Store
-            </a>
-            <a
-              href={TEAAMO_LINKS.tiktok}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="editorial-link hover:text-[#FD5E86] text-[#FD5E86] font-medium"
-            >
-              TikTok
-            </a>
-            <a
-              href={TEAAMO_LINKS.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="editorial-link hover:text-[#FD5E86] text-[#1C0D12] dark:text-white"
-            >
-              Instagram
-            </a>
-            <a
-              href={TEAAMO_LINKS.linktree}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="editorial-link hover:text-[#FD5E86] text-[#1C0D12] dark:text-white"
-            >
-              Linktree
-            </a>
-            <a
-              href={TEAAMO_LINKS.googleShare}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="editorial-link hover:text-[#FD5E86] text-[#1C0D12] dark:text-white"
-            >
-              Google Maps
-            </a>
+          {/* Oversized wordmark */}
+          <p
+            className="mt-14 sm:mt-20 font-serif leading-none tracking-tight text-[22vw] lg:text-[15rem] text-transparent bg-clip-text bg-gradient-to-b from-[#FCEFF2]/25 to-[#FCEFF2]/0 select-none text-center"
+            aria-hidden="true"
+          >
+            TeaAmo<span className="italic">.</span>
+          </p>
+
+          <div className="mt-2 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 font-mono text-[11px] uppercase tracking-widest text-[#C9AEBB]">
+            <span>© {new Date().getFullYear()} TeaAmo Bubble Tea — Sweet &amp; Coffee · Palermo</span>
+            <a href="#top" className="hover:text-white transition-colors">Torna su ↑</a>
           </div>
         </div>
       </footer>
