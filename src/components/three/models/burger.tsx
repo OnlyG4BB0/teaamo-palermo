@@ -5,6 +5,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import {
   cachedGeometry,
   clamp01,
+  detailNormal,
   displace,
   fbm3,
   flagTexture,
@@ -104,6 +105,8 @@ const useBunMaterial = () =>
         clearcoatRoughness: 0.4,
         sheen: 0.3,
         sheenColor: new THREE.Color('#FFE2B0'),
+        normalMap: detailNormal('pores', 9, 3),
+        normalScale: new THREE.Vector2(0.32, 0.32),
       }),
     []
   );
@@ -228,6 +231,8 @@ const Patty: React.FC<{ seed: number }> = ({ seed }) => {
         roughness: 0.62,
         clearcoat: 0.35,
         clearcoatRoughness: 0.4,
+        normalMap: detailNormal('rough', 12, 2),
+        normalScale: new THREE.Vector2(0.9, 0.9),
       }),
     []
   );
@@ -238,6 +243,8 @@ const Patty: React.FC<{ seed: number }> = ({ seed }) => {
         roughness: 0.7,
         clearcoat: 0.25,
         side: THREE.DoubleSide,
+        normalMap: detailNormal('rough', 10, 1),
+        normalScale: new THREE.Vector2(0.8, 0.8),
       }),
     []
   );
@@ -415,7 +422,14 @@ const onionRingGeometry = (seed: number) =>
 
 const OnionRings: React.FC = () => {
   const mat = useMemo(
-    () => new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.7, clearcoat: 0.25 }),
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        vertexColors: true,
+        roughness: 0.7,
+        clearcoat: 0.25,
+        normalMap: detailNormal('pores', 6, 2),
+        normalScale: new THREE.Vector2(0.7, 0.7),
+      }),
     []
   );
   return (
@@ -470,7 +484,7 @@ const chickenGeometry = () =>
 
 const Chicken: React.FC = () => (
   <mesh geometry={chickenGeometry()}>
-    <meshPhysicalMaterial vertexColors roughness={0.72} clearcoat={0.2} />
+    <meshPhysicalMaterial vertexColors roughness={0.72} clearcoat={0.2} normalMap={detailNormal('pores', 8, 4)} normalScale={[0.75, 0.75]} />
   </mesh>
 );
 

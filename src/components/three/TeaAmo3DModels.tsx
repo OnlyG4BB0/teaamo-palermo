@@ -2,7 +2,8 @@ import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } fr
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Environment, Lightformer, PerformanceMonitor, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
-import { cachedGeometry, damp, lathe, mulberry32, prewarmInIdle, smoothProfile, softShadowTexture } from './kit';
+import { PREWARM_DETAIL, cachedGeometry, damp, lathe, mulberry32, prewarmInIdle, smoothProfile, softShadowTexture } from './kit';
+import { useReducedMotion } from '../../hooks/useSiteState';
 import { MotionRoot, useMotion } from './motion';
 import { BobaCupMesh, FruitTeaMesh, PREWARM_CUPS, type Cup3DConfig } from './models/cups';
 import { PREWARM_BURGERS, SpacePollyBurgerMesh } from './models/burger';
@@ -82,7 +83,7 @@ const CameraRig: React.FC<{ fit: ModelFit; exploded: boolean }> = ({ fit, explod
     const tanHalf = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
     const forH = (fit.h * explodeK * 0.5) / tanHalf;
     const forW = (fit.w * 0.5) / (tanHalf * aspect);
-    const targetDist = Math.max(forH, forW) * 1.12 + fit.d * 0.46;
+    const targetDist = Math.max(forH, forW) * 1.03 + fit.d * 0.42;
     // Start further out so the first frame is a gentle dolly-in
     dist.current = dist.current === null ? targetDist * 1.6 : damp(dist.current, targetDist, 2.6, dt);
 
@@ -256,6 +257,20 @@ const SoftShadow: React.FC<{ fit: ModelFit }> = ({ fit }) => {
 /* ============================================================================
    MODEL DISPATCH
    ============================================================================ */
+const MODEL_LABEL: Record<ModelType, string> = {
+  cup: 'bubble tea al latte con perle di tapioca',
+  fruittea: 'fruit tea con frutta e popping boba',
+  'burger-giove': 'smash burger SpacePolly Giove',
+  'burger-plutone': 'smash burger SpacePolly Plutone',
+  'burger-marte': 'smash burger SpacePolly Marte',
+  'burger-urano': 'burger di pollo SpacePolly Urano',
+  burger: 'smash burger SpacePolly',
+  waffle: 'bubble waffle con gelato',
+  crepe: 'crêpe con Nutella e Pan di Stelle',
+  pancake: 'pancake con sciroppo e gelato',
+  coppetta: 'coppetta di frozen yogurt',
+};
+
 const renderModel = (type: ModelType, cupConfig: Cup3DConfig, accent: string) => {
   switch (type) {
     case 'cup':
@@ -313,8 +328,8 @@ export interface StudioViewport3DProps {
 }
 
 const hudButton =
-  'pointer-events-auto rounded-full px-3 py-1.5 text-xs font-bold transition-all duration-300 cursor-pointer backdrop-blur-md shadow-[0_6px_16px_-10px_rgba(29,11,51,0.5)]';
-const hudIdle = 'bg-white/80 text-ink hover:bg-ink hover:text-white';
+  'lg lg-press pointer-events-auto rounded-full px-3.5 py-2 min-h-[40px] text-xs font-bold transition-colors duration-300 cursor-pointer';
+const hudIdle = 'text-ink hover:text-pop-ink';
 
 export const StudioViewport3D: React.FC<StudioViewport3DProps> = ({
   modelType,
@@ -336,19 +351,24 @@ export const StudioViewport3D: React.FC<StudioViewport3DProps> = ({
   const [isTouch] = useState(
     () => typeof window !== 'undefined' && window.matchMedia('(hover: none), (pointer: coarse)').matches
   );
-  const [reducedMotion] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  );
-  // Resolution adapts to the measured frame rate: sharp on fast GPUs, smooth on slow ones
-  const maxDpr = useMemo(
-    () => (typeof window === 'undefined' ? 1 : Math.min(window.devicePixelRatio || 1, isTouch ? 1.5 : 1.75)),
-    [isTouch]
-  );
-  const [dpr, setDpr] = useState(() => Math.min(maxDpr, isTouch ? 1.25 : 1.5));
+  // Live value: follows OS setting changes mid-session
+  const reducedMotion = useReducedMotion();
+  // Full device sharpness up to 2x; only steps down if the measured frame rate drops,
+  // and never below a floor that keeps edges crisp
+  const maxDpr = useMemo(() => (typeof window === 'undefined' ? 1 : Math.min(window.devicePixelRatio || 1, 2)), []);
+  const minDpr = Math.min(maxDpr, isTouch ? 1.25 : 1.5);
+  const [dpr, setDpr] = useState(maxDpr);
+  const glRef = useRef<THREE.WebGLRenderer | null>(null);
+  const canvasLabel = `Modello 3D interattivo: ${MODEL_LABEL[modelType] ?? 'prodotto TeaAmo'}. Trascina per ruotare, tocca per animarlo.`;
+
+  // Screen readers get a description of the WebGL canvas that follows the product
+  useEffect(() => {
+    glRef.current?.domElement.setAttribute('aria-label', canvasLabel);
+  }, [canvasLabel]);
 
   // Build every other product's geometry while the browser is idle
   useEffect(() => {
-    prewarmInIdle([...PREWARM_CUPS, ...PREWARM_BURGERS, ...PREWARM_DESSERTS]);
+    prewarmInIdle([...PREWARM_DETAIL, ...PREWARM_CUPS, ...PREWARM_BURGERS, ...PREWARM_DESSERTS]);
   }, []);
 
   // Render and animate ONLY while the viewport is on screen (battery + GPU)
@@ -387,7 +407,8 @@ export const StudioViewport3D: React.FC<StudioViewport3DProps> = ({
           type="button"
           onClick={() => setExploded((prev) => !prev)}
           aria-pressed={exploded}
-          className={`${hudButton} ${exploded ? 'bg-ink text-white' : hudIdle}`}
+          className={`${hudButton} ${exploded ? 'lg-tint text-white' : hudIdle}`}
+          style={exploded ? ({ '--lg-color': '#1D0B33' } as React.CSSProperties) : undefined}
         >
           {exploded ? 'Ricomponi strati' : 'Esplodi strati'}
         </button>
@@ -404,34 +425,42 @@ export const StudioViewport3D: React.FC<StudioViewport3DProps> = ({
       <div className="absolute inset-0">
         <CanvasErrorBoundary>
           <Canvas
+            onCreated={({ gl }) => {
+              glRef.current = gl;
+              gl.domElement.setAttribute('role', 'img');
+              gl.domElement.setAttribute('aria-label', canvasLabel);
+            }}
             frameloop={inView ? 'always' : 'never'}
             camera={{ position: [0, 0.6, 5.2], fov: 34 }}
             dpr={dpr}
             gl={{
-              antialias: !isTouch,
+              antialias: true,
               alpha: true,
               powerPreference: isTouch ? 'low-power' : 'high-performance',
-              toneMapping: THREE.ACESFilmicToneMapping,
-              toneMappingExposure: 1.05,
+              // Neutral keeps food colours true and contrasty (ACES washes highlights out)
+              toneMapping: THREE.NeutralToneMapping,
+              toneMappingExposure: 1.0,
             }}
             style={{ touchAction: isTouch ? 'pan-y' : 'none' }}
           >
             <PerformanceMonitor
               flipflops={4}
-              onDecline={() => setDpr((d) => Math.max(0.75, +(d - 0.25).toFixed(2)))}
+              onDecline={() => setDpr((d) => Math.max(minDpr, +(d - 0.25).toFixed(2)))}
               onIncline={() => setDpr((d) => Math.min(maxDpr, +(d + 0.25).toFixed(2)))}
-              onFallback={() => setDpr(1)}
+              onFallback={() => setDpr(minDpr)}
             />
             <Suspense fallback={null}>
-              <ambientLight intensity={0.45} />
-              <hemisphereLight args={['#fff6f1', '#f3d6dc', 0.65]} />
-              <directionalLight position={[4, 7, 5]} intensity={2.0} color="#fff4ea" />
+              <ambientLight intensity={0.32} />
+              <hemisphereLight args={['#fff6f1', '#f3d6dc', 0.55]} />
+              <directionalLight position={[4, 7, 5]} intensity={2.2} color="#fff4ea" />
               <directionalLight position={[-5, 3, -4]} intensity={1.2} color="#ffc4d6" />
+              {/* Back rim light: a bright edge that separates the silhouette from the stage */}
+              <directionalLight position={[1.5, 4, -6]} intensity={2.4} color="#ffffff" />
               <spotLight position={[0, 6, -4]} angle={0.5} penumbra={1} intensity={18} color="#ffffff" />
               <pointLight position={[0, -1.2, 3.5]} intensity={0.6} color={accentColor} />
 
               {/* Procedural studio HDRI: soft boxes give glossy surfaces real reflections offline */}
-              <Environment resolution={isTouch ? 64 : 128} frames={1}>
+              <Environment resolution={isTouch ? 128 : 256} frames={1}>
                 <Lightformer form="rect" intensity={2.4} position={[0, 5, -2]} scale={[8, 3, 1]} rotation-x={Math.PI / 2} />
                 <Lightformer form="rect" intensity={1.7} position={[-5, 1, 1]} scale={[3, 6, 1]} rotation-y={Math.PI / 2} color="#ffe3ea" />
                 <Lightformer form="rect" intensity={1.4} position={[5, 1, 1]} scale={[3, 6, 1]} rotation-y={-Math.PI / 2} color="#fff1dc" />

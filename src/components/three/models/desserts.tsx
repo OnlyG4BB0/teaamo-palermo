@@ -6,6 +6,7 @@ import {
   cachedGeometry,
   clamp01,
   crepeTexture,
+  detailNormal,
   displace,
   easeOutCubic,
   fbm3,
@@ -101,7 +102,7 @@ const scoopGeometry = (seed: number) =>
 
 const Scoop: React.FC<{ color: string; seed: number }> = ({ color, seed }) => (
   <mesh geometry={scoopGeometry(seed)}>
-    <meshPhysicalMaterial color={color} roughness={0.58} sheen={0.8} sheenColor="#ffffff" sheenRoughness={0.5} clearcoat={0.08} />
+    <meshPhysicalMaterial color={color} roughness={0.58} sheen={0.8} sheenColor="#ffffff" sheenRoughness={0.5} clearcoat={0.08} normalMap={detailNormal('pores', 5, 3)} normalScale={[0.42, 0.42]} />
   </mesh>
 );
 
@@ -258,7 +259,16 @@ const WaffleBubbles: React.FC = () => {
   const ref = useRef<THREE.InstancedMesh>(null);
   const geo = useMemo(() => cachedGeometry('waffle-bubble', () => new THREE.SphereGeometry(1, 20, 14)), []);
   const mat = useMemo(
-    () => new THREE.MeshPhysicalMaterial({ roughness: 0.5, clearcoat: 0.35, clearcoatRoughness: 0.4, sheen: 0.4, sheenColor: new THREE.Color('#FFE2A8') }),
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        roughness: 0.5,
+        clearcoat: 0.35,
+        clearcoatRoughness: 0.4,
+        sheen: 0.4,
+        sheenColor: new THREE.Color('#FFE2A8'),
+        normalMap: detailNormal('pores', 2, 1),
+        normalScale: new THREE.Vector2(0.45, 0.45),
+      }),
     []
   );
   const bubbles = useMemo(() => {
@@ -324,7 +334,15 @@ const WaferRoll: React.FC = () => (
 
 export const BubbleWaffleMesh: React.FC<{ accentColor?: string }> = ({ accentColor = '#DE3163' }) => {
   const coneMat = useMemo(
-    () => new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.55, clearcoat: 0.2, side: THREE.DoubleSide }),
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        vertexColors: true,
+        roughness: 0.55,
+        clearcoat: 0.2,
+        side: THREE.DoubleSide,
+        normalMap: detailNormal('pores', 14, 4),
+        normalScale: new THREE.Vector2(0.5, 0.5),
+      }),
     []
   );
   const sprinkleSpheres = useMemo<[number, number, number, number][]>(
@@ -426,6 +444,8 @@ const CrepeWedge: React.FC<{ seed: number }> = ({ seed }) => {
     () =>
       new THREE.MeshPhysicalMaterial({
         map: crepeTexture(),
+        normalMap: detailNormal('soft', 3, 3),
+        normalScale: new THREE.Vector2(0.35, 0.35),
         roughness: 0.6,
         sheen: 0.15,
         sheenColor: new THREE.Color('#FFE3B0'),
@@ -652,7 +672,15 @@ const SyrupDrips: React.FC<{ order: number }> = ({ order }) => {
 
 export const PancakeStackMesh: React.FC<{ accentColor?: string }> = () => {
   const mat = useMemo(
-    () => new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.6, sheen: 0.4, sheenColor: new THREE.Color('#FFDCA0') }),
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        vertexColors: true,
+        roughness: 0.6,
+        sheen: 0.4,
+        sheenColor: new THREE.Color('#FFDCA0'),
+        normalMap: detailNormal('pores', 8, 2),
+        normalScale: new THREE.Vector2(0.4, 0.4),
+      }),
     []
   );
   const stack = [
