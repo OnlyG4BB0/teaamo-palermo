@@ -70,7 +70,7 @@ export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({ isOpenNow })
   return (
     <>
       {/* ================= DELIVERY ================= */}
-      <section id="delivery" className="relative py-20 sm:py-28" aria-labelledby="delivery-title">
+      <section id="delivery" className="relative py-16 sm:py-28" aria-labelledby="delivery-title">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionTitle
             eyebrow="Delivery & take away"
@@ -81,7 +81,7 @@ export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({ isOpenNow })
                   href={TEAAMO_LINKS.linktree}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-squish glass-night inline-flex items-center gap-2 rounded-full px-5 py-3 font-display font-bold text-white"
+                  className="lg lg-dark lg-press inline-flex items-center gap-2 rounded-full px-5 py-3 font-display font-bold text-white"
                 >
                   Tutti i nostri link
                   <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
@@ -92,13 +92,13 @@ export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({ isOpenNow })
             Fame? <span className="text-neon">Arriviamo noi.</span>
           </SectionTitle>
 
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-5">
+          <div className="mt-8 sm:mt-12 grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-5">
             <RevealOnScroll delayMs={40} className="md:col-span-7">
               <a
                 href={TEAAMO_LINKS.glovo}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative block h-full overflow-hidden rounded-5xl bg-mango text-ink p-8 sm:p-10 min-h-[300px] card-lift"
+                className="group relative block h-full overflow-hidden rounded-4xl sm:rounded-5xl bg-mango text-ink p-6 sm:p-10 min-h-[260px] sm:min-h-[300px] card-lift"
               >
                 <span className="blob w-72 h-72 -right-16 -bottom-24 bg-white/50" aria-hidden="true" />
                 <Bike className="absolute right-8 top-8 w-20 h-20 sm:w-28 sm:h-28 text-ink/15 group-hover:translate-x-3 transition-transform duration-700" aria-hidden="true" />
@@ -170,9 +170,9 @@ export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({ isOpenNow })
             Il nostro <span className="text-neon">diario</span>
           </SectionTitle>
 
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+          <div className="mt-8 sm:mt-12 rail md:grid md:grid-cols-3 md:gap-5">
             {INSTAGRAM_MOMENTS.map((post, idx) => (
-              <RevealOnScroll key={post.id} delayMs={idx * 80} direction="scale">
+              <RevealOnScroll key={post.id} delayMs={idx * 80} direction="scale" className="w-[78%] sm:w-[55%] md:w-auto">
                 <a
                   href={TEAAMO_LINKS.instagram}
                   target="_blank"
@@ -208,11 +208,11 @@ export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({ isOpenNow })
             Buono <span className="text-neon">per tutti.</span>
           </SectionTitle>
 
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+          <div className="mt-8 sm:mt-12 rail md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-5">
             {ALLERGEN_CARDS.map((card, i) => {
               const Icon = card.icon;
               return (
-                <RevealOnScroll key={card.title} delayMs={i * 70}>
+                <RevealOnScroll key={card.title} delayMs={i * 70} className="w-[78%] sm:w-[48%] md:w-auto">
                   <div
                     onMouseMove={handleSpotlightMove}
                     className="spotlight h-full rounded-5xl glass-night p-7 card-lift"
@@ -254,7 +254,7 @@ export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({ isOpenNow })
                 href={TEAAMO_LINKS.googleShare}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="self-start md:self-auto glass-night rounded-4xl px-6 py-4 flex items-center gap-4 card-lift"
+                className="self-start md:self-auto lg lg-dark rounded-4xl px-6 py-4 flex items-center gap-4 card-lift"
               >
                 <span className="font-display font-extrabold text-5xl">4.2</span>
                 <span>
@@ -273,11 +273,11 @@ export const SocialAndReviews: React.FC<SocialAndReviewsProps> = ({ isOpenNow })
             <span className="text-neon">Palermo.</span>
           </SectionTitle>
 
-          <div className="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5">
-            <div className="lg:col-span-5 grid grid-cols-1 gap-4 sm:gap-5">
+          <div className="mt-8 sm:mt-12 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5">
+            <div className="lg:col-span-5 rail md:grid md:grid-cols-1 md:gap-5">
               {GOOGLE_REVIEWS.map((rev, i) => (
-                <RevealOnScroll key={rev.id} delayMs={i * 80} direction="left">
-                  <blockquote className={`relative rounded-5xl p-7 ${i === 1 ? 'bg-white text-ink' : 'glass-night'}`}>
+                <RevealOnScroll key={rev.id} delayMs={i * 80} direction="left" className="w-[85%] sm:w-[60%] md:w-auto">
+                  <blockquote className={`relative h-full rounded-4xl sm:rounded-5xl p-6 sm:p-7 ${i === 1 ? 'bg-white text-ink' : 'glass-night'}`}>
                     <Quote className={`w-8 h-8 ${i === 1 ? 'text-pop' : 'text-pop/80'}`} aria-hidden="true" />
                     <p className="mt-3 font-display font-semibold text-lg sm:text-xl leading-snug tracking-tight">{rev.text}</p>
                     <footer className={`mt-5 flex items-center justify-between gap-3 text-sm ${i === 1 ? 'text-ink-soft' : 'text-haze'}`}>

@@ -7,6 +7,7 @@ import {
   citrusTexture,
   clamp01,
   cupLabelTexture,
+  detailNormal,
   damp,
   easeOutCubic,
   glassMaterial,
@@ -121,7 +122,7 @@ const foamGeometry = () =>
     )
   );
 
-const sphereGeometry = () => cachedGeometry('unit-sphere', () => new THREE.SphereGeometry(1, 28, 20));
+const sphereGeometry = () => cachedGeometry('unit-sphere', () => new THREE.SphereGeometry(1, 32, 24));
 
 /* ============================================================================
    PEARL PHYSICS — gravity, drag, wall/floor constraints, pearl-pearl collisions
@@ -517,6 +518,8 @@ const CreamSwirl: React.FC<{ color: string; order: number }> = ({ color, order }
         sheenColor: new THREE.Color('#ffffff'),
         sheenRoughness: 0.45,
         clearcoat: 0.15,
+        normalMap: detailNormal('soft', 24, 2),
+        normalScale: new THREE.Vector2(0.22, 0.22),
       }),
     // colour is lerped in useFrame
     // eslint-disable-next-line react-hooks/exhaustive-deps

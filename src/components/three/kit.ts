@@ -54,13 +54,11 @@ export const mulberry32 = (seed: number) => () => {
 };
 
 let simplex: SimplexNoise | null = null;
-export const noise3 = (x: number, y: number, z: number) => {
-  if (!simplex) {
-    const rand = mulberry32(1337);
-    simplex = new SimplexNoise({ random: rand });
-  }
-  return simplex.noise3d(x, y, z);
+const getSimplex = () => {
+  if (!simplex) simplex = new SimplexNoise({ random: mulberry32(1337) });
+  return simplex;
 };
+export const noise3 = (x: number, y: number, z: number) => getSimplex().noise3d(x, y, z);
 export const fbm3 = (x: number, y: number, z: number, octaves = 3) => {
   let sum = 0;
   let amp = 0.5;
@@ -110,7 +108,7 @@ export const canvasTexture = (
 
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
-  tex.anisotropy = 8;
+  tex.anisotropy = 16;
   if (opts.wrap) {
     tex.wrapS = THREE.RepeatWrapping;
     tex.wrapT = THREE.RepeatWrapping;
@@ -847,3 +845,89 @@ export const prewarmInIdle = (tasks: (() => unknown)[]) => {
   };
   idle(run);
 };
+
+/* ============================================================================
+   MICRO-DETAIL NORMAL MAPS — seamless (4D-noise torus mapping) tangent-space
+   normals that give buns pores, patties a seared crust and gelato its grain.
+   ============================================================================ */
+export type DetailKind = 'pores' | 'rough' | 'soft';
+const detailBase = new Map<DetailKind, THREE.CanvasTexture>();
+const detailCache = new Map<string, THREE.Texture>();
+
+const buildDetailBase = (kind: DetailKind) => {
+  const size = 256;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d')!;
+  const img = ctx.createImageData(size, size);
+  const heights = new Float32Array(size * size);
+  const noise = getSimplex();
+  const TAU = Math.PI * 2;
+  const base = kind === 'pores' ? 2.4 : kind === 'rough' ? 1.7 : 0.9;
+  const octaves = kind === 'soft' ? 2 : 3;
+  for (let y = 0; y < size; y++) {
+    const b = (y / size) * TAU;
+    for (let x = 0; x < size; x++) {
+      const a = (x / size) * TAU;
+      let sum = 0;
+      let amp = 0.5;
+      let f = base;
+      for (let o = 0; o < octaves; o++) {
+        sum += noise.noise4d(Math.cos(a) * f, Math.sin(a) * f, Math.cos(b) * f, Math.sin(b) * f) * amp;
+        f *= 2.1;
+        amp *= 0.5;
+      }
+      // Pores read as small pits; the others as bumps
+      heights[y * size + x] = kind === 'pores' ? -Math.pow(Math.abs(sum), 0.65) : sum;
+    }
+  }
+  const k = kind === 'pores' ? 7 : kind === 'rough' ? 5 : 3;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const l = heights[y * size + ((x - 1 + size) % size)];
+      const r = heights[y * size + ((x + 1) % size)];
+      const u = heights[((y - 1 + size) % size) * size + x];
+      const d = heights[((y + 1) % size) * size + x];
+      let nx = (l - r) * k;
+      let ny = (u - d) * k;
+      let nz = 1;
+      const len = Math.hypot(nx, ny, nz);
+      nx /= len;
+      ny /= len;
+      nz /= len;
+      const i = (y * size + x) * 4;
+      img.data[i] = (nx * 0.5 + 0.5) * 255;
+      img.data[i + 1] = (ny * 0.5 + 0.5) * 255;
+      img.data[i + 2] = (nz * 0.5 + 0.5) * 255;
+      img.data[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  const tex = new THREE.CanvasTexture(canvas);
+  // Normal data is linear, never sRGB
+  tex.colorSpace = THREE.NoColorSpace;
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.anisotropy = 16;
+  return tex;
+};
+
+/** Shared detail normal map, tiled `rx` × `ry` times over the mesh UVs */
+export const detailNormal = (kind: DetailKind, rx = 1, ry = 1) => {
+  const key = `${kind}-${rx}-${ry}`;
+  const cached = detailCache.get(key);
+  if (cached) return cached;
+  let base = detailBase.get(kind);
+  if (!base) {
+    base = buildDetailBase(kind);
+    detailBase.set(kind, base);
+  }
+  const tex = base.clone();
+  tex.repeat.set(rx, ry);
+  tex.needsUpdate = true;
+  detailCache.set(key, tex);
+  return tex;
+};
+
+export const PREWARM_DETAIL: (() => unknown)[] = [() => detailNormal('pores'), () => detailNormal('rough'), () => detailNormal('soft')];

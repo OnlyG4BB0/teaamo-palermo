@@ -125,7 +125,7 @@ const TikTokVideoCard: React.FC<VideoCardProps> = ({
             onClick={handleAudioClick}
             aria-label={isUnmuted ? 'Disattiva audio' : 'Attiva audio'}
             className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-bold backdrop-blur-md transition-all duration-300 ${
-              isUnmuted ? 'bg-pop text-white' : 'bg-white/15 text-white hover:bg-white/25'
+              isUnmuted ? 'bg-pop text-white' : 'lg lg-dark text-white'
             }`}
           >
             {isUnmuted ? <Volume2 className="w-4 h-4" aria-hidden="true" /> : <VolumeX className="w-4 h-4" aria-hidden="true" />}
@@ -161,11 +161,11 @@ const TikTokVideoCard: React.FC<VideoCardProps> = ({
           <p className="text-[13px] font-medium text-white/95 leading-snug line-clamp-2">{video.title}</p>
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 text-xs font-semibold">
-              <span className="inline-flex items-center gap-1 rounded-full bg-white/15 backdrop-blur-md px-2.5 py-1">
+              <span className="lg lg-dark inline-flex items-center gap-1 rounded-full px-2.5 py-1">
                 <Eye className="w-3.5 h-3.5" aria-hidden="true" />
                 {video.views}
               </span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-white/15 backdrop-blur-md px-2.5 py-1">
+              <span className="lg lg-dark inline-flex items-center gap-1 rounded-full px-2.5 py-1">
                 <Heart className="w-3.5 h-3.5 fill-pop text-pop" aria-hidden="true" />
                 {video.likes}
               </span>
@@ -263,7 +263,7 @@ export const TikTokFeedBoard: React.FC<TikTokFeedBoardProps> = () => {
   };
 
   return (
-    <section id="tiktok" className="relative pt-20 sm:pt-28 pb-16 overflow-hidden" aria-labelledby="tiktok-title">
+    <section id="tiktok" className="relative pt-16 sm:pt-28 pb-12 sm:pb-16 overflow-hidden" aria-labelledby="tiktok-title">
       <span className="blob w-[520px] h-[520px] -left-56 top-10 bg-pop/25" aria-hidden="true" />
       <span className="blob w-[460px] h-[460px] -right-40 bottom-0 bg-taro/20" style={{ animationDelay: '-8s' }} aria-hidden="true" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -281,7 +281,7 @@ export const TikTokFeedBoard: React.FC<TikTokFeedBoardProps> = () => {
             </p>
           </div>
           <div className="flex items-center gap-3 self-start md:self-auto">
-            <div className="glass-night inline-flex items-center rounded-full p-1">
+            <div className="lg lg-dark inline-flex items-center rounded-full p-1">
               <button
                 type="button"
                 onClick={() => scrollCarousel('left')}
@@ -321,7 +321,7 @@ export const TikTokFeedBoard: React.FC<TikTokFeedBoardProps> = () => {
 
       <div
         ref={carouselRef}
-        className="relative mt-10 flex gap-4 sm:gap-6 overflow-x-auto no-scrollbar snap-x snap-mandatory py-6 px-4 sm:px-6 lg:px-[max(2rem,calc((100vw-80rem)/2+2rem))] scroll-px-4 sm:scroll-px-6 lg:scroll-px-[max(2rem,calc((100vw-80rem)/2+2rem))]"
+        className="relative mt-6 sm:mt-10 flex gap-4 sm:gap-6 overflow-x-auto no-scrollbar snap-x snap-mandatory py-6 px-4 sm:px-6 lg:px-[max(2rem,calc((100vw-80rem)/2+2rem))] scroll-px-4 sm:scroll-px-6 lg:scroll-px-[max(2rem,calc((100vw-80rem)/2+2rem))]"
       >
         {TIKTOK_VIDEOS.map((video, idx) => (
           <TikTokVideoCard
@@ -338,17 +338,22 @@ export const TikTokFeedBoard: React.FC<TikTokFeedBoardProps> = () => {
         ))}
       </div>
 
-      <div className="mt-4 flex items-center justify-center gap-2">
+      <div className="mt-2 flex items-center justify-center">
         {TIKTOK_VIDEOS.map((_, dotIdx) => (
           <button
             key={dotIdx}
             type="button"
             onClick={() => scrollToSlide(dotIdx)}
             aria-label={`Vai al video ${dotIdx + 1}`}
-            className={`h-2.5 rounded-full transition-all duration-500 ${
-              activeSlideIndex === dotIdx ? 'w-10 bg-gradient-to-r from-pop to-taro' : 'w-2.5 bg-white/25 hover:bg-white/50'
-            }`}
-          />
+            aria-current={activeSlideIndex === dotIdx ? 'true' : undefined}
+            className="group h-11 min-w-[24px] px-1 flex items-center justify-center"
+          >
+            <span
+              className={`block h-2.5 rounded-full transition-all duration-500 ${
+                activeSlideIndex === dotIdx ? 'w-10 bg-gradient-to-r from-pop to-taro' : 'w-2.5 bg-white/25 group-hover:bg-white/50'
+              }`}
+            />
+          </button>
         ))}
       </div>
     </section>

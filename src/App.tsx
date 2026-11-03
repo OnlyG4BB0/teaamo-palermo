@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -17,7 +17,6 @@ import {
   Sparkles,
   Star,
   Sun,
-  X,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -33,6 +32,9 @@ import { MenuShowcase } from './components/MenuShowcase';
 import { TikTokFeedBoard } from './components/TikTokFeedBoard';
 import { SocialAndReviews } from './components/SocialAndReviews';
 import { RevealOnScroll, MagneticWrap } from './components/ui/AnimatedPrimitives';
+import { SiteHeader, MobileTabBar, NAV_LINKS } from './components/Navigation';
+import { useLiquidGlass } from './components/ui/LiquidGlass';
+import { useIsOpenNow, useReducedMotion } from './hooks/useSiteState';
 
 type HeroModelCategory = 'cup' | 'fruittea' | 'burger-giove' | 'waffle' | 'crepe' | 'pancake';
 
@@ -110,44 +112,8 @@ const HERO_MODELS_LIST: HeroModelTab[] = [
   },
 ];
 
-const NAV_LINKS = [
-  { href: '#menu', label: 'Menu', desc: 'Bubble tea, burger & dolci' },
-  { href: '#boba-lab', label: 'Boba Lab', desc: 'Crea il tuo bubble tea in 3D' },
-  { href: '#tiktok', label: 'TikTok', desc: 'I nostri video' },
-  { href: '#delivery', label: 'Delivery', desc: 'Glovo & ritiro al locale' },
-  { href: '#allergeni', label: 'Allergeni', desc: 'Vegan, senza glutine & lattosio' },
-  { href: '#dove-siamo', label: 'Dove siamo', desc: 'Viale Strasburgo 378' },
-  { href: '#faq', label: 'FAQ', desc: 'Domande frequenti' },
-];
-
 const MARQUEE_WORDS = ['Bubble tea', 'Smash burger', 'Bubble waffle', 'Crêpes', 'Pancake', 'Gelato', 'Frozen yogurt'];
 const PEARL_COLORS = ['#FF2E7E', '#A98BFF', '#FFC94A', '#9AD96B', '#7CCBFF'];
-
-/** Opening hours 12:30 – 03:30, evaluated in Palermo's time zone */
-const computeIsOpenNow = (): boolean => {
-  const parts = new Intl.DateTimeFormat('it-IT', {
-    timeZone: 'Europe/Rome',
-    hour: 'numeric',
-    minute: 'numeric',
-    hourCycle: 'h23',
-  }).formatToParts(new Date());
-  const hour = Number(parts.find((p) => p.type === 'hour')?.value ?? 0);
-  const minute = Number(parts.find((p) => p.type === 'minute')?.value ?? 0);
-  const totalMinutes = hour * 60 + minute;
-  return totalMinutes >= 750 || totalMinutes < 210;
-};
-
-/** Live open/closed status (null until mounted, so prerendered HTML never disagrees) */
-const useIsOpenNow = () => {
-  const [isOpenNow, setIsOpenNow] = useState<boolean | null>(null);
-  useEffect(() => {
-    const update = () => setIsOpenNow(computeIsOpenNow());
-    update();
-    const id = window.setInterval(update, 60_000);
-    return () => window.clearInterval(id);
-  }, []);
-  return isOpenNow;
-};
 
 /** Splits a phrase into masked words that rise in sequence */
 const RisingWords: React.FC<{ text: string; startMs: number; className?: string }> = ({
@@ -171,229 +137,68 @@ const RisingWords: React.FC<{ text: string; startMs: number; className?: string 
 
 const delay = (ms: number) => ({ '--d': `${ms}ms` }) as React.CSSProperties;
 
-/* Header state (scroll, active section, mobile menu) lives here so it never re-renders the page */
-function SiteHeader() {
-  const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
-  const isOpenNow = useIsOpenNow();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState<string>('');
-  const progressRef = useRef<SVGCircleElement>(null);
+/** Product switcher: liquid glass track with an indicator that slides between products */
+const ProductSwitcher: React.FC<{ value: HeroModelCategory; onChange: (id: HeroModelCategory) => void }> = ({
+  value,
+  onChange,
+}) => {
+  const glass = useLiquidGlass<HTMLDivElement>({ refract: true, strength: 12, bevel: 16, blur: 2 });
+  const trackRef = useRef<HTMLDivElement>(null);
+  const btnRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [indicator, setIndicator] = useState<{ left: number; width: number } | null>(null);
 
-  // Compact header + reading-progress ring around the logo
-  useEffect(() => {
-    let raf = 0;
-    const circumference = 2 * Math.PI * 22;
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const max = document.documentElement.scrollHeight - window.innerHeight;
-        const progress = max > 0 ? window.scrollY / max : 0;
-        if (progressRef.current) {
-          progressRef.current.style.strokeDashoffset = String(circumference * (1 - progress));
-        }
-        setIsScrolled(window.scrollY > 24);
-      });
+  useLayoutEffect(() => {
+    const update = () => {
+      const idx = HERO_MODELS_LIST.findIndex((m) => m.id === value);
+      const btn = btnRefs.current[idx];
+      const track = trackRef.current;
+      if (!btn || !track) return;
+      setIndicator({ left: btn.offsetLeft, width: btn.offsetWidth });
+      // Keep the active product centred when the rail scrolls on small phones
+      track.scrollTo({ left: btn.offsetLeft - track.clientWidth / 2 + btn.offsetWidth / 2, behavior: 'smooth' });
     };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('scroll', onScroll);
-    };
-  }, []);
-
-  // Highlight the nav link of the section in view
-  useEffect(() => {
-    if (typeof IntersectionObserver === 'undefined') return;
-    const sections = NAV_LINKS.map((l) => document.querySelector(l.href)).filter((el): el is Element => el !== null);
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActiveSection(`#${entry.target.id}`);
-        });
-      },
-      { rootMargin: '-45% 0px -50% 0px' }
-    );
-    sections.forEach((s) => io.observe(s));
-    return () => io.disconnect();
-  }, []);
-
-  // Full-screen mobile menu: lock page scroll, close on Escape / desktop resize
-  useEffect(() => {
-    document.documentElement.style.overflow = isMobileNavOpen ? 'hidden' : '';
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setIsMobileNavOpen(false);
-    const mq = window.matchMedia('(min-width: 1024px)');
-    const onMq = () => mq.matches && setIsMobileNavOpen(false);
-    window.addEventListener('keydown', onKey);
-    mq.addEventListener('change', onMq);
-    return () => {
-      document.documentElement.style.overflow = '';
-      window.removeEventListener('keydown', onKey);
-      mq.removeEventListener('change', onMq);
-    };
-  }, [isMobileNavOpen]);
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, [value]);
 
   return (
-    <>
-      {/* ================= FLOATING PILL HEADER ================= */}
-      <header className="fixed top-3 sm:top-4 inset-x-0 z-50 px-3 sm:px-6 pointer-events-none">
-        <nav
-          aria-label="Navigazione principale"
-          className={`pointer-events-auto mx-auto max-w-6xl flex items-center justify-between gap-2 rounded-full p-1.5 sm:p-2 transition-all duration-500 ${
-            isScrolled || isMobileNavOpen
-              ? 'bg-white/85 backdrop-blur-xl border border-white shadow-[0_16px_44px_-18px_rgba(29,11,51,0.35)]'
-              : 'bg-white/55 backdrop-blur-md border border-white/70'
-          }`}
-        >
-          <a href="#top" className="group flex items-center gap-2.5 pl-1 pr-2 min-w-0" aria-label="TeaAmo Palermo, torna all'inizio">
-            <span className="relative w-11 h-11 shrink-0">
-              <svg className="absolute inset-0 -rotate-90" viewBox="0 0 48 48" aria-hidden="true">
-                <circle cx="24" cy="24" r="22" fill="none" stroke="#FFE3EC" strokeWidth="3" />
-                <circle
-                  ref={progressRef}
-                  cx="24"
-                  cy="24"
-                  r="22"
-                  fill="none"
-                  stroke="url(#progress-gradient)"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeDasharray={2 * Math.PI * 22}
-                  strokeDashoffset={2 * Math.PI * 22}
-                />
-                <defs>
-                  <linearGradient id="progress-gradient" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#FF2E7E" />
-                    <stop offset="100%" stopColor="#A98BFF" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <img
-                src={`${import.meta.env.BASE_URL}teaamo-logo.png`}
-                alt=""
-                width={36}
-                height={36}
-                className="absolute inset-[4px] w-9 h-9 rounded-full object-cover group-hover:rotate-[-12deg] transition-transform duration-500"
-              />
-            </span>
-            <span className="font-display font-extrabold text-xl tracking-tight text-ink">TeaAmo</span>
-          </a>
-
-          <div className="hidden lg:flex items-center gap-0.5">
-            {NAV_LINKS.map((link) => {
-              const isActive = activeSection === link.href;
-              return (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  aria-current={isActive ? 'location' : undefined}
-                  className={`px-3.5 py-2 rounded-full text-[15px] font-semibold transition-colors duration-300 ${
-                    isActive ? 'bg-ink text-white' : 'text-ink hover:bg-blush'
-                  }`}
-                >
-                  {link.label}
-                </a>
-              );
-            })}
-          </div>
-
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {isOpenNow !== null && (
-              <span className="hidden md:inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white text-sm font-semibold text-ink">
-                <span className={`w-2 h-2 rounded-full ${isOpenNow ? 'bg-emerald-400 live-dot' : 'bg-ink/30'}`} />
-                {isOpenNow ? 'Aperto ora' : 'Apre alle 12:30'}
-              </span>
-            )}
-            <a
-              href={TEAAMO_LINKS.glovo}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-squish inline-flex items-center gap-1.5 rounded-full bg-pop-deep text-white px-4 sm:px-5 py-2.5 sm:py-3 font-display font-bold text-sm sm:text-[15px] shadow-pop"
-            >
-              Ordina
-              <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
-            </a>
+    <div ref={glass.ref} {...glass.glassHandlers} className="lg rounded-full p-1.5 max-w-full">
+      {glass.filter}
+      <div ref={trackRef} role="tablist" aria-label="Scegli il prodotto 3D" className="relative flex gap-0.5 overflow-x-auto no-scrollbar">
+        {indicator && (
+          <span
+            className="absolute inset-y-0 rounded-full bg-ink shadow-soft transition-[left,width] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+            style={{ left: indicator.left, width: indicator.width }}
+            aria-hidden="true"
+          />
+        )}
+        {HERO_MODELS_LIST.map((m, i) => {
+          const Icon = m.icon;
+          const isSelected = value === m.id;
+          return (
             <button
+              key={m.id}
+              ref={(el) => {
+                btnRefs.current[i] = el;
+              }}
               type="button"
-              onClick={() => setIsMobileNavOpen((v) => !v)}
-              aria-expanded={isMobileNavOpen}
-              aria-controls="mobile-nav-panel"
-              aria-label={isMobileNavOpen ? 'Chiudi menu' : 'Apri menu'}
-              className="lg:hidden w-11 h-11 rounded-full bg-ink text-white flex items-center justify-center btn-squish"
+              role="tab"
+              aria-selected={isSelected}
+              onClick={() => onChange(m.id)}
+              className={`relative z-10 shrink-0 inline-flex items-center gap-1.5 rounded-full px-3.5 xl:px-4 py-2.5 min-h-[44px] text-[13px] xl:text-sm font-bold whitespace-nowrap transition-colors duration-300 ${
+                isSelected ? `text-white ${indicator ? '' : 'bg-ink'}` : 'text-ink'
+              }`}
             >
-              {isMobileNavOpen ? (
-                <X className="w-5 h-5" aria-hidden="true" />
-              ) : (
-                <span className="flex flex-col gap-1.5" aria-hidden="true">
-                  <span className="block w-5 h-0.5 rounded-full bg-white" />
-                  <span className="block w-3.5 h-0.5 rounded-full bg-white ml-auto" />
-                </span>
-              )}
+              <Icon className="w-4 h-4" aria-hidden="true" />
+              {m.label}
             </button>
-          </div>
-        </nav>
-      </header>
-
-      {/* Full-screen mobile menu */}
-      <div
-        id="mobile-nav-panel"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Menu di navigazione"
-        className={`lg:hidden fixed inset-0 z-40 bg-night-sky transition-all duration-500 ${
-          isMobileNavOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
-        }`}
-      >
-        <span className="blob w-80 h-80 -right-20 top-20 bg-pop/40" aria-hidden="true" />
-        <span className="blob w-72 h-72 -left-24 bottom-10 bg-taro/30" aria-hidden="true" />
-        <div className="relative h-full flex flex-col justify-between px-6 pt-28 pb-10 overflow-y-auto">
-          <nav aria-label="Sezioni" className="space-y-1">
-            {NAV_LINKS.map((link, idx) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={() => setIsMobileNavOpen(false)}
-                style={{ transitionDelay: isMobileNavOpen ? `${idx * 50 + 80}ms` : '0ms' }}
-                className={`group flex items-baseline gap-4 py-2 transition-all duration-500 ${
-                  isMobileNavOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-                }`}
-              >
-                <span className="font-display text-sm font-bold text-pop">0{idx + 1}</span>
-                <span>
-                  <span className="block font-display font-extrabold text-4xl sm:text-5xl tracking-tight text-white group-hover:text-pop transition-colors">
-                    {link.label}
-                  </span>
-                  <span className="block text-sm text-haze">{link.desc}</span>
-                </span>
-              </a>
-            ))}
-          </nav>
-          <div
-            style={{ transitionDelay: isMobileNavOpen ? '480ms' : '0ms' }}
-            className={`mt-10 flex flex-wrap gap-2 transition-all duration-500 ${isMobileNavOpen ? 'opacity-100' : 'opacity-0'}`}
-          >
-            {[
-              { href: TEAAMO_LINKS.instagram, label: 'Instagram' },
-              { href: TEAAMO_LINKS.tiktok, label: 'TikTok' },
-              { href: `tel:${TEAAMO_LINKS.phone}`, label: TEAAMO_LINKS.phoneDisplay },
-            ].map((s) => (
-              <a
-                key={s.label}
-                href={s.href}
-                target={s.href.startsWith('tel') ? undefined : '_blank'}
-                rel="noopener noreferrer"
-                className="glass-night rounded-full px-4 py-2.5 text-sm font-semibold text-white"
-              >
-                {s.label}
-              </a>
-            ))}
-          </div>
-        </div>
+          );
+        })}
       </div>
-
-    </>
+    </div>
   );
-}
+};
 
 /* Hero state (flavour auto-cycle, product switcher) is local: cycling never re-renders the rest of the page */
 function Hero() {
@@ -405,9 +210,13 @@ function Hero() {
   const isDrink = heroModelType === 'cup' || heroModelType === 'fruittea';
   const stageAccent = isDrink ? selectedHeroFlavor.accentHex : '#FF2E7E';
 
+  const reducedMotion = useReducedMotion();
+  // Auto-rotation pauses while the visitor hovers or focuses the hero, and never runs with reduced motion
+  const [heroPaused, setHeroPaused] = useState(false);
+
   // Auto-cycle hero flavours every 4.5s until the visitor picks one
   useEffect(() => {
-    if (!autoCycleHero || heroModelType !== 'cup') return;
+    if (!autoCycleHero || heroModelType !== 'cup' || reducedMotion || heroPaused) return;
     const id = window.setInterval(() => {
       setSelectedHeroFlavor((prev) => {
         const curIdx = HERO_FLAVORS.findIndex((f) => f.id === prev.id);
@@ -415,7 +224,7 @@ function Hero() {
       });
     }, 4500);
     return () => window.clearInterval(id);
-  }, [autoCycleHero, heroModelType]);
+  }, [autoCycleHero, heroModelType, reducedMotion, heroPaused]);
 
   const heroTitle = heroModelType === 'cup' ? selectedHeroFlavor.name : activeHeroModel.title;
   const heroPrice = heroModelType === 'cup' ? selectedHeroFlavor.price : activeHeroModel.price;
@@ -436,7 +245,7 @@ function Hero() {
   );
 
   return (
-        <section className="relative bg-day pt-28 sm:pt-36 pb-16 sm:pb-20 overflow-hidden" aria-labelledby="hero-title">
+        <section id="home" className="relative bg-day pt-24 sm:pt-36 pb-12 sm:pb-20 overflow-hidden" aria-labelledby="hero-title">
           <span className="blob w-[520px] h-[520px] -left-48 -top-40 bg-pop/25" aria-hidden="true" />
           <span className="blob w-[480px] h-[480px] -right-40 top-24 bg-mango/30" style={{ animationDelay: '-5s' }} aria-hidden="true" />
           <span className="blob w-[520px] h-[520px] left-1/3 -bottom-64 bg-taro/30" style={{ animationDelay: '-9s' }} aria-hidden="true" />
@@ -490,10 +299,16 @@ function Hero() {
               </span>
             </h1>
 
-            <div className="mt-8 sm:mt-10 grid grid-cols-1 lg:grid-cols-[minmax(0,290px)_minmax(0,1fr)_minmax(0,290px)] items-center gap-6 lg:gap-4">
+            <div
+              className="mt-8 sm:mt-10 grid grid-cols-1 lg:grid-cols-[minmax(0,290px)_minmax(0,1fr)_minmax(0,290px)] items-center gap-6 lg:gap-4"
+              onPointerEnter={(e) => e.pointerType === 'mouse' && setHeroPaused(true)}
+              onPointerLeave={(e) => e.pointerType === 'mouse' && setHeroPaused(false)}
+              onFocus={() => setHeroPaused(true)}
+              onBlur={(e) => !e.currentTarget.contains(e.relatedTarget as Node | null) && setHeroPaused(false)}
+            >
               {/* Product on stage */}
               <aside className="order-2 lg:order-1 hero-enter" style={delay(700)} aria-live="polite">
-                <div className="glass rounded-4xl p-6 shadow-soft">
+                <div className="lg rounded-4xl p-5 sm:p-6">
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-blush px-3 py-1 text-xs font-bold uppercase tracking-wide text-pop-ink">
                     <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
                     {heroBadge}
@@ -518,7 +333,7 @@ function Hero() {
                   {isDrink && (
                     <div className="mt-5 pt-5 border-t border-ink/10">
                       <p className="text-xs font-bold uppercase tracking-wide text-ink-soft">
-                        Scegli il gusto {autoCycleHero && heroModelType === 'cup' ? '· in rotazione' : ''}
+                        Scegli il gusto {autoCycleHero && heroModelType === 'cup' && !reducedMotion ? (heroPaused ? '· in pausa' : '· in rotazione') : ''}
                       </p>
                       <div className="mt-3 flex items-center gap-2.5">
                         {HERO_FLAVORS.map((flav) => {
@@ -533,7 +348,7 @@ function Hero() {
                               }}
                               aria-label={`Gusto ${flav.name}`}
                               aria-pressed={active}
-                              className={`w-9 h-9 rounded-full border-[3px] border-white shadow-soft transition-transform duration-300 ${
+                              className={`w-11 h-11 lg:w-9 lg:h-9 rounded-full border-[3px] border-white shadow-soft transition-transform duration-300 ${
                                 active ? 'scale-110 ring-2 ring-ink' : 'hover:scale-110'
                               }`}
                               style={{ background: `linear-gradient(160deg, ${flav.liquidTopColor}, ${flav.liquidBottomColor})` }}
@@ -573,71 +388,65 @@ function Hero() {
                   className="h-[380px] sm:h-[460px] lg:h-[520px]"
                 />
                 <div className="relative mt-2 flex justify-center">
-                  <div role="tablist" aria-label="Scegli il prodotto 3D" className="glass rounded-full p-1.5 flex gap-0.5 overflow-x-auto no-scrollbar max-w-full shadow-soft">
-                    {HERO_MODELS_LIST.map((m) => {
-                      const Icon = m.icon;
-                      const isSelected = heroModelType === m.id;
-                      return (
-                        <button
-                          key={m.id}
-                          type="button"
-                          role="tab"
-                          aria-selected={isSelected}
-                          onClick={() => {
-                            setHeroModelType(m.id);
-                            if (m.id !== 'cup') setAutoCycleHero(false);
-                          }}
-                          className={`shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 xl:px-4 py-2.5 text-[13px] xl:text-sm font-bold whitespace-nowrap transition-all duration-300 ${
-                            isSelected ? 'bg-ink text-white shadow-soft' : 'text-ink hover:bg-white'
-                          }`}
-                        >
-                          <Icon className="w-4 h-4 hidden sm:block" aria-hidden="true" />
-                          {m.label}
-                        </button>
-                      );
-                    })}
-                  </div>
+                  <ProductSwitcher
+                    value={heroModelType}
+                    onChange={(id) => {
+                      setHeroModelType(id);
+                      if (id !== 'cup') setAutoCycleHero(false);
+                    }}
+                  />
                 </div>
               </div>
 
               {/* Quick facts */}
-              <aside className="order-3 grid grid-cols-3 lg:grid-cols-1 gap-3 lg:gap-4 hero-enter" style={delay(850)}>
-                <div className="glass rounded-4xl p-4 lg:p-6 shadow-soft card-lift">
+              <aside className="order-3 grid grid-cols-3 lg:grid-cols-1 gap-2.5 sm:gap-3 lg:gap-4 hero-enter" style={delay(850)}>
+                <div className="lg rounded-3xl lg:rounded-4xl p-3.5 sm:p-4 lg:p-6 card-lift">
                   <div className="flex items-center gap-0.5 text-mango" aria-label="Valutazione 4,2 su 5">
                     {[0, 1, 2, 3, 4].map((i) => (
-                      <Star key={i} className={`w-3.5 h-3.5 lg:w-4 lg:h-4 ${i < 4 ? 'fill-current' : 'fill-current opacity-40'}`} aria-hidden="true" />
+                      <Star key={i} className={`w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 ${i < 4 ? 'fill-current' : 'fill-current opacity-40'}`} aria-hidden="true" />
                     ))}
                   </div>
-                  <p className="mt-2 font-display font-extrabold text-2xl lg:text-4xl text-ink">4.2</p>
-                  <p className="text-xs lg:text-sm text-ink-soft font-medium">540+ recensioni Google</p>
+                  <p className="mt-1.5 sm:mt-2 font-display font-extrabold text-2xl lg:text-4xl text-ink">4.2</p>
+                  <p className="text-[11px] sm:text-xs lg:text-sm text-ink-soft font-semibold">
+                    <span className="lg:hidden">su Google</span>
+                    <span className="hidden lg:inline">540+ recensioni Google</span>
+                  </p>
                 </div>
-                <div className="rounded-4xl p-4 lg:p-6 bg-ink text-white shadow-soft card-lift">
-                  <Clock className="w-5 h-5 text-mango" aria-hidden="true" />
-                  <p className="mt-2 font-display font-extrabold text-lg lg:text-3xl leading-tight">12:30–03:30</p>
-                  <p className="text-xs lg:text-sm text-haze font-medium">tutti i giorni</p>
+                <div
+                  className="lg lg-tint rounded-3xl lg:rounded-4xl p-3.5 sm:p-4 lg:p-6 text-white card-lift"
+                  style={{ '--lg-color': '#1D0B33' } as React.CSSProperties}
+                >
+                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-mango" aria-hidden="true" />
+                  <p className="mt-1.5 sm:mt-2 font-display font-extrabold text-[15px] sm:text-lg lg:text-3xl leading-tight">12:30–03:30</p>
+                  <p className="text-[11px] sm:text-xs lg:text-sm text-haze font-semibold">tutti i giorni</p>
                 </div>
                 <a
                   href={TEAAMO_LINKS.glovo}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-4xl p-4 lg:p-6 bg-mango text-ink shadow-soft card-lift block"
+                  className="lg lg-tint lg-press rounded-3xl lg:rounded-4xl p-3.5 sm:p-4 lg:p-6 text-ink card-lift block"
+                  style={{ '--lg-color': '#FFC94A' } as React.CSSProperties}
                 >
-                  <Bike className="w-5 h-5" aria-hidden="true" />
-                  <p className="mt-2 font-display font-extrabold text-lg lg:text-3xl leading-tight">Delivery</p>
-                  <p className="text-xs lg:text-sm font-semibold">a casa con Glovo →</p>
+                  <Bike className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
+                  <p className="mt-1.5 sm:mt-2 font-display font-extrabold text-[15px] sm:text-lg lg:text-3xl leading-tight">Delivery</p>
+                  <p className="text-[11px] sm:text-xs lg:text-sm font-bold">con Glovo →</p>
                 </a>
               </aside>
             </div>
 
-            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 hero-enter" style={delay(1000)}>
-              <MagneticWrap strength={0.15}>
-                <a href="#menu" className="btn-squish inline-flex items-center gap-2 rounded-full bg-ink text-white px-8 py-4 font-display font-bold text-lg shadow-soft">
+            <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 hero-enter" style={delay(1000)}>
+              <MagneticWrap strength={0.15} className="w-full sm:w-auto">
+                <a
+                  href="#menu"
+                  className="lg lg-tint lg-press flex sm:inline-flex items-center justify-center gap-2 rounded-full text-white px-8 py-4 font-display font-bold text-lg"
+                  style={{ '--lg-color': '#1D0B33' } as React.CSSProperties}
+                >
                   Scopri il menu
                   <ArrowRight className="w-5 h-5" aria-hidden="true" />
                 </a>
               </MagneticWrap>
-              <MagneticWrap strength={0.15}>
-                <a href="#boba-lab" className="btn-squish inline-flex items-center gap-2 rounded-full bg-white text-ink px-8 py-4 font-display font-bold text-lg shadow-soft">
+              <MagneticWrap strength={0.15} className="w-full sm:w-auto">
+                <a href="#boba-lab" className="lg lg-press flex sm:inline-flex items-center justify-center gap-2 rounded-full text-ink px-8 py-4 font-display font-bold text-lg">
                   <Sparkles className="w-5 h-5 text-pop-ink" aria-hidden="true" />
                   Crea il tuo boba
                 </a>
@@ -659,12 +468,13 @@ export function App() {
     <div className="min-h-screen">
       <div className="film-grain" aria-hidden="true" />
       <SiteHeader />
+      <MobileTabBar />
 
       <main id="top">
         <Hero />
 
         {/* ================= GIANT TICKER ================= */}
-        <section className="relative py-10 sm:py-14 overflow-hidden bg-milk" aria-hidden="true">
+        <section className="relative py-8 sm:py-14 overflow-hidden bg-milk" aria-hidden="true">
           <div className="flex w-max animate-marquee marquee-track">
             {[...MARQUEE_WORDS, ...MARQUEE_WORDS].map((word, i) => (
               <span key={`a-${i}`} className="inline-flex items-center gap-6 sm:gap-8 pr-6 sm:pr-8">
@@ -698,7 +508,7 @@ export function App() {
 
         {/* ================= SUNSET: DAY BECOMES NIGHT ================= */}
         <section
-          className="relative overflow-hidden py-28 sm:py-40 text-center"
+          className="relative overflow-hidden py-24 sm:py-40 text-center"
           style={{
             background:
               'linear-gradient(180deg, #EEE7FF 0%, #FFD6E4 18%, #FF9DBE 36%, #E25C9E 52%, #7A2E8C 68%, #2B1A4D 84%, #0E0620 100%)',
@@ -744,17 +554,17 @@ export function App() {
         </section>
 
         {/* ================= NIGHT ZONE ================= */}
-        <div className="bg-night-sky text-white">
+        <div className="bg-night-sky text-white" data-surface="dark">
           <TikTokFeedBoard />
 
           <SocialAndReviews isOpenNow={isOpenNow === true} />
 
           {/* FAQ — mirrored in the FAQPage JSON-LD injected at prerender time */}
-          <section id="faq" className="cv-auto relative py-20 sm:py-28" aria-labelledby="faq-title">
+          <section id="faq" className="cv-auto relative py-16 sm:py-28" aria-labelledby="faq-title">
             <span className="blob w-[420px] h-[420px] -right-40 top-10 bg-taro/20" aria-hidden="true" />
             <div className="relative max-w-4xl mx-auto px-4 sm:px-6">
               <RevealOnScroll className="text-center">
-                <span className="glass-night inline-flex rounded-full px-4 py-2 text-sm font-bold text-haze">Domande frequenti</span>
+                <span className="lg lg-dark inline-flex rounded-full px-4 py-2 text-sm font-bold text-haze">Domande frequenti</span>
                 <h2 id="faq-title" className="mt-5 font-display font-extrabold tracking-[-0.045em] leading-[0.92] text-[clamp(2.4rem,6vw,4.75rem)]">
                   Domande? <span className="text-neon">Risposte.</span>
                 </h2>
@@ -781,8 +591,8 @@ export function App() {
       </main>
 
       {/* ================= FOOTER ================= */}
-      <div className="bg-night-sky text-white">
-          <footer className="cv-auto relative overflow-hidden pt-8 pb-8">
+      <div className="bg-night-sky text-white" data-surface="dark">
+          <footer className="cv-auto relative overflow-hidden pt-8 pb-32 lg:pb-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <RevealOnScroll>
                 <div className="relative overflow-hidden rounded-5xl bg-gradient-to-br from-pop-deep via-[#B23AB8] to-[#5B3BD9] p-8 sm:p-14 shadow-neon">
@@ -810,7 +620,7 @@ export function App() {
                         href={TEAAMO_LINKS.googleMapsDirect}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn-squish inline-flex items-center justify-center gap-2 rounded-full border-2 border-white/70 text-white px-7 py-4 font-display font-bold text-lg"
+                        className="lg lg-dark lg-press inline-flex items-center justify-center gap-2 rounded-full text-white px-7 py-4 font-display font-bold text-lg"
                       >
                         <MapPin className="w-5 h-5" aria-hidden="true" />
                         Come arrivare
@@ -840,20 +650,20 @@ export function App() {
                     <Clock className="w-4 h-4 mt-0.5 text-pop shrink-0" aria-hidden="true" />
                     <span>Lun – Dom · 12:30 – 03:30</span>
                   </p>
-                  <a href={`tel:${TEAAMO_LINKS.phone}`} className="flex gap-2.5 text-haze hover:text-white transition-colors">
+                  <a href={`tel:${TEAAMO_LINKS.phone}`} className="flex gap-2.5 py-2.5 -my-2.5 text-haze hover:text-white transition-colors">
                     <Phone className="w-4 h-4 mt-0.5 text-pop shrink-0" aria-hidden="true" />
                     <span>{TEAAMO_LINKS.phoneDisplay}</span>
                   </a>
                 </address>
-                <nav className="md:col-span-3 space-y-2.5 text-sm" aria-label="Sezioni del sito">
+                <nav className="md:col-span-3 space-y-0 lg:space-y-2.5 text-sm" aria-label="Sezioni del sito">
                   <p className="font-display font-bold text-white">Esplora</p>
                   {NAV_LINKS.map((link) => (
-                    <a key={link.href} href={link.href} className="block text-haze hover:text-white transition-colors">
+                    <a key={link.href} href={link.href} className="block py-2 lg:py-0.5 text-haze hover:text-white transition-colors">
                       {link.label}
                     </a>
                   ))}
                 </nav>
-                <div className="md:col-span-2 space-y-2.5 text-sm">
+                <div className="md:col-span-2 space-y-0 lg:space-y-2.5 text-sm">
                   <p className="font-display font-bold text-white">Social</p>
                   {[
                     { href: TEAAMO_LINKS.instagram, label: 'Instagram' },
@@ -866,7 +676,7 @@ export function App() {
                       href={s.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex items-center gap-1 text-haze hover:text-white transition-colors"
+                      className="group flex items-center gap-1 py-2 lg:py-0.5 text-haze hover:text-white transition-colors"
                     >
                       {s.label}
                       <ArrowUpRight className="w-3.5 h-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" aria-hidden="true" />
@@ -881,7 +691,7 @@ export function App() {
 
               <div className="mt-6 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-sm text-haze">
                 <span>© {new Date().getFullYear()} TeaAmo Bubble Tea — Sweet &amp; Coffee · Palermo</span>
-                <a href="#top" className="font-semibold hover:text-white transition-colors">Torna su ↑</a>
+                <a href="#top" className="inline-flex items-center min-h-[44px] font-semibold hover:text-white transition-colors">Torna su ↑</a>
               </div>
             </div>
           </footer>

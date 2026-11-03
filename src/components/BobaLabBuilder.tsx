@@ -19,18 +19,18 @@ const StepCard: React.FC<{ step: number; title: string; hint: string; children: 
   delayMs = 0,
 }) => (
   <RevealOnScroll delayMs={delayMs}>
-    <div className="rounded-5xl bg-white/80 backdrop-blur-sm p-5 sm:p-7 shadow-soft">
-      <div className="flex items-center justify-between gap-3 mb-5">
+    <div className="rounded-4xl sm:rounded-5xl bg-white/85 p-4 sm:p-7 shadow-soft">
+      <div className="flex items-center justify-between gap-3 mb-4 sm:mb-5">
         <div className="flex items-center gap-3">
           <span
-            className="w-10 h-10 rounded-full flex items-center justify-center font-display font-extrabold text-lg text-ink shrink-0"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-display font-extrabold text-lg text-ink shrink-0"
             style={{ backgroundColor: STEP_COLORS[step - 1] }}
           >
             {step}
           </span>
           <h3 className="font-display font-extrabold text-xl sm:text-2xl tracking-tight text-ink">{title}</h3>
         </div>
-        <span className="hidden sm:inline text-sm font-semibold text-ink-soft">{hint}</span>
+        <span className="text-xs sm:text-sm font-semibold text-ink-soft">{hint}</span>
       </div>
       {children}
     </div>
@@ -50,12 +50,12 @@ const OptionTile: React.FC<{
     onClick={onClick}
     onMouseMove={handleSpotlightMove}
     aria-pressed={active}
-    className={`spotlight group relative w-full text-left rounded-3xl p-3.5 flex items-center gap-3.5 transition-all duration-300 ${
+    className={`spotlight group relative w-full h-full text-left rounded-3xl p-3 sm:p-3.5 flex flex-col sm:flex-row items-start sm:items-center gap-2.5 sm:gap-3.5 min-h-[44px] active:scale-[0.97] transition-all duration-300 ${
       active ? 'bg-ink text-white shadow-soft' : 'bg-milk hover:bg-white hover:shadow-soft text-ink'
     }`}
   >
     <span
-      className={`relative w-12 h-12 rounded-full shrink-0 border-[3px] transition-transform duration-500 group-hover:rotate-12 ${
+      className={`relative w-10 h-10 sm:w-12 sm:h-12 rounded-full shrink-0 border-[3px] transition-transform duration-500 group-hover:rotate-12 ${
         active ? 'border-white/80 scale-105' : 'border-white'
       }`}
       style={{ background: swatch, boxShadow: 'inset -4px -6px 10px rgba(0,0,0,0.15), 0 6px 14px -8px rgba(29,11,51,0.5)' }}
@@ -68,10 +68,10 @@ const OptionTile: React.FC<{
     </span>
     <span className="min-w-0">
       <span className="flex flex-wrap items-center gap-1.5">
-        <span className="font-display font-bold text-[15px] leading-tight">{name}</span>
+        <span className="font-display font-bold text-[14px] sm:text-[15px] leading-tight">{name}</span>
         {extra}
       </span>
-      <span className={`block text-xs mt-0.5 leading-snug ${active ? 'text-white/75' : 'text-ink-soft'}`}>{subtitle}</span>
+      <span className={`hidden sm:block text-xs mt-0.5 leading-snug ${active ? 'text-white/75' : 'text-ink-soft'}`}>{subtitle}</span>
     </span>
   </button>
 );
@@ -156,52 +156,7 @@ export const BobaLabBuilder: React.FC = () => {
 
   const flavorSwatch = `linear-gradient(160deg, ${selectedFlavor.color}, ${selectedFlavor.secondaryColor || selectedFlavor.color})`;
 
-  return (
-    <section id="boba-lab" className="relative py-20 sm:py-28 bg-taro-soft overflow-hidden" aria-labelledby="lab-title">
-      <span className="blob w-[560px] h-[560px] -right-56 -top-40 bg-white/70" aria-hidden="true" />
-      <span className="blob w-[460px] h-[460px] -left-48 bottom-0 bg-pop/15" style={{ animationDelay: '-6s' }} aria-hidden="true" />
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <RevealOnScroll className="text-center max-w-3xl mx-auto">
-          <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-ink shadow-soft">
-            <Sparkles className="w-4 h-4 text-taro" aria-hidden="true" />
-            Boba Lab
-          </span>
-          <h2 id="lab-title" className="mt-5 font-display font-extrabold tracking-[-0.05em] leading-[0.9] text-ink text-[clamp(2.6rem,6.5vw,5.5rem)]">
-            Crea il tuo <span className="text-candy">bubble tea</span>
-          </h2>
-          <p className="mt-5 text-base sm:text-lg text-ink-soft leading-relaxed">
-            Scegli base, gusto, perle e dolcezza: il bicchiere 3D si riempie in tempo reale. Poi copia la ricetta e ordinala al bancone.
-          </p>
-        </RevealOnScroll>
-
-        <div className="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          {/* Live cup + receipt */}
-          <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-4">
-            <div className="relative rounded-5xl overflow-hidden bg-white shadow-soft">
-              <div
-                className="absolute inset-0 transition-[background] duration-700"
-                style={{ background: `radial-gradient(circle at 50% 45%, #ffffff 0%, ${selectedFlavor.color}33 60%, ${selectedFlavor.color}12 100%)` }}
-                aria-hidden="true"
-              />
-              <StudioViewport3D
-                modelType="cup"
-                cupConfig={{
-                  liquidTopColor: selectedFlavor.color,
-                  liquidBottomColor: selectedFlavor.secondaryColor || selectedFlavor.color,
-                  bobaColor: primaryBoba,
-                  bobaSecondaryColor: secondaryBoba,
-                  creamColor: hasPinkCream ? '#FFD9DE' : '#FFF8FA',
-                  hasPinkCream,
-                  showIce: ice !== 'No Ice',
-                }}
-                accentColor={selectedFlavor.color}
-                interactiveHint="Tocca il bicchiere per mescolare"
-                className="h-[340px] sm:h-[400px] lg:h-[380px] xl:h-[420px]"
-              />
-            </div>
-
-            {/* Perforated receipt */}
+  const ticket = (
             <div className="ticket-edge rounded-b-4xl bg-white px-6 sm:px-7 pt-7 pb-6 shadow-soft">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
@@ -255,12 +210,60 @@ export const BobaLabBuilder: React.FC = () => {
                 <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
               </a>
             </div>
+  );
+
+  return (
+    <section id="boba-lab" className="relative py-16 sm:py-28 bg-taro-soft overflow-clip" aria-labelledby="lab-title">
+      <span className="blob w-[560px] h-[560px] -right-56 -top-40 bg-white/70" aria-hidden="true" />
+      <span className="blob w-[460px] h-[460px] -left-48 bottom-0 bg-pop/15" style={{ animationDelay: '-6s' }} aria-hidden="true" />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <RevealOnScroll className="text-center max-w-3xl mx-auto">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-ink shadow-soft">
+            <Sparkles className="w-4 h-4 text-taro" aria-hidden="true" />
+            Boba Lab
+          </span>
+          <h2 id="lab-title" className="mt-5 font-display font-extrabold tracking-[-0.05em] leading-[0.9] text-ink text-[clamp(2.6rem,6.5vw,5.5rem)]">
+            Crea il tuo <span className="text-candy">bubble tea</span>
+          </h2>
+          <p className="mt-5 text-base sm:text-lg text-ink-soft leading-relaxed">
+            Scegli base, gusto, perle e dolcezza: il bicchiere 3D si riempie in tempo reale. Poi copia la ricetta e ordinala al bancone.
+          </p>
+        </RevealOnScroll>
+
+        <div className="mt-8 sm:mt-12 flex flex-col gap-4 sm:gap-6 lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
+          {/* Live cup + receipt */}
+          <div className="sticky top-[68px] z-20 lg:z-auto lg:top-24 lg:col-span-5 space-y-4">
+            <div className="lg relative rounded-4xl sm:rounded-5xl overflow-hidden [--lg-bg:rgba(255,255,255,0.72)] [--lg-bg-2:rgba(255,255,255,0.55)] lg:[--lg-bg:#ffffff] lg:[--lg-bg-2:#ffffff]">
+              <div
+                className="absolute inset-0 transition-[background] duration-700"
+                style={{ background: `radial-gradient(circle at 50% 45%, #ffffff 0%, ${selectedFlavor.color}33 60%, ${selectedFlavor.color}12 100%)` }}
+                aria-hidden="true"
+              />
+              <StudioViewport3D
+                modelType="cup"
+                cupConfig={{
+                  liquidTopColor: selectedFlavor.color,
+                  liquidBottomColor: selectedFlavor.secondaryColor || selectedFlavor.color,
+                  bobaColor: primaryBoba,
+                  bobaSecondaryColor: secondaryBoba,
+                  creamColor: hasPinkCream ? '#FFD9DE' : '#FFF8FA',
+                  hasPinkCream,
+                  showIce: ice !== 'No Ice',
+                }}
+                accentColor={selectedFlavor.color}
+                interactiveHint="Tocca il bicchiere per mescolare"
+                className="h-[220px] sm:h-[380px] lg:h-[380px] xl:h-[420px]"
+              />
+            </div>
+
+            <div className="hidden lg:block">{ticket}</div>
           </div>
 
           {/* Steps */}
-          <div className="lg:col-span-7 space-y-5">
+          <div className="lg:col-span-7 space-y-3 sm:space-y-5">
             <StepCard step={1} title="La base" hint="1 scelta" delayMs={40}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
                 {BOBA_BASES.map((base) => (
                   <OptionTile
                     key={base.id}
@@ -275,7 +278,7 @@ export const BobaLabBuilder: React.FC = () => {
             </StepCard>
 
             <StepCard step={2} title="Il gusto" hint="colora il bicchiere" delayMs={80}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
                 {BOBA_FLAVORS.map((flavor) => (
                   <OptionTile
                     key={flavor.id}
@@ -295,7 +298,7 @@ export const BobaLabBuilder: React.FC = () => {
             </StepCard>
 
             <StepCard step={3} title="Perle & topping" hint={`${selectedToppings.length} di 3`} delayMs={120}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
                 {BOBA_TOPPINGS.map((topping) => {
                   const active = selectedToppings.some((t) => t.id === topping.id);
                   return (
@@ -324,6 +327,7 @@ export const BobaLabBuilder: React.FC = () => {
               </div>
             </StepCard>
           </div>
+          <div className="lg:hidden">{ticket}</div>
         </div>
       </div>
     </section>
